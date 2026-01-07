@@ -1,4 +1,4 @@
-name: Mirror to forotrix
+name: Mirror to forotrix (SSH)
 
 on:
   push:
@@ -11,24 +11,24 @@ permissions:
 jobs:
   mirror:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout full history
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Debug token presence
-        env:
-          MIRROR_TOKEN: ${{ secrets.FOROTRIX_MIRROR_TOKEN }}
+
+      - name: Setup SSH for mirror push
         run: |
-          if [ -z "${MIRROR_TOKEN}" ]; then echo "TOKEN EMPTY"; exit 1; fi
-          echo "TOKEN LENGTH: ${#MIRROR_TOKEN}"
+          mkdir -p ~/.ssh
+          echo "${{ secrets.FOROTRIX_DEPLOY_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
 
       - name: Push to forotrix mirror
-        env:
-          MIRROR_TOKEN: ${{ secrets.FOROTRIX_MIRROR_TOKEN }}
         run: |
           set -euo pipefail
           git remote remove mirror 2>/dev/null || true
-          git remote add mirror "https://x-access-token:${MIRROR_TOKEN}@github.com/forotrix/anuncios.git"
-          git push --force --prune mirror "refs/heads/main:refs/heads/main"
+          git remote add mirror git@github.com:forotrix/anuncios.git
+          git push --force --prune mirror main
           git push --force --prune mirror --tags
