@@ -1,0 +1,286 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --blue-800: rgba(0, 29, 117, 1);
+    --caption-heavy-font-family: "Open Sans", Helvetica, Arial, sans-serif;
+    --caption-heavy-font-size: 12px;
+    --caption-heavy-font-style: normal;
+    --caption-heavy-font-weight: 600;
+    --caption-heavy-letter-spacing: 0px;
+    --caption-heavy-line-height: 16px;
+    --collection-1-booleana: initial;
+    --collection-1-color: rgba(255, 255, 255, 1);
+    --collection-1-fondo: rgba(14, 28, 32, 1);
+    --collection-1-fondo-02: rgba(7, 14, 15, 1);
+    --gray-2: rgba(79, 79, 79, 1);
+    --gris-claro: rgba(240, 244, 245, 1);
+    --h1-2-0-font-family: "Plus Jakarta Sans", Helvetica, Arial, sans-serif;
+    --h1-2-0-font-size: 48px;
+    --h1-2-0-font-style: normal;
+    --h1-2-0-font-weight: 600;
+    --h1-2-0-letter-spacing: 0px;
+    --h1-2-0-line-height: normal;
+    --h1-titulos-principales-font-family: "Plus Jakarta Sans", Helvetica,
+      Arial, sans-serif;
+    --h1-titulos-principales-font-size: 40px;
+    --h1-titulos-principales-font-style: normal;
+    --h1-titulos-principales-font-weight: 400;
+    --h1-titulos-principales-letter-spacing: 0px;
+    --h1-titulos-principales-line-height: normal;
+    --h2-2-0-font-family: "Plus Jakarta Sans", Helvetica, Arial, sans-serif;
+    --h2-2-0-font-size: 32px;
+    --h2-2-0-font-style: normal;
+    --h2-2-0-font-weight: 600;
+    --h2-2-0-letter-spacing: 0px;
+    --h2-2-0-line-height: normal;
+    --h2-subtitulos-o-secciones-font-family: "Plus Jakarta Sans", Helvetica,
+      Arial, sans-serif;
+    --h2-subtitulos-o-secciones-font-size: 32px;
+    --h2-subtitulos-o-secciones-font-style: normal;
+    --h2-subtitulos-o-secciones-font-weight: 400;
+    --h2-subtitulos-o-secciones-letter-spacing: 0px;
+    --h2-subtitulos-o-secciones-line-height: normal;
+    --h3-subdivisiones-font-family: "Plus Jakarta Sans", Helvetica,
+      Arial, sans-serif;
+    --h3-subdivisiones-font-size: 28px;
+    --h3-subdivisiones-font-style: normal;
+    --h3-subdivisiones-font-weight: 400;
+    --h3-subdivisiones-letter-spacing: 0px;
+    --h3-subdivisiones-line-height: normal;
+    --h4-font-family: "Plus Jakarta Sans", Helvetica, Arial, sans-serif;
+    --h4-font-size: 24px;
+    --h4-font-style: normal;
+    --h4-font-weight: 400;
+    --h4-letter-spacing: 0px;
+    --h4-line-height: normal;
+    --h5-font-family: "Plus Jakarta Sans", Helvetica, Arial, sans-serif;
+    --h5-font-size: 20px;
+    --h5-font-style: normal;
+    --h5-font-weight: 400;
+    --h5-letter-spacing: 0px;
+    --h5-line-height: normal;
+    --h6-font-family: "Plus Jakarta Sans", Helvetica, Arial, sans-serif;
+    --h6-font-size: 18px;
+    --h6-font-style: normal;
+    --h6-font-weight: 400;
+    --h6-letter-spacing: 0px;
+    --h6-line-height: normal;
+    --legal-font-family: "Plus Jakarta Sans", Helvetica, Arial, sans-serif;
+    --legal-font-size: 12px;
+    --legal-font-style: normal;
+    --legal-font-weight: 400;
+    --legal-letter-spacing: 0px;
+    --legal-line-height: normal;
+    --lightness: rgba(242, 242, 242, 1);
+    --neutral-0: rgba(255, 255, 255, 1);
+    --neutral-1: rgba(238, 238, 238, 1);
+    --nombre-chica-feed-font-family: "Plus Jakarta Sans", Helvetica,
+      Arial, sans-serif;
+    --nombre-chica-feed-font-size: 28px;
+    --nombre-chica-feed-font-style: normal;
+    --nombre-chica-feed-font-weight: 600;
+    --nombre-chica-feed-letter-spacing: 0px;
+    --nombre-chica-feed-line-height: normal;
+    --rojo-cereza0: rgba(255, 245, 248, 1);
+    --rojo-cereza100: rgba(250, 166, 191, 1);
+    --rojo-cereza200: rgba(237, 90, 134, 1);
+    --rojo-cereza300: rgba(215, 33, 88, 1);
+    --rojo-cereza400: rgba(179, 6, 58, 1);
+    --rojo-cereza500: rgba(135, 0, 41, 1);
+    --rojo-pasion0: rgba(255, 245, 245, 1);
+    --rojo-pasion100: rgba(251, 152, 155, 1);
+    --rojo-pasion200: rgba(236, 76, 81, 1);
+    --rojo-pasion300: rgba(208, 29, 35, 1);
+    --rojo-pasion400: rgba(172, 7, 13, 1);
+    --rojo-pasion500: rgba(135, 0, 5, 1);
+    --shadow-g: 0px 4px 12px 0px rgba(0, 0, 0, 0.12);
+    --soft: rgba(132, 132, 132, 1);
+    --switch-in-shadow: 2px 1px 6px 0px rgba(0, 0, 0, 0.25);
+    --texto-base-p-rrafo-negrita-font-family: "Plus Jakarta Sans", Helvetica,
+      Arial, sans-serif;
+    --texto-base-p-rrafo-negrita-font-size: 16px;
+    --texto-base-p-rrafo-negrita-font-style: normal;
+    --texto-base-p-rrafo-negrita-font-weight: 600;
+    --texto-base-p-rrafo-negrita-letter-spacing: 0px;
+    --texto-base-p-rrafo-negrita-line-height: normal;
+    --texto-base-p-rrafo-regular-font-family: "Plus Jakarta Sans", Helvetica,
+      Arial, sans-serif;
+    --texto-base-p-rrafo-regular-font-size: 16px;
+    --texto-base-p-rrafo-regular-font-style: normal;
+    --texto-base-p-rrafo-regular-font-weight: 400;
+    --texto-base-p-rrafo-regular-letter-spacing: 0px;
+    --texto-base-p-rrafo-regular-line-height: normal;
+    --texto-secundario-font-family: "Plus Jakarta Sans", Helvetica,
+      Arial, sans-serif;
+    --texto-secundario-font-size: 14px;
+    --texto-secundario-font-style: normal;
+    --texto-secundario-font-weight: 400;
+    --texto-secundario-letter-spacing: 0px;
+    --texto-secundario-line-height: normal;
+    --textwhite: rgba(255, 255, 255, 1);
+    --white: rgba(255, 255, 255, 1);
+    --animate-spin: spin 1s linear infinite;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    font-family: var(--texto-base-p-rrafo-regular-font-family);
+    background-color: #000;
+    color: var(--textwhite);
+  }
+}
+
+@layer components {
+  .all-\[unset\] {
+    all: unset;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 1s var(--animation-delay, 0s) ease forwards;
+}
+
+.animate-fade-up {
+  animation: fade-up 1s var(--animation-delay, 0s) ease forwards;
+}
+
+.animate-marquee {
+  animation: marquee var(--duration) infinite linear;
+}
+
+.animate-marquee-vertical {
+  animation: marquee-vertical var(--duration) linear infinite;
+}
+
+.animate-shimmer {
+  animation: shimmer 8s infinite;
+}
+
+.animate-spin {
+  animation: var(--animate-spin);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@keyframes image-glow {
+  0% {
+    opacity: 0;
+    animation-timing-function: cubic-bezier(0.74, 0.25, 0.76, 1);
+  }
+
+  10% {
+    opacity: 0.7;
+    animation-timing-function: cubic-bezier(0.12, 0.01, 0.08, 0.99);
+  }
+
+  to {
+    opacity: 0.4;
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes shimmer {
+  0%,
+  90%,
+  to {
+    background-position: calc(-100% - var(--shimmer-width)) 0;
+  }
+
+  30%,
+  60% {
+    background-position: calc(100% + var(--shimmer-width)) 0;
+  }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translate(0);
+  }
+
+  to {
+    transform: translateX(calc(-100% - var(--gap)));
+  }
+}
+
+@keyframes marquee-vertical {
+  0% {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(calc(-100% - var(--gap)));
+  }
+}
+
+@layer utilities {
+  .bg-brand-gradient {
+    background-image: linear-gradient(
+      119deg,
+      rgba(135, 0, 5, 1) 12%,
+      rgba(172, 7, 13, 1) 45%,
+      rgba(208, 29, 35, 1) 75%,
+      rgba(236, 76, 81, 1) 100%
+    );
+  }
+
+  .bg-brand-gradient-soft {
+    background-image: linear-gradient(
+      119deg,
+      rgba(135, 0, 5, 0.3) 12%,
+      rgba(172, 7, 13, 0.3) 45%,
+      rgba(208, 29, 35, 0.3) 75%,
+      rgba(236, 76, 81, 0.3) 100%
+    );
+  }
+
+  .bg-panel-gradient {
+    background-image: linear-gradient(
+      119deg,
+      rgba(7, 7, 7, 0.9) 12%,
+      rgba(15, 16, 16, 0.9) 45%,
+      rgba(22, 25, 25, 0.9) 75%,
+      rgba(26, 28, 28, 0.9) 100%
+    );
+  }
+}

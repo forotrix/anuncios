@@ -1,0 +1,33 @@
+{
+  "name": "@anuncios/desktop-web",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --port 3100",
+    "build": "next build",
+    "start": "next start --port 3100",
+    "lint": "next lint .",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@anuncios/shared": "workspace:*",
+    "next": "16.0.1",
+    "prop-types": "^15.8.1",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/prop-types": "^15.7.15",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "autoprefixer": "^10.4.20",
+    "baseline-browser-mapping": "^2.8.32",
+    "eslint": "^9",
+    "eslint-config-next": "16.0.1",
+    "postcss": "^8.4.49",
+    "tailwindcss": "3.4.16",
+    "typescript": "^5.6.2"
+  }
+}

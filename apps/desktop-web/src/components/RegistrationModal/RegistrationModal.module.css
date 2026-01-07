@@ -1,0 +1,336 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+.modalContainer {
+  position: relative;
+  width: 541px;
+  min-height: 541px;
+  border-radius: 40px;
+  background-color: #0e1c20;
+  backdrop-filter: blur(3.2px);
+  padding: 44px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.25);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.welcomeText {
+  font-family: 'Roboto', Helvetica, sans-serif;
+  font-weight: 400;
+  font-size: 21px;
+  color: #d01d23; /* rojo-pasion300 */
+  white-space: nowrap;
+}
+
+.loginLink {
+  font-family: 'Poppins', Helvetica, sans-serif;
+  font-size: 13px;
+  line-height: normal;
+  text-align: right;
+}
+
+.loginLinkText {
+  color: #ffffff;
+}
+
+.loginLinkAction {
+  color: #e40303;
+  cursor: pointer;
+  font-weight: 600;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.backButton {
+  background-color: #a90024; /* Dark red background */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-family: 'Plus Jakarta Sans', Helvetica, sans-serif;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.backButton:hover {
+  background-color: #8a001d;
+}
+
+.title {
+  font-family: 'Poppins', Helvetica, sans-serif;
+  font-weight: 500;
+  font-size: 55px;
+  color: #ffffff;
+  line-height: 1;
+}
+
+/* Override title margin when inside headerRow */
+.headerRow .title {
+  margin-bottom: 0;
+  font-size: 40px;
+}
+
+/* Standalone title (selection view) */
+.modalContainer > .title {
+  margin-bottom: 40px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.formGroup {
+  position: relative;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.label {
+  font-family: 'Poppins', Helvetica, sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  color: #ffffff;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.inputWrapper {
+  width: 100%;
+  height: 57px;
+  background-color: #ffffff;
+  border-radius: 9px;
+  border: 1px solid #adadad;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+}
+
+.input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: 'Poppins', Helvetica, sans-serif;
+  font-size: 14px;
+  color: #000000;
+}
+
+.input::placeholder {
+  color: #7f7f7f;
+  font-weight: 300;
+}
+
+.inputActionButton {
+  background: none;
+  border: none;
+  color: #d01d23;
+  font-family: 'Poppins', Helvetica, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 12px;
+  padding: 0;
+}
+
+.helperText {
+  margin-top: 6px;
+  font-family: 'Poppins', Helvetica, sans-serif;
+  font-size: 12px;
+  color: #cfcfcf;
+}
+
+/* Selection View Buttons */
+.selectionButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.selectionButton {
+  width: 100%;
+  height: 80px;
+  background-color: #d01d23; /* rojo-pasion300 */
+  border-radius: 16px;
+  border: none;
+  color: white;
+  font-family: 'Plus Jakarta Sans', Helvetica, sans-serif;
+  font-size: 24px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.selectionButton:hover {
+  background-color: #ac070d;
+}
+
+/* Dropdown Styles */
+.dropdownWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.dropdownButton {
+  width: 100%;
+  height: 57px;
+  background-color: #ffffff;
+  border-radius: 9px;
+  border: 1px solid #adadad;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  font-family: 'Poppins', Helvetica, sans-serif;
+  font-size: 14px;
+  color: #000000;
+  cursor: pointer;
+  text-align: left;
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background-color: #0e1c20;
+  border: 1px solid #333;
+  border-radius: 9px;
+  margin-top: 4px;
+  z-index: 10;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.dropdownItem {
+  width: 100%;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  color: white;
+  text-align: left;
+  cursor: pointer;
+  font-family: 'Poppins', Helvetica, sans-serif;
+  font-size: 14px;
+}
+
+.dropdownItem:hover {
+  background-color: rgba(255,255,255,0.1);
+}
+
+/* Row layout for side-by-side inputs */
+.row {
+  display: flex;
+  gap: 20px;
+}
+
+.row .formGroup {
+  flex: 1;
+}
+
+.submitButtonContainer {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.submitButton {
+  width: 238px;
+  height: 54px;
+  background-color: #d01d23;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.submitButton:hover {
+  background-color: #ac070d;
+}
+
+.submitButton:disabled {
+  background-color: #666;
+  cursor: not-allowed;
+}
+
+.submitButtonText {
+  font-family: 'Plus Jakarta Sans', Helvetica, sans-serif;
+  font-weight: 400;
+  font-size: 24px;
+  color: #ffffff;
+}
+
+.error {
+  color: #ff4444;
+  font-family: 'Poppins', Helvetica, sans-serif;
+  font-size: 14px;
+  text-align: right;
+  margin-bottom: 8px;
+}
+
+.formFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: -8px;
+}
+
+.checkboxRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Poppins', Helvetica, sans-serif;
+  font-size: 14px;
+  color: #ffffff;
+}
+
+.checkbox {
+  width: 16px;
+  height: 16px;
+  accent-color: #d01d23;
+}
+
+.linkButton {
+  background: none;
+  border: none;
+  color: #d01d23;
+  font-family: 'Poppins', Helvetica, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}

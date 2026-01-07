@@ -1,0 +1,70 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/screens/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        "blue-800": "var(--blue-800)",
+        "collection-1-color": "var(--collection-1-color)",
+        "collection-1-fondo": "var(--collection-1-fondo)",
+        "collection-1-fondo-02": "var(--collection-1-fondo-02)",
+        "gray-2": "var(--gray-2)",
+        "gris-claro": "var(--gris-claro)",
+        lightness: "var(--lightness)",
+        "neutral-0": "var(--neutral-0)",
+        "neutral-1": "var(--neutral-1)",
+        "rojo-cereza0": "var(--rojo-cereza0)",
+        "rojo-cereza100": "var(--rojo-cereza100)",
+        "rojo-cereza200": "var(--rojo-cereza200)",
+        "rojo-cereza300": "var(--rojo-cereza300)",
+        "rojo-cereza400": "var(--rojo-cereza400)",
+        "rojo-cereza500": "var(--rojo-cereza500)",
+        "rojo-pasion0": "var(--rojo-pasion0)",
+        "rojo-pasion100": "var(--rojo-pasion100)",
+        "rojo-pasion200": "var(--rojo-pasion200)",
+        "rojo-pasion300": "var(--rojo-pasion300)",
+        "rojo-pasion400": "var(--rojo-pasion400)",
+        "rojo-pasion500": "var(--rojo-pasion500)",
+        soft: "var(--soft)",
+        textwhite: "var(--textwhite)",
+        white: "var(--white)",
+        night: "#020404",
+        ink: "#050505",
+        graphite: "#4a4a4a",
+        steel: "#7f7f7f",
+        mist: "#d9d9d9",
+        "deep-forest": "#070e0f",
+      },
+      fontFamily: {
+        "caption-heavy": "var(--caption-heavy-font-family)",
+        "h1-2-0": "var(--h1-2-0-font-family)",
+        "h1-titulos-principales":
+          "var(--h1-titulos-principales-font-family)",
+        "h2-2-0": "var(--h2-2-0-font-family)",
+        "h2-subtitulos-o-secciones":
+          "var(--h2-subtitulos-o-secciones-font-family)",
+        "h3-subdivisiones": "var(--h3-subdivisiones-font-family)",
+        h4: "var(--h4-font-family)",
+        h5: "var(--h5-font-family)",
+        h6: "var(--h6-font-family)",
+        legal: "var(--legal-font-family)",
+        "nombre-chica-feed": "var(--nombre-chica-feed-font-family)",
+        "texto-base-p-rrafo-negrita":
+          "var(--texto-base-p-rrafo-negrita-font-family)",
+        "texto-base-p-rrafo-regular":
+          "var(--texto-base-p-rrafo-regular-font-family)",
+        "texto-secundario": "var(--texto-secundario-font-family)",
+      },
+      boxShadow: {
+        "shadow-g": "var(--shadow-g)",
+        "switch-in-shadow": "var(--switch-in-shadow)",
+      },
+    },
+  },
+  plugins: [],
+};

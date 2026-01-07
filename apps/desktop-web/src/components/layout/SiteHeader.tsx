@@ -1,0 +1,213 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import type { GenderIdentity, GenderSex, ProfileType } from "@anuncios/shared";
+import { ProfileTypeToggle } from "@/components/ProfileTypeToggle";
+import { GenderToggleStack } from "@/components/GenderToggleStack";
+import { BotonChicas } from "@/components/BotonChicas";
+import { ASSETS } from "@/constants/assets";
+import { useEffect, useState } from "react";
+
+type Props = {
+  profileType?: ProfileType;
+  onProfileTypeChange?: (next: ProfileType) => void;
+  genderSex?: GenderSex;
+  genderIdentity?: GenderIdentity;
+  onGenderSexChange?: (next: GenderSex) => void;
+  onGenderIdentityChange?: (next: GenderIdentity) => void;
+  profileToggleClassName?: string;
+  logoHref?: string;
+  onRegisterClick?: () => void;
+};
+
+const DEFAULT_PROFILE_TOGGLE_CLASS = "absolute left-[618px] top-2.5";
+const MENU_ID = "siteheader-mobile-menu";
+
+export const SiteHeader = ({
+  profileType,
+  onProfileTypeChange,
+  genderSex,
+  genderIdentity,
+  onGenderSexChange,
+  onGenderIdentityChange,
+  profileToggleClassName = DEFAULT_PROFILE_TOGGLE_CLASS,
+  logoHref = "/feed",
+  onRegisterClick,
+}: Props) => {
+  const canToggleProfile = profileType && onProfileTypeChange;
+  const canToggleGender = genderSex && genderIdentity && onGenderSexChange && onGenderIdentityChange;
+  const pathname = usePathname();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const { style } = document.body;
+    const prevOverflow = style.overflow;
+    if (isMobileMenuOpen) {
+      style.overflow = "hidden";
+    } else {
+      style.overflow = prevOverflow;
+    }
+    return () => {
+      style.overflow = prevOverflow;
+    };
+  }, [isMobileMenuOpen]);
+
+  return (
+    <>
+      <header className="fixed left-0 top-0 z-[240] w-full">
+        <div className="mx-auto w-full max-w-[1440px]">
+          <div className="relative h-[72px] w-full">
+            {(canToggleGender || canToggleProfile) && (
+              <div className={`hidden md:block ${profileToggleClassName}`}>
+                {canToggleGender ? (
+                  <GenderToggleStack
+                    sex={genderSex}
+                    identity={genderIdentity}
+                    onSexChange={onGenderSexChange}
+                    onIdentityChange={onGenderIdentityChange}
+                    gapClassName="gap-3"
+                  />
+                ) : (
+                  canToggleProfile && <ProfileTypeToggle value={profileType} onToggle={onProfileTypeChange} />
+                )}
+              </div>
+            )}
+
+            <Link
+              href={logoHref}
+              className="absolute left-4 top-3 block h-[66px] w-[273px] md:left-[72px]"
+              aria-label="Volver al inicio"
+            >
+              <img className="h-full w-full" alt="Logo Forotrix" src={ASSETS.logoPrimary} />
+            </Link>
+
+            <button
+              type="button"
+              className="absolute right-4 top-3 z-[260] inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-black/40 text-white/80 backdrop-blur-sm transition hover:border-white/40 hover:text-white md:hidden"
+              aria-label={isMobileMenuOpen ? "Cerrar menu" : "Abrir menu"}
+              aria-expanded={isMobileMenuOpen}
+              aria-controls={MENU_ID}
+              onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+            >
+              <span className="text-lg leading-none">{isMobileMenuOpen ? "×" : "≡"}</span>
+            </button>
+
+            <BotonChicas
+              buttonStyleDivClassName="!mr-[-20.50px] !mt-[-3.00px] !tracking-[var(--h4-letter-spacing)] !ml-[-20.50px] !text-[length:var(--h4-font-size)] ![font-style:var(--h4-font-style)] ![white-space:unset] !font-[number:var(--h4-font-weight)] !font-h4 !leading-[var(--h4-line-height)]"
+              buttonStyleStyleFilledIconNoClassName="!self-stretch !flex-[0_0_auto] !border-[none] !px-[70px] !py-3.5 !flex !left-[unset] !bg-[unset] !w-full !top-[unset]"
+              buttonStyleText="Anuncia"
+              className="!absolute !left-[1012px] !top-0 !hidden md:!block"
+              propiedad1="predeterminada"
+              to="/perfil/mi-anuncio"
+            />
+
+            {onRegisterClick ? (
+              <BotonChicas
+                buttonStyleDivClassName="!mr-[-40.00px] !mt-[-3.00px] !tracking-[var(--h4-letter-spacing)] !ml-[-40.00px] !text-[length:var(--h4-font-size)] ![font-style:var(--h4-font-style)] ![white-space:unset] !font-[number:var(--h4-font-weight)] !font-h4 !leading-[var(--h4-line-height)]"
+                buttonStyleStyleFilledIconNoClassName="!self-stretch !flex-[0_0_auto] !px-[70px] !py-3.5 !bg-blend-screen !flex !left-[unset] !bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] !bg-[unset] !w-full !top-[unset]"
+                buttonStyleText="Registrarse"
+                className="!absolute !left-[1217px] !top-0 !hidden md:!block"
+                propiedad1="predeterminada"
+                onClick={onRegisterClick}
+              />
+            ) : (
+              <Link
+                href="/auth/registro"
+                className="absolute left-[1217px] top-0 hidden h-[66px] w-[273px] md:block"
+                aria-label="Registrarse"
+              >
+                <BotonChicas
+                  buttonStyleDivClassName="!mr-[-40.00px] !mt-[-3.00px] !tracking-[var(--h4-letter-spacing)] !ml-[-40.00px] !text-[length:var(--h4-font-size)] ![font-style:var(--h4-font-style)] ![white-space:unset] !font-[number:var(--h4-font-weight)] !font-h4 !leading-[var(--h4-line-height)]"
+                  buttonStyleStyleFilledIconNoClassName="!self-stretch !flex-[0_0_auto] !px-[70px] !py-3.5 !bg-blend-screen !flex !left-[unset] !bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] !bg-[unset] !w-full !top-[unset]"
+                  buttonStyleText="Registrarse"
+                  className="!relative !left-[unset] !top-[unset]"
+                  propiedad1="predeterminada"
+                />
+              </Link>
+            )}
+          </div>
+        </div>
+      </header>
+
+      {isMobileMenuOpen && (
+        <div id={MENU_ID} className="fixed inset-0 z-[250] md:hidden" role="dialog" aria-modal="true">
+          <button
+            type="button"
+            className="absolute inset-0 bg-black/60"
+            aria-label="Cerrar menu"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+          <aside className="absolute right-0 top-0 flex h-full w-[85vw] max-w-[360px] flex-col gap-6 border-l border-white/10 bg-[#020404] px-6 py-6 shadow-[0_30px_80px_rgba(0,0,0,0.65)]">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-white/60">Menu</p>
+              <button
+                type="button"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/20 text-white/80 transition hover:border-white/40 hover:text-white"
+                aria-label="Cerrar menu"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                ×
+              </button>
+            </div>
+
+            {(canToggleGender || canToggleProfile) && (
+              <div className="rounded-[28px] border border-white/10 bg-[#07080c]/70 p-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.35em] text-white/50">Preferencias</p>
+                <div className="mt-4">
+                  {canToggleGender ? (
+                    <GenderToggleStack
+                      sex={genderSex}
+                      identity={genderIdentity}
+                      onSexChange={onGenderSexChange}
+                      onIdentityChange={onGenderIdentityChange}
+                      gapClassName="gap-3"
+                    />
+                  ) : (
+                    canToggleProfile && <ProfileTypeToggle value={profileType} onToggle={onProfileTypeChange} />
+                  )}
+                </div>
+              </div>
+            )}
+
+            <div className="mt-auto space-y-3">
+              <Link
+                href="/perfil/mi-anuncio"
+                className="inline-flex w-full items-center justify-center rounded-full border border-white/20 bg-white/5 px-6 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-white/85 transition hover:border-white/40 hover:text-white"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Anuncia
+              </Link>
+
+              {onRegisterClick ? (
+                <button
+                  type="button"
+                  className="inline-flex w-full items-center justify-center rounded-full bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] px-6 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-white shadow-shadow-g"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    onRegisterClick();
+                  }}
+                >
+                  Registrarse
+                </button>
+              ) : (
+                <Link
+                  href="/auth/registro"
+                  className="inline-flex w-full items-center justify-center rounded-full bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] px-6 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-white shadow-shadow-g"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Registrarse
+                </Link>
+              )}
+            </div>
+          </aside>
+        </div>
+      )}
+    </>
+  );
+};

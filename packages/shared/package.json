@@ -1,0 +1,30 @@
+{
+  "name": "@anuncios/shared",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./mock-ads": {
+      "types": "./dist/mock-ads.d.ts",
+      "default": "./dist/mock-ads.js"
+    },
+    "./filters": {
+      "types": "./dist/filters.d.ts",
+      "default": "./dist/filters.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4"
+  }
+}

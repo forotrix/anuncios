@@ -1,0 +1,1 @@
+export { ChicaFeedDestacada } from "./ChicaFeedDestacada";

@@ -1,0 +1,1 @@
+export { Anuncio } from "./Anuncio";

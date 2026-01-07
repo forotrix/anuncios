@@ -1,0 +1,1 @@
+export { PropiedadFiltrarWrapper } from "./PropiedadFiltrarWrapper";

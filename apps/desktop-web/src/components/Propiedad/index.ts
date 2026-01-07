@@ -1,0 +1,1 @@
+export { Propiedad } from "./Propiedad";

@@ -1,0 +1,1 @@
+export { FeaturedHeroCarousel } from "./FeaturedHeroCarousel";

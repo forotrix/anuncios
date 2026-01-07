@@ -1,0 +1,11 @@
+import express from 'express';
+import { httpLogger } from './utils/logger';
+import { security } from './middlewares/security';
+import { errorHandler } from './middlewares/error';
+import routes from './routes';
+export const app = express();
+app.use(express.json({ limit:'1mb' }));
+app.use(httpLogger);
+app.use(security);
+app.use('/api/v1', routes);
+app.use(errorHandler);
