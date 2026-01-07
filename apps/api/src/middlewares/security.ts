@@ -10,9 +10,32 @@ const defaultLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+const allowlist = new Set(env.cors.originAllowlist.map((origin) => origin.toLowerCase()));
+const vercelPreviewRegex = /^https:\/\/[a-z0-9-]+\.vercel\.app$/i;
+
+function isAllowedOrigin(origin?: string | null) {
+  if (!origin) return true;
+  if (env.cors.allowAll) return true;
+
+  const normalized = origin.toLowerCase();
+  if (allowlist.has(normalized)) return true;
+  if (env.cors.allowVercelPreview && vercelPreviewRegex.test(normalized)) return true;
+
+  return false;
+}
+
 export const security = [
   helmet(),
-  cors({ origin: env.corsOrigin, credentials: true }),
+  cors({
+    origin: (origin, callback) => {
+      if (isAllowedOrigin(origin)) {
+        callback(null, true);
+        return;
+      }
+      callback(new Error('Not allowed by CORS'));
+    },
+    credentials: true,
+  }),
   defaultLimiter,
 ];
 

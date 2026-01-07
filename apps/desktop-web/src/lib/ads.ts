@@ -71,9 +71,7 @@ export type AdsResult = {
   citySummary: CitySummary[];
 };
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ??
-  (process.env.NODE_ENV !== "production" ? "http://localhost:3000/api/v1" : "");
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL?.trim() ?? "";
 
 function mapBackendAd(ad: BackendAd): Ad {
   const services = ad.services ?? [];

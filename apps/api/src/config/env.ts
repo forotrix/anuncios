@@ -17,10 +17,28 @@ function req(name: string, def?: string) {
   return value;
 }
 
+function opt(name: string, def?: string) {
+  return process.env[name] ?? def;
+}
+
 function reqNumber(name: string, def?: string) {
   const value = Number(req(name, def));
   if (Number.isNaN(value)) throw new Error(`Env ${name} must be a number`);
   return value;
+}
+
+function parseCsv(value?: string) {
+  if (!value) return [];
+  return value
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function parseBoolean(value?: string) {
+  if (!value) return false;
+  const normalized = value.trim().toLowerCase();
+  return ['1', 'true', 'yes', 'y', 'on'].includes(normalized);
 }
 
 const storageDriver = req('STORAGE_DRIVER', 'cloudinary');
@@ -28,10 +46,16 @@ if (!['cloudinary'].includes(storageDriver)) {
   throw new Error(`Unsupported STORAGE_DRIVER: ${storageDriver}`);
 }
 
+const corsOriginRaw = opt('CORS_ORIGIN', '');
+
 export const env = {
   port: reqNumber('API_PORT', '8080'),
   mongoUri: req('MONGODB_URI'),
-  corsOrigin: req('CORS_ORIGIN', '*').split(','),
+  cors: {
+    originAllowlist: parseCsv(corsOriginRaw),
+    allowAll: corsOriginRaw.includes('*'),
+    allowVercelPreview: parseBoolean(opt('CORS_ALLOW_VERCEL_PREVIEW', 'false')),
+  },
   jwt: {
     accessSecret: req('JWT_ACCESS_SECRET'),
     refreshSecret: req('JWT_REFRESH_SECRET'),

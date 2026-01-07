@@ -1,0 +1,28 @@
+name: Mirror to forotrix
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Push to forotrix mirror
+        env:
+          MIRROR_TOKEN: ${{ secrets.FOROTRIX_MIRROR_TOKEN }}
+        run: |
+          set -euo pipefail
+          git remote remove mirror 2>/dev/null || true
+          git remote add mirror "https://x-access-token:${MIRROR_TOKEN}@github.com/forotrix/anuncios.git"
+          git push --force --prune mirror "refs/heads/main:refs/heads/main"
+          git push --force --prune mirror --tags

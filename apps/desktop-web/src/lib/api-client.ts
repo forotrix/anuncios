@@ -1,7 +1,5 @@
 import { z } from 'zod';
 
-const DEV_FALLBACK_BASE_URL = 'http://localhost:3000/api/v1';
-
 export class ApiClientError extends Error {
   constructor(
     message: string,
@@ -18,11 +16,6 @@ export function getApiBaseUrl(): string | undefined {
   if (explicit) {
     return explicit;
   }
-
-  if (process.env.NODE_ENV !== 'production') {
-    return DEV_FALLBACK_BASE_URL;
-  }
-
   return undefined;
 }
 
