@@ -46,7 +46,7 @@ if (!['cloudinary'].includes(storageDriver)) {
   throw new Error(`Unsupported STORAGE_DRIVER: ${storageDriver}`);
 }
 
-const corsOriginRaw = opt('CORS_ORIGIN', '');
+const corsOriginRaw = opt('CORS_ORIGIN', '') ?? '';
 
 export const env = {
   port: reqNumber('API_PORT', '8080'),
