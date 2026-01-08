@@ -24,3 +24,4 @@ Keep it off in production if you only want the fixed allowlist.
 
 - Requests without an Origin header (server-to-server, curl) are allowed.
 - When CORS_ORIGIN includes *, all origins are allowed.
+- Avoid using * in production.

@@ -13,3 +13,4 @@ docs/*
 !docs/ENV.md
 !docs/CORS.md
 !docs/DEPLOYMENT.md
+!docs/ARCHITECTURE.md

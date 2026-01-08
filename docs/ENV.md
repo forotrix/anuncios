@@ -70,7 +70,7 @@ Local:
 Preview (Vercel):
 - CORS_ORIGIN=https://your-project.vercel.app
 - CORS_ALLOW_VERCEL_PREVIEW=true
-- NEXT_PUBLIC_API_BASE_URL=http://<hetzner-ip>:8080/api/v1
+- NEXT_PUBLIC_API_BASE_URL=http://<hetzner-ip>:3000/api/v1
 
 Production:
 - CORS_ORIGIN=https://forotrix.com,https://www.forotrix.com
