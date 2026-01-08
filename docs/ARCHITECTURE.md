@@ -11,6 +11,8 @@ Front (Next.js) -> API (Node/Express) -> MongoDB
 - Preview: https://*.vercel.app (front) -> http://<hetzner-ip>:3000/api/v1 (api)
 - Production: https://forotrix.com and https://www.forotrix.com -> https://api.forotrix.com/api/v1
 
+Note: The API listens on API_PORT (3000 on Hetzner).
+
 ## Git flow
 
 - Source repo: mikongame/anuncios
