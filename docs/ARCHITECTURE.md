@@ -1,5 +1,5 @@
 # Architecture
-
+check 1
 ## Overview
 
 Front (Next.js) -> API (Node/Express) -> MongoDB
