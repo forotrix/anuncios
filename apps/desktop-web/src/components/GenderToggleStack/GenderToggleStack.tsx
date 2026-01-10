@@ -67,14 +67,14 @@ function BinaryToggle<T extends string>({
       <button
         type="button"
         onClick={() => onChange?.(next.value)}
-        className="relative flex h-full w-full items-center justify-between rounded-[100px] bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] pl-[85px] pr-[26px]"
+        className="relative flex h-full w-full items-center justify-center rounded-[100px] bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] px-[26px]"
         aria-label={`${ariaLabelPrefix} ${next.label}`}
       >
-        <span className="font-h3-subdivisiones text-[length:var(--h3-subdivisiones-font-size)] text-white tracking-[var(--h3-subdivisiones-letter-spacing)] leading-[var(--h3-subdivisiones-line-height)]">
+        <span className="relative z-10 w-full text-center font-h3-subdivisiones text-[length:calc(var(--h3-subdivisiones-font-size)*0.9)] text-white tracking-[var(--h3-subdivisiones-letter-spacing)] leading-[var(--h3-subdivisiones-line-height)]">
           {isLeft ? left.label : right.label}
         </span>
         <span
-          className="absolute top-1 h-[62px] w-[62px] rounded-[31px] bg-gradient-to-b from-white to-[#e8eaea] shadow-switch-in-shadow transition-all"
+          className="absolute top-1 z-0 h-[62px] w-[62px] rounded-[31px] bg-gradient-to-b from-white to-[#e8eaea] shadow-switch-in-shadow transition-all"
           style={{
             left: isLeft ? "6px" : "calc(100% - 68px)",
           }}
@@ -84,4 +84,3 @@ function BinaryToggle<T extends string>({
     </div>
   );
 }
-

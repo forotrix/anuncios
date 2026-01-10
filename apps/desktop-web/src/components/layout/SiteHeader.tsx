@@ -60,22 +60,27 @@ export const SiteHeader = ({
 
   return (
     <>
-      <header className="fixed left-0 top-0 z-[240] w-full">
+      <header className="fixed left-0 top-0 z-[240] w-full bg-black">
         <div className="mx-auto w-full max-w-[1440px]">
           <div className="relative h-[72px] w-full">
             {(canToggleGender || canToggleProfile) && (
               <div className={`hidden md:block ${profileToggleClassName}`}>
-                {canToggleGender ? (
-                  <GenderToggleStack
-                    sex={genderSex}
-                    identity={genderIdentity}
-                    onSexChange={onGenderSexChange}
-                    onIdentityChange={onGenderIdentityChange}
-                    gapClassName="gap-3"
-                  />
-                ) : (
-                  canToggleProfile && <ProfileTypeToggle value={profileType} onToggle={onProfileTypeChange} />
-                )}
+                <div className="flex flex-col items-center">
+                  {canToggleGender ? (
+                    <GenderToggleStack
+                      sex={genderSex}
+                      identity={genderIdentity}
+                      onSexChange={onGenderSexChange}
+                      onIdentityChange={onGenderIdentityChange}
+                      gapClassName="gap-3"
+                      className="items-center"
+                    />
+                  ) : (
+                    canToggleProfile && (
+                      <ProfileTypeToggle value={profileType} onToggle={onProfileTypeChange} className="mx-auto" />
+                    )
+                  )}
+                </div>
               </div>
             )}
 
@@ -100,7 +105,7 @@ export const SiteHeader = ({
 
             <BotonChicas
               buttonStyleDivClassName="!mr-[-20.50px] !mt-[-3.00px] !tracking-[var(--h4-letter-spacing)] !ml-[-20.50px] !text-[length:var(--h4-font-size)] ![font-style:var(--h4-font-style)] ![white-space:unset] !font-[number:var(--h4-font-weight)] !font-h4 !leading-[var(--h4-line-height)]"
-              buttonStyleStyleFilledIconNoClassName="!self-stretch !flex-[0_0_auto] !border-[none] !px-[70px] !py-3.5 !flex !left-[unset] !bg-[unset] !w-full !top-[unset]"
+              buttonStyleStyleFilledIconNoClassName="!self-stretch !flex-[0_0_auto] !border !border-[#ec4c51] !px-[70px] !py-3.5 !flex !left-[unset] !bg-black !w-full !top-[unset]"
               buttonStyleText="Anuncia"
               className="!absolute !left-[1012px] !top-0 !hidden md:!block"
               propiedad1="predeterminada"
