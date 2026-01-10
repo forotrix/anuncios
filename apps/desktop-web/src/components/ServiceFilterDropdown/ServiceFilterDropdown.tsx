@@ -41,18 +41,14 @@ export const ServiceFilterDropdown = ({
       <button
         type="button"
         onClick={onToggle}
-        className={`relative w-full rounded-[32px] ${
-          isOpen
-            ? "flex items-center gap-2 bg-brand-gradient px-[38px] py-5 font-h3-subdivisiones text-[length:var(--h3-subdivisiones-font-size)] leading-[var(--h3-subdivisiones-line-height)] text-white"
-            : "flex items-center justify-center font-h3-subdivisiones text-[length:var(--h3-subdivisiones-font-size)] leading-[var(--h3-subdivisiones-line-height)] text-white"
+        className={`relative flex w-full items-center justify-center gap-2 rounded-[32px] px-[38px] py-5 font-h3-subdivisiones text-[length:var(--h3-subdivisiones-font-size)] leading-[var(--h3-subdivisiones-line-height)] text-white ${
+          isOpen ? "bg-brand-gradient" : ""
         }`}
       >
         <span>{label}</span>
-        {isOpen && (
-          <svg className="h-3 w-3 text-white" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
-            <path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        )}
+        <svg className="h-3 w-3 text-white" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+          <path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
       </button>
 
       {isOpen && (

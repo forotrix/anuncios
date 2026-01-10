@@ -386,36 +386,29 @@ export const DesktopFeed = ({ ads, heroAds, filtersCatalog, initialFilters, pagi
               </div>
             </section>
 
-            <section className="rounded-[36px] border border-white/10 bg-[#050608]/80 px-6 py-8 shadow-[0_25px_60px_rgba(0,0,0,0.45)] sm:px-10">
-              <div className="space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.35em] text-white/60">Catalogo completo</p>
-                <h2 className="font-h2-2-0 text-[length:var(--h2-2-0-font-size)] leading-[var(--h2-2-0-line-height)]">
-                  Las favoritas de ForoTrix
-                </h2>
-                <p className="text-base text-white/70">
-                  Ajusta filtros para encontrar anuncios segun tus preferencias y guarda tus perfiles preferidos.
-                </p>
-              </div>
+            <section className="space-y-4">
+              <h2 className="text-lg font-semibold text-white">Las favoritas de ForoTrix</h2>
 
-              <div className="mt-6 flex flex-col gap-4 md:flex-row md:flex-wrap md:items-center">
+              <div className="flex flex-wrap items-center gap-3">
                 <AgeRangeFilterControl
-                  className="w-full md:w-auto"
+                  className="!h-[52px] !w-[130px]"
                   label={ageConfig.label}
                   min={ageConfig.min}
                   max={ageConfig.max}
-                  value={ageRange.max}
+                  minValue={ageRange.min}
+                  maxValue={ageRange.max}
                   isOpen={isAgeOpen}
                   onToggle={toggleAge}
-                  onChange={(value) =>
-                    setAgeRange((prev) => ({
-                      ...prev,
-                      max: value ?? prev.max,
+                  onChange={({ min, max }) =>
+                    setAgeRange(() => ({
+                      min,
+                      max,
                     }))
                   }
-                  onApply={(value) => {
+                  onApply={({ min, max }) => {
                     const nextRange = {
-                      ...ageRange,
-                      max: value ?? ageRange.max,
+                      min,
+                      max,
                     };
                     setIsAgeOpen(false);
                     setAgeRange(nextRange);
@@ -423,7 +416,7 @@ export const DesktopFeed = ({ ads, heroAds, filtersCatalog, initialFilters, pagi
                   }}
                 />
                 <ServiceFilterDropdown
-                  className="w-full md:w-auto"
+                  className="!h-[52px] !w-[140px]"
                   label="Filtrar"
                   options={servicesOptions}
                   selectedOptions={selectedServices}
@@ -437,7 +430,7 @@ export const DesktopFeed = ({ ads, heroAds, filtersCatalog, initialFilters, pagi
                   }}
                 />
                 <SearchInput
-                  className="w-full md:max-w-md"
+                  className="!h-[52px] !w-[260px] !rounded-full !px-5"
                   value={searchValue}
                   onChange={(val) => setSearchValue(val)}
                   onSubmit={() => applyFilters({ text: searchValue })}
@@ -663,54 +656,44 @@ type FeedCardProps = {
 
 const FeedCard = ({ ad, isFavorite, onToggleFavorite }: FeedCardProps) => {
   const image = getAdImage(ad);
-  const subtitle = [ad.city ?? "Sin ciudad", ad.age ? `${ad.age} anos` : null].filter(Boolean).join(" / ");
-  const tags = buildTagList(ad).slice(0, 3);
+  const subtitle = ad.city ?? "Sin ciudad";
+  const titleLine = `${ad.title ?? "Anuncio"}${ad.age ? `, ${ad.age} anos` : ""}`;
   const isMock = Boolean(ad.metadata?.seed?.isMock);
 
   return (
-    <article className="group relative overflow-hidden rounded-[32px] border border-white/10 bg-[#060709] shadow-[0_25px_60px_rgba(0,0,0,0.45)]">
+    <article className="group relative overflow-hidden rounded-[28px] border border-[#7a0f11]/60 bg-[#090204] shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
       <div className="relative h-72 w-full overflow-hidden">
         <img
           src={image}
           alt={ad.title ?? "Anuncio"}
           className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
         />
-        <div className="absolute left-4 top-4 flex gap-2 text-xs uppercase tracking-[0.35em]">
-          <span className="rounded-full bg-black/60 px-3 py-1 text-white">{formatPlanLabel(ad.plan)}</span>
-          {ad.highlighted && <span className="rounded-full bg-[#ec4c51] px-3 py-1 text-white">Top</span>}
-          {isMock && <span className="rounded-full bg-black/60 px-3 py-1 text-white">Perfil de prueba</span>}
-        </div>
+        <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+        {isMock && (
+          <span className="absolute left-3 top-3 rounded-full bg-black/60 px-3 py-1 text-[10px] uppercase tracking-[0.3em] text-white">
+            Perfil de prueba
+          </span>
+        )}
         <button
           type="button"
           onClick={onToggleFavorite}
-          className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full border border-white/40 bg-black/50 text-white transition hover:border-white/70"
+          className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full border border-white/40 bg-black/60 text-white transition hover:border-white/70"
           aria-label={isFavorite ? "Quitar de favoritos" : "Agregar a favoritos"}
         >
-          <img src={isFavorite ? "/img/star-1-1.svg" : "/img/star-1-27.svg"} alt="" className="h-5 w-5" />
+          <img src={isFavorite ? "/img/star-1-1.svg" : "/img/star-1-27.svg"} alt="" className="h-4 w-4" />
         </button>
-      </div>
-      <div className="space-y-4 px-6 py-6">
-        <div>
-          <h3 className="text-xl font-semibold">{ad.title ?? "Anuncio destacado"}</h3>
-          <p className="text-sm text-white/60">{subtitle}</p>
+        <div className="absolute bottom-3 left-4 right-4 flex items-end justify-between gap-3">
+          <div>
+            <h3 className="text-sm font-semibold text-white">{titleLine}</h3>
+            <p className="text-xs text-white/70">{subtitle}</p>
+          </div>
+          <Link
+            href={`/anuncio/${ad.id}`}
+            className="inline-flex items-center justify-center rounded-full bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] px-3 py-1 text-[11px] font-semibold text-white shadow-shadow-g"
+          >
+            Ver perfil
+          </Link>
         </div>
-        <div className="flex flex-wrap gap-2 text-xs text-white/60">
-          {tags.length ? (
-            tags.map((tag) => (
-              <span key={`${ad.id}-${tag}`} className="rounded-full border border-white/15 px-3 py-1">
-                {tag.startsWith("#") ? tag : `#${tag}`}
-              </span>
-            ))
-          ) : (
-            <span className="text-white/40">Sin etiquetas</span>
-          )}
-        </div>
-        <Link
-          href={`/anuncio/${ad.id}`}
-          className="inline-flex items-center justify-center rounded-full bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] px-6 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white shadow-shadow-g"
-        >
-          Ver perfil
-        </Link>
       </div>
     </article>
   );
