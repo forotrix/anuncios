@@ -62,10 +62,10 @@ export const SiteHeader = ({
     <>
       <header className="fixed left-0 top-0 z-[240] w-full bg-black">
         <div className="mx-auto w-full max-w-[1440px]">
-          <div className="relative h-[152px] w-full">
+          <div className="relative h-[168px] w-full">
             {(canToggleGender || canToggleProfile) && (
               <div className={`hidden md:block ${profileToggleClassName}`}>
-                <div className="flex flex-col items-center">
+                <div className="flex flex-col items-center py-2">
                   {canToggleGender ? (
                     <GenderToggleStack
                       sex={genderSex}
@@ -105,7 +105,7 @@ export const SiteHeader = ({
 
             <BotonChicas
               buttonStyleDivClassName="!mr-[-20.50px] !mt-[-3.00px] !tracking-[var(--h4-letter-spacing)] !ml-[-20.50px] !text-[length:var(--h4-font-size)] ![font-style:var(--h4-font-style)] ![white-space:unset] !font-[number:var(--h4-font-weight)] !font-h4 !leading-[var(--h4-line-height)]"
-              buttonStyleStyleFilledIconNoClassName="!self-stretch !flex-[0_0_auto] !border-2 !border-[#ec4c51] !px-[70px] !py-3.5 !flex !left-[unset] !bg-transparent !w-full !top-[unset]"
+              buttonStyleStyleFilledIconNoClassName="!self-stretch !flex-[0_0_auto] !px-[70px] !py-3.5 !flex !left-[unset] !bg-transparent !w-full !top-[unset] !rounded-[32px] ![background:linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] !p-[2px]"
               buttonStyleText="Anuncia"
               className="!absolute !left-[1012px] !top-1/2 !hidden md:!block !-translate-y-1/2"
               propiedad1="predeterminada"

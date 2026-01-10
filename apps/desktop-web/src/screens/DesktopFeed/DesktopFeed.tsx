@@ -236,7 +236,7 @@ export const DesktopFeed = ({ ads, heroAds, filtersCatalog, initialFilters, pagi
           onRegisterClick={() => setShowRegistration(true)}
         />
 
-        <main className={`w-full flex-1 ${isAtTop ? "pt-[152px]" : ""}`}>
+        <main className={`w-full flex-1 ${isAtTop ? "pt-[168px]" : ""}`}>
           <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-10 px-4 pb-24 pt-10 sm:px-6 lg:px-10">
             <section className="space-y-6">
               <div className="flex flex-col gap-3 rounded-[28px] border border-white/5 bg-[#050608]/60 p-4 text-sm text-white/60 sm:flex-row sm:items-center sm:justify-between">
