@@ -29,7 +29,7 @@ export const ButtonStyle = ({
 }: Props) => {
   return (
     <button
-      className={`all-[unset] box-border inline-flex items-center justify-center gap-1 px-[62px] py-5 relative bg-blue-800 rounded-[32px] ${className}`}
+      className={`all-[unset] box-border inline-flex items-center justify-center gap-1 px-[62px] py-5 relative rounded-[32px] ${className}`}
     >
       <div
         className={`relative w-fit mt-[-1.00px] font-caption-heavy font-[number:var(--caption-heavy-font-weight)] text-textwhite text-[length:var(--caption-heavy-font-size)] tracking-[var(--caption-heavy-letter-spacing)] leading-[var(--caption-heavy-line-height)] whitespace-nowrap [font-style:var(--caption-heavy-font-style)] ${divClassName}`}

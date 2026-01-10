@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CitySelector } from "@/components/CitySelector";
 import { RegistrationModal } from "@/components/RegistrationModal/RegistrationModal";
@@ -15,6 +15,7 @@ import { useGenderPreference } from "@/hooks/useGenderPreference";
 import type { Ad, AdsQuery, FiltersCatalog, CitySummary } from "@/lib/ads";
 import { rankAds } from "@/lib/ranking";
 import type { GenderIdentity, GenderSex } from "@anuncios/shared";
+import { ASSETS } from "@/constants/assets";
 
 const FALLBACK_IMAGE = "https://res.cloudinary.com/dqhxthtby/image/upload/v1762882388/marina-hero.svg";
 
@@ -59,6 +60,7 @@ export const DesktopFeed = ({ ads, heroAds, filtersCatalog, initialFilters, pagi
   const [identity, setIdentity] = useState<GenderIdentity>(initialFilters.identity ?? identityPreference ?? "cis");
   const [heroIndex, setHeroIndex] = useState(0);
   const [isAtTop, setIsAtTop] = useState(true);
+  const topSentinelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setSex(initialFilters.sex ?? sexPreference ?? "female");
@@ -73,12 +75,16 @@ export const DesktopFeed = ({ ads, heroAds, filtersCatalog, initialFilters, pagi
   }, [heroAds, ads]);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsAtTop(window.scrollY <= 0);
-    };
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    const sentinel = topSentinelRef.current;
+    if (!sentinel) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsAtTop(entry.isIntersecting);
+      },
+      { threshold: 0 },
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
   }, []);
 
   const rankingSeed = `${sex}:${identity}:${initialFilters.city ?? "all"}`;
@@ -225,7 +231,7 @@ export const DesktopFeed = ({ ads, heroAds, filtersCatalog, initialFilters, pagi
   const logoHref = sex === "female" && identity === "cis" ? "/feed" : `/feed?sex=${sex}&identity=${identity}`;
 
   return (
-    <div className="bg-[#020404] text-white">
+    <div className="bg-black text-white">
       <div className="flex min-h-screen w-full flex-col">
         <SiteHeader
           genderSex={sex}
@@ -236,15 +242,12 @@ export const DesktopFeed = ({ ads, heroAds, filtersCatalog, initialFilters, pagi
           onRegisterClick={() => setShowRegistration(true)}
         />
 
-        <main className={`w-full flex-1 ${isAtTop ? "pt-[168px]" : ""}`}>
+        <main className={`w-full flex-1 transition-[padding-top] duration-200 ease-out ${isAtTop ? "pt-[168px]" : ""}`}>
+          <div ref={topSentinelRef} aria-hidden="true" />
           <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-10 px-4 pb-24 pt-10 sm:px-6 lg:px-10">
             <section className="space-y-6">
-              <div className="flex flex-col gap-3 rounded-[28px] border border-white/5 bg-[#050608]/60 p-4 text-sm text-white/60 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.35em] text-white/50">Filtra por ciudad</p>
-                  <p>Selecciona tu zona para personalizar los anuncios destacados.</p>
-                </div>
-                <div className="w-full sm:w-auto sm:min-w-[260px]">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="w-full sm:w-auto sm:min-w-[220px]">
                   <CitySelector
                     className="w-full"
                     options={cityOptions}
@@ -255,67 +258,73 @@ export const DesktopFeed = ({ ads, heroAds, filtersCatalog, initialFilters, pagi
                     }}
                   />
                 </div>
+                <div className="inline-flex h-[42px] items-center gap-2 self-end rounded-full border border-white/50 bg-transparent px-4 text-white shadow-[0_6px_20px_rgba(0,0,0,0.45)] sm:self-auto">
+                  <img src={ASSETS.flagEs} alt="Espana" className="h-6 w-8 rounded-sm object-cover" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    className="h-4 w-4"
+                    aria-hidden="true"
+                  >
+                    <path d="M5 7.5 10 12.5 15 7.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </div>
               </div>
 
-              <div className="rounded-[40px] border border-white/10 bg-[#050608]/95 px-6 py-8 shadow-[0_30px_80px_rgba(0,0,0,0.55)] sm:px-10 sm:py-12">
+              <div className="px-2 py-4 sm:px-4 sm:py-6">
                 {heroAd ? (
                   <>
-                    <div className="flex flex-col gap-2 border-b border-white/5 pb-6 lg:flex-row lg:items-end lg:justify-between">
-                      <div className="space-y-2">
-                        <p className="text-xs font-semibold uppercase tracking-[0.35em] text-white/50">Anfitriona destacada</p>
-                        <h1 className="font-h1-2-0 text-[length:var(--h1-2-0-font-size)] leading-[var(--h1-2-0-line-height)]">
-                          {heroAd.title}
-                        </h1>
-                        <p className="text-base text-white/70">{heroMeta || "Sin datos"}</p>
-                      </div>
-                      <div className="flex flex-wrap items-center gap-3 pt-4 text-xs uppercase tracking-[0.3em]">
-                        <span className="rounded-full border border-white/15 px-4 py-1 text-white/70">
-                          {formatPlanLabel(heroAd.plan)}
-                        </span>
-                        <span className="rounded-full border border-white/15 px-4 py-1 text-white/70">{heroGenderLabel}</span>
+                    <div className="flex flex-col gap-2 lg:flex-row lg:items-end lg:justify-between">
+                      <div className="space-y-3">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-white/60">Perfiles destacados</p>
                       </div>
                     </div>
 
-                    <div className="mt-8 grid gap-8 lg:grid-cols-[1.1fr,0.9fr]">
-                      <div className="space-y-6">
-                        <p className="text-base text-white/70">
-                          {heroAd.description?.trim().length ? heroAd.description :
-                            "Monitorea anfitrionas con fotos verificadas y agendas activas para vivir experiencias premium."}
-                        </p>
-                        <div className="flex flex-wrap gap-2 text-xs text-white/70">
-                          {heroTags.length ? (
-                            heroTags.map((tag) => (
-                              <span
-                                key={`${heroAd.id}-${tag}`}
-                                className="rounded-full border border-white/15 px-3 py-1 uppercase tracking-[0.25em]"
-                              >
-                                {tag.startsWith("#") ? tag : `#${tag}`}
-                              </span>
-                            ))
-                          ) : (
-                            <span className="text-white/50">Sin etiquetas disponibles.</span>
-                          )}
+                    <div className="mt-6 grid items-stretch gap-8 lg:grid-cols-[0.9fr,1.1fr]">
+                      <div className="flex min-h-[460px] flex-col justify-between">
+                        <div className="space-y-3">
+                          <h1 className="text-3xl font-semibold leading-tight sm:text-4xl">
+                            {heroAd.title}
+                          </h1>
+                          <div className="text-sm text-white/70">
+                            <p>{heroAd.age ? `${heroAd.age} anos` : "Sin edad"}</p>
+                            <p>{heroAd.city ?? "Sin ciudad"}</p>
+                          </div>
+                          <p className="text-sm text-white/70 sm:max-w-[420px]">
+                            {heroAd.description?.trim().length ? heroAd.description :
+                              "Monitorea anfitrionas con fotos verificadas y agendas activas para vivir experiencias premium."}
+                          </p>
+                          <div className="flex flex-wrap gap-2 text-xs text-white/70">
+                            {heroTags.length ? (
+                              heroTags.map((tag) => (
+                                <span key={`${heroAd.id}-${tag}`} className="tracking-[0.02em]">
+                                  {tag.startsWith("#") ? tag : `#${tag}`}
+                                </span>
+                              ))
+                            ) : (
+                              <span className="text-white/50">Sin etiquetas disponibles.</span>
+                            )}
+                          </div>
                         </div>
-                        <div className="flex flex-wrap items-center gap-3">
+                        <div className="flex justify-center sm:justify-start">
                           <Link
                             href={heroAd.id ? `/anuncio/${heroAd.id}` : "/anuncio"}
-                            className="rounded-full bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] px-8 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-white shadow-shadow-g"
+                            className="rounded-full bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] px-6 py-2.5 text-sm font-semibold text-white shadow-shadow-g"
                           >
                             Ver perfil
                           </Link>
-                          <p className="text-xs text-white/50">ID #{heroAd.id}</p>
                         </div>
                       </div>
 
                       <div className="relative">
-                        <div className="overflow-hidden rounded-[32px] border border-white/10 bg-black/30 p-4">
-                          <img src={heroImage} alt={heroAd.title} className="h-[420px] w-full rounded-[24px] object-cover" />
-                        </div>
-                        {heroAd.highlighted && (
-                          <span className="absolute right-8 top-8 rounded-full bg-[#ec4c51] px-4 py-1 text-xs font-semibold uppercase tracking-[0.35em]">
-                            Top
-                          </span>
-                        )}
+                        <img
+                          src={heroImage}
+                          alt={heroAd.title}
+                          className="h-[460px] w-full rounded-[40px] object-cover object-top shadow-[0_30px_80px_rgba(0,0,0,0.6)]"
+                        />
                       </div>
                     </div>
                   </>
@@ -341,7 +350,9 @@ export const DesktopFeed = ({ ads, heroAds, filtersCatalog, initialFilters, pagi
                         type="button"
                         onClick={() => handleHeroSelect(index)}
                         className={`h-2.5 w-6 rounded-full transition ${
-                          index === heroIndex ? "bg-rojo-cereza400" : "bg-white/20"
+                          index === heroIndex
+                            ? "bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)]"
+                            : "bg-white/20"
                         }`}
                         aria-label={`Ver ${item.title}`}
                       />
@@ -359,25 +370,19 @@ export const DesktopFeed = ({ ads, heroAds, filtersCatalog, initialFilters, pagi
               )}
             </section>
 
-            <section className="rounded-[36px] border border-[#7a0f11]/40 bg-[#090204] px-6 py-8 shadow-[0_25px_60px_rgba(0,0,0,0.5)] sm:px-10">
-              <div className="space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.35em] text-white/60">Seleccion semanal</p>
-                <h2 className="font-h2-2-0 text-[length:var(--h2-2-0-font-size)] leading-[var(--h2-2-0-line-height)]">
-                  Favoritas de la semana
-                </h2>
-                <p className="text-base text-white/70">
-                  Curamos perfiles destacados segun actividad reciente y valoraciones de la comunidad.
-                </p>
-              </div>
-              <div className="mt-8 grid gap-6 md:grid-cols-3">
-                {displayedFavoriteAds.map((ad) => (
-                  <FavoriteCard
-                    key={ad.id}
-                    ad={ad}
-                    isFavorite={favoriteIds.includes(ad.id)}
-                    onToggleFavorite={() => toggleFavorite(ad.id)}
-                  />
-                ))}
+            <section className="space-y-4">
+              <h2 className="text-lg font-semibold text-white">Perfiles de la semana</h2>
+              <div className="rounded-[28px] border border-[#7a0f11]/60 bg-[#090204] p-4 shadow-[0_25px_60px_rgba(0,0,0,0.5)] sm:p-6">
+                <div className="grid gap-4 md:grid-cols-3">
+                  {displayedFavoriteAds.map((ad) => (
+                    <FavoriteCard
+                      key={ad.id}
+                      ad={ad}
+                      isFavorite={favoriteIds.includes(ad.id)}
+                      onToggleFavorite={() => toggleFavorite(ad.id)}
+                    />
+                  ))}
+                </div>
               </div>
             </section>
 
@@ -618,52 +623,33 @@ const FavoriteCard = ({ ad, isFavorite, onToggleFavorite }: FavoriteCardProps) =
   const isMock = Boolean(ad.metadata?.seed?.isMock);
 
   return (
-    <article className="relative overflow-hidden rounded-[32px] border border-[#d52b33]/40 bg-[#0b0406] p-4 shadow-[0_20px_50px_rgba(0,0,0,0.45)]">
-      <div className="overflow-hidden rounded-[24px] border border-white/10">
-        <img src={image} alt={ad.title ?? "Anuncio destacado"} className="h-56 w-full object-cover" />
+    <article className="relative overflow-hidden rounded-[20px] border border-[#d52b33]/60 bg-[linear-gradient(135deg,#3a0d15_0%,#200608_70%,#140405_100%)] p-3 shadow-[0_20px_50px_rgba(0,0,0,0.45)]">
+      <div className="overflow-hidden rounded-[16px]">
+        <img src={image} alt={ad.title ?? "Anuncio destacado"} className="h-48 w-full rounded-[16px] object-cover object-top" />
       </div>
-      <div className="mt-4 space-y-1">
-        <h3 className="text-lg font-semibold">{ad.title ?? "Anuncio destacado"}</h3>
-        <p className="text-sm text-white/60">{subtitle}</p>
+      <div className="mt-3 space-y-1">
+        <h3 className="text-base font-semibold">{ad.title ?? "Anuncio destacado"}</h3>
+        <p className="text-xs text-white/70">{subtitle}</p>
       </div>
-      <div className="mt-4 flex flex-wrap gap-2 text-xs text-white/60">
-        {tags.length ? (
-          tags.map((tag) => (
-            <span key={`${ad.id}-${tag}`} className="rounded-full border border-white/15 px-3 py-1">
-              {tag.startsWith("#") ? tag : `#${tag}`}
-            </span>
-          ))
-        ) : (
-          <span className="text-white/40">Sin etiquetas</span>
-        )}
-      </div>
-      <div className="mt-5 flex items-center justify-between">
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="rounded-full border border-white/15 px-3 py-1 text-[11px] uppercase tracking-[0.35em] text-white/60">
-            {formatPlanLabel(ad.plan)}
-          </span>
-          {isMock && (
-            <span className="rounded-full border border-white/15 px-3 py-1 text-[11px] uppercase tracking-[0.35em] text-white/60">
-              Perfil de prueba
-            </span>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          <Link
-            href={`/anuncio/${ad.id}`}
-            className="rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/80 transition hover:border-white/40"
-          >
-            Ver perfil
-          </Link>
-          <button
-            type="button"
-            onClick={onToggleFavorite}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-black/30 text-white transition hover:border-white/60"
-            aria-label={isFavorite ? "Quitar de favoritos" : "Agregar a favoritos"}
-          >
-            <img src={isFavorite ? "/img/star-1-1.svg" : "/img/star-1-27.svg"} alt="" className="h-5 w-5" />
-          </button>
-        </div>
+      <div className="mt-3 flex items-center justify-between">
+        <Link
+          href={`/anuncio/${ad.id}`}
+          className="rounded-full bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] px-4 py-1.5 text-xs font-semibold text-white"
+        >
+          Ver perfil
+        </Link>
+        <button
+          type="button"
+          onClick={onToggleFavorite}
+          className={`flex h-8 w-8 items-center justify-center rounded-full border transition ${
+            isFavorite
+              ? "border-[#ec4c51] bg-[#ec4c51]/20 text-white"
+              : "border-white/30 bg-black/30 text-white"
+          }`}
+          aria-label={isFavorite ? "Quitar de favoritos" : "Agregar a favoritos"}
+        >
+          <img src={isFavorite ? "/img/star-1-1.svg" : "/img/star-1-27.svg"} alt="" className="h-4 w-4" />
+        </button>
       </div>
     </article>
   );

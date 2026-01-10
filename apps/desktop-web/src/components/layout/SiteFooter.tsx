@@ -7,7 +7,7 @@ type Props = {
 
 export const SiteFooter = ({ className = "" }: Props) => {
   return (
-    <footer className={`w-full bg-[#020404] px-6 py-10 text-white md:px-16 ${className}`}>
+    <footer className={`w-full bg-black px-6 py-10 text-white md:px-16 ${className}`}>
       <div className="mx-auto flex w-full max-w-[1440px] flex-wrap items-start justify-between gap-8">
         <div className="flex flex-col items-start gap-3">
           <img className="h-[66px] w-[273px]" alt="ForoTrix" src={ASSETS.logoPrimary} />
@@ -39,4 +39,3 @@ export const SiteFooter = ({ className = "" }: Props) => {
     </footer>
   );
 };
-

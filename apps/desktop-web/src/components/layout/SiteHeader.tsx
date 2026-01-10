@@ -105,9 +105,9 @@ export const SiteHeader = ({
 
             <BotonChicas
               buttonStyleDivClassName="!mr-[-20.50px] !mt-[-3.00px] !tracking-[var(--h4-letter-spacing)] !ml-[-20.50px] !text-[length:var(--h4-font-size)] ![font-style:var(--h4-font-style)] ![white-space:unset] !font-[number:var(--h4-font-weight)] !font-h4 !leading-[var(--h4-line-height)]"
-              buttonStyleStyleFilledIconNoClassName="!self-stretch !flex-[0_0_auto] !px-[70px] !py-3.5 !flex !left-[unset] !bg-transparent !w-full !top-[unset] !rounded-[32px] ![background:linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] !p-[2px]"
+              buttonStyleStyleFilledIconNoClassName="!self-stretch !flex-[0_0_auto] !px-[70px] !py-3.5 !flex !left-[unset] !w-full !top-[unset] !rounded-[30px] !bg-black"
               buttonStyleText="Anuncia"
-              className="!absolute !left-[1012px] !top-1/2 !hidden md:!block !-translate-y-1/2"
+              className="!absolute !left-[1012px] !top-1/2 !hidden md:!block !-translate-y-1/2 !p-[3px] !gap-0 !items-stretch !rounded-[32px] !bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)]"
               propiedad1="predeterminada"
               to="/perfil/mi-anuncio"
             />
