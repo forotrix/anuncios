@@ -64,7 +64,7 @@ export const SiteHeader = ({
     <>
       <header className="fixed left-0 top-0 z-[240] w-full bg-black">
         <div className="mx-auto w-full max-w-[1440px]">
-          <div className="relative h-[168px] w-full">
+          <div className="relative h-[72px] w-full md:h-[168px]">
             {(canToggleGender || canToggleProfile) && (
               <div className={`hidden md:block ${profileToggleClassName}`}>
                 <div className="flex flex-col items-center py-2">
@@ -88,7 +88,7 @@ export const SiteHeader = ({
 
             <Link
               href={logoHref}
-              className="absolute left-4 top-1/2 block h-[66px] w-[273px] -translate-y-1/2 md:left-[72px]"
+              className="absolute left-4 top-1/2 block h-[40px] w-[170px] -translate-y-1/2 md:left-[72px] md:h-[66px] md:w-[273px]"
               aria-label="Volver al inicio"
             >
               <img className="h-full w-full" alt="Logo Forotrix" src={ASSETS.logoPrimary} />
@@ -197,15 +197,44 @@ export const SiteHeader = ({
             )}
 
             <div className="mt-auto space-y-3">
-              <Link
-                href="/perfil/mi-anuncio"
-                className="inline-flex w-full items-center justify-center rounded-full border border-white/20 bg-white/5 px-6 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-white/85 transition hover:border-white/40 hover:text-white"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Anuncia
-              </Link>
+              {isAuthenticated ? (
+                <Link
+                  href="/perfil/mi-anuncio"
+                  className="inline-flex w-full items-center justify-center rounded-full border border-white/20 bg-white/5 px-6 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-white/85 transition hover:border-white/40 hover:text-white"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Anuncia
+                </Link>
+              ) : onRegisterClick ? (
+                <button
+                  type="button"
+                  className="inline-flex w-full items-center justify-center rounded-full border border-white/20 bg-white/5 px-6 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-white/85 transition hover:border-white/40 hover:text-white"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    onRegisterClick();
+                  }}
+                >
+                  Anuncia
+                </button>
+              ) : (
+                <Link
+                  href="/auth/registro"
+                  className="inline-flex w-full items-center justify-center rounded-full border border-white/20 bg-white/5 px-6 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-white/85 transition hover:border-white/40 hover:text-white"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Anuncia
+                </Link>
+              )}
 
-              {onRegisterClick ? (
+              {isAuthenticated ? (
+                <Link
+                  href="/perfil/mi-anuncio"
+                  className="inline-flex w-full items-center justify-center rounded-full bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] px-6 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-white shadow-shadow-g"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Mi cuenta
+                </Link>
+              ) : onRegisterClick ? (
                 <button
                   type="button"
                   className="inline-flex w-full items-center justify-center rounded-full bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] px-6 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-white shadow-shadow-g"

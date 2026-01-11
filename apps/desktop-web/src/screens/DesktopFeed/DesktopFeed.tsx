@@ -249,9 +249,13 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
           onRegisterClick={() => setShowRegistration(true)}
         />
 
-        <main className={`w-full flex-1 transition-[padding-top] duration-200 ease-out ${isAtTop ? "pt-[168px]" : ""}`}>
+        <main
+          className={`w-full flex-1 transition-[padding-top] duration-200 ease-out ${
+            isAtTop ? "pt-[72px] md:pt-[168px]" : ""
+          }`}
+        >
           <div ref={topSentinelRef} aria-hidden="true" />
-          <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-10 px-4 pb-24 pt-10 sm:px-6 lg:px-10">
+          <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-8 px-4 pb-24 pt-8 sm:px-6 md:gap-10 md:pt-10 lg:px-10">
             <section className="space-y-6">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="w-full sm:w-auto sm:min-w-[220px]">
@@ -290,9 +294,9 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
                       </div>
                     </div>
 
-                    <div className="mt-6 grid items-stretch gap-8 lg:grid-cols-[0.9fr,1.1fr]">
-                      <div className="flex min-h-[460px] flex-col justify-between">
-                        <div className="space-y-3">
+                    <div className="mt-6 grid items-stretch gap-6 lg:grid-cols-[0.9fr,1.1fr]">
+                      <div className="order-2 flex min-h-[0] flex-col justify-between lg:order-1 lg:min-h-[460px]">
+                        <div className="space-y-3 text-center lg:text-left">
                           <h1 className="text-3xl font-semibold leading-tight sm:text-4xl">
                             {heroAd.title}
                           </h1>
@@ -316,7 +320,7 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
                             )}
                           </div>
                         </div>
-                        <div className="flex justify-center sm:justify-start">
+                        <div className="flex justify-center lg:justify-start">
                           <Link
                             href={heroAd.id ? `/anuncio/${heroAd.id}` : "/anuncio"}
                             className="rounded-full bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] px-6 py-2.5 text-sm font-semibold text-white shadow-shadow-g"
@@ -326,11 +330,11 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
                         </div>
                       </div>
 
-                      <div className="relative">
+                      <div className="order-1 relative lg:order-2">
                         <img
                           src={heroImage}
                           alt={heroAd.title}
-                          className="h-[460px] w-full rounded-[40px] object-cover object-top shadow-[0_30px_80px_rgba(0,0,0,0.6)]"
+                          className="h-[320px] w-full rounded-[40px] object-cover object-top shadow-[0_30px_80px_rgba(0,0,0,0.6)] sm:h-[420px] lg:h-[460px]"
                         />
                       </div>
                     </div>
@@ -380,7 +384,7 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
             <section className="space-y-4">
               <h2 className="text-[19px] font-semibold tracking-[0.01em] text-white">Perfiles de la semana</h2>
               <div className="rounded-[28px] border border-[#7a0f11]/60 bg-[#090204] p-4 shadow-[0_25px_60px_rgba(0,0,0,0.5)] sm:p-6">
-                <div className="grid gap-4 md:grid-cols-3">
+                <div className="-mx-1 flex gap-4 overflow-x-auto px-1 pb-2 snap-x snap-mandatory md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:pb-0">
                   {displayedFavoriteAds.map((ad) => (
                     <FavoriteCard
                       key={ad.id}
@@ -396,48 +400,50 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
             <section className="space-y-6 pt-2">
               <h2 className="text-[19px] font-semibold tracking-[0.01em] text-white">Explora perfiles</h2>
 
-              <div className="flex flex-wrap items-center gap-3">
-                <AgeRangeFilterControl
-                  className="!h-[52px] !w-[130px]"
-                  label={ageConfig.label}
-                  min={ageConfig.min}
-                  max={ageConfig.max}
-                  minValue={ageRange.min}
-                  maxValue={ageRange.max}
-                  isOpen={isAgeOpen}
-                  onToggle={toggleAge}
-                  onChange={({ min, max }) =>
-                    setAgeRange(() => ({
-                      min,
-                      max,
-                    }))
-                  }
-                  onApply={({ min, max }) => {
-                    const nextRange = {
-                      min,
-                      max,
-                    };
-                    setIsAgeOpen(false);
-                    setAgeRange(nextRange);
-                    applyFilters({ ageMin: nextRange.min, ageMax: nextRange.max });
-                  }}
-                />
-                <ServiceFilterDropdown
-                  className="!h-[52px] !w-[140px]"
-                  label="Filtrar"
-                  options={servicesOptions}
-                  selectedOptions={selectedServices}
-                  isOpen={isServicesOpen}
-                  onToggle={toggleServices}
-                  onChange={setSelectedServices}
-                  onApply={(selected) => {
-                    setIsServicesOpen(false);
-                    setSelectedServices(selected);
-                    applyFilters({ services: selected });
-                  }}
-                />
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <div className="flex items-center gap-3 overflow-x-auto pb-1 sm:overflow-visible sm:pb-0">
+                  <AgeRangeFilterControl
+                    className="!h-[52px] !w-[120px] shrink-0 sm:!w-[130px]"
+                    label={ageConfig.label}
+                    min={ageConfig.min}
+                    max={ageConfig.max}
+                    minValue={ageRange.min}
+                    maxValue={ageRange.max}
+                    isOpen={isAgeOpen}
+                    onToggle={toggleAge}
+                    onChange={({ min, max }) =>
+                      setAgeRange(() => ({
+                        min,
+                        max,
+                      }))
+                    }
+                    onApply={({ min, max }) => {
+                      const nextRange = {
+                        min,
+                        max,
+                      };
+                      setIsAgeOpen(false);
+                      setAgeRange(nextRange);
+                      applyFilters({ ageMin: nextRange.min, ageMax: nextRange.max });
+                    }}
+                  />
+                  <ServiceFilterDropdown
+                    className="!h-[52px] !w-[132px] shrink-0 sm:!w-[140px]"
+                    label="Filtrar"
+                    options={servicesOptions}
+                    selectedOptions={selectedServices}
+                    isOpen={isServicesOpen}
+                    onToggle={toggleServices}
+                    onChange={setSelectedServices}
+                    onApply={(selected) => {
+                      setIsServicesOpen(false);
+                      setSelectedServices(selected);
+                      applyFilters({ services: selected });
+                    }}
+                  />
+                </div>
                 <SearchInput
-                  className="!h-[52px] !w-[260px] !rounded-full !px-5"
+                  className="!h-[52px] !w-full !rounded-full !px-5 sm:!w-[260px]"
                   value={searchValue}
                   onChange={(val) => setSearchValue(val)}
                   onSubmit={() => applyFilters({ text: searchValue })}
@@ -493,7 +499,7 @@ type PaginationControlsProps = {
 
 function PaginationControls({ className = "", currentPage, totalPages, onPageChange }: PaginationControlsProps) {
   const arrowButtonClass =
-    "flex h-10 w-10 items-center justify-center rounded-full border border-white/30 text-white transition hover:border-white/60 disabled:opacity-40";
+    "flex h-9 w-9 items-center justify-center rounded-full border border-white/30 text-sm text-white transition hover:border-white/60 disabled:opacity-40 sm:h-10 sm:w-10";
   const pages = getVisiblePages(totalPages, currentPage);
 
   return (
@@ -513,7 +519,7 @@ function PaginationControls({ className = "", currentPage, totalPages, onPageCha
           item === "ellipsis" ? (
             <span
               key={`ellipsis-${index}`}
-              className="flex h-10 w-10 items-center justify-center text-lg font-semibold text-white/40"
+              className="flex h-9 w-9 items-center justify-center text-base font-semibold text-white/40 sm:h-10 sm:w-10"
             >
               ...
             </span>
@@ -522,7 +528,7 @@ function PaginationControls({ className = "", currentPage, totalPages, onPageCha
               key={item}
               type="button"
               onClick={() => onPageChange(item)}
-              className={`flex h-10 w-10 items-center justify-center rounded-full border text-sm font-semibold transition ${
+              className={`flex h-9 w-9 items-center justify-center rounded-full border text-sm font-semibold transition sm:h-10 sm:w-10 ${
                 item === currentPage
                   ? "border-rojo-cereza400 text-white"
                   : "border-white/30 text-white/70 hover:border-white/60"
@@ -623,7 +629,7 @@ const FavoriteCard = ({ ad, isFavorite, onToggleFavorite }: FavoriteCardProps) =
   const isMock = Boolean(ad.metadata?.seed?.isMock);
 
   return (
-    <article className="relative overflow-hidden rounded-[20px] border border-[#d52b33]/60 bg-[linear-gradient(135deg,#3a0d15_0%,#200608_70%,#140405_100%)] p-3 shadow-[0_22px_50px_rgba(213,43,51,0.2)]">
+    <article className="relative w-[88%] min-w-[240px] snap-start overflow-hidden rounded-[20px] border border-[#d52b33]/60 bg-[linear-gradient(135deg,#3a0d15_0%,#200608_70%,#140405_100%)] p-3 shadow-[0_22px_50px_rgba(213,43,51,0.2)] sm:w-[320px] md:w-auto md:min-w-0">
       <div className="overflow-hidden rounded-[16px]">
         <img src={image} alt={ad.title ?? "Anuncio destacado"} className="h-56 w-full rounded-[16px] object-cover object-[50%_20%]" />
       </div>
@@ -669,7 +675,7 @@ const FeedCard = ({ ad, isFavorite, onToggleFavorite }: FeedCardProps) => {
 
   return (
     <article className="group relative overflow-hidden rounded-[28px] border border-[#7a0f11]/60 bg-[#090204] shadow-[0_20px_50px_rgba(0,0,0,0.5)] ring-1 ring-[#7a0f11]/25">
-      <div className="relative h-72 w-full overflow-hidden">
+      <div className="relative h-64 w-full overflow-hidden sm:h-72">
         <img
           src={image}
           alt={ad.title ?? "Anuncio"}
