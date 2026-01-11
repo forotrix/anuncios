@@ -393,7 +393,7 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
               </div>
             </section>
 
-            <section className="space-y-4">
+            <section className="space-y-6 pt-2">
               <h2 className="text-[19px] font-semibold tracking-[0.01em] text-white">Explora perfiles</h2>
 
               <div className="flex flex-wrap items-center gap-3">
@@ -623,9 +623,9 @@ const FavoriteCard = ({ ad, isFavorite, onToggleFavorite }: FavoriteCardProps) =
   const isMock = Boolean(ad.metadata?.seed?.isMock);
 
   return (
-    <article className="relative overflow-hidden rounded-[20px] border border-[#d52b33]/60 bg-[linear-gradient(135deg,#3a0d15_0%,#200608_70%,#140405_100%)] p-3 shadow-[0_25px_60px_rgba(213,43,51,0.25)]">
+    <article className="relative overflow-hidden rounded-[20px] border border-[#d52b33]/60 bg-[linear-gradient(135deg,#3a0d15_0%,#200608_70%,#140405_100%)] p-3 shadow-[0_22px_50px_rgba(213,43,51,0.2)]">
       <div className="overflow-hidden rounded-[16px]">
-        <img src={image} alt={ad.title ?? "Anuncio destacado"} className="h-56 w-full rounded-[16px] object-cover object-top" />
+        <img src={image} alt={ad.title ?? "Anuncio destacado"} className="h-56 w-full rounded-[16px] object-cover object-[50%_20%]" />
       </div>
       <div className="mt-3 space-y-1">
         <h3 className="text-base font-semibold">{ad.title ?? "Anuncio destacado"}</h3>
@@ -634,7 +634,7 @@ const FavoriteCard = ({ ad, isFavorite, onToggleFavorite }: FavoriteCardProps) =
       <div className="mt-3 flex items-center justify-between">
         <Link
           href={`/anuncio/${ad.id}`}
-          className="rounded-full bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] px-4 py-1.5 text-xs font-semibold text-white"
+          className="rounded-full bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] px-4 py-2 text-[13px] font-semibold text-white"
         >
           Ver perfil
         </Link>
@@ -668,7 +668,7 @@ const FeedCard = ({ ad, isFavorite, onToggleFavorite }: FeedCardProps) => {
   const isMock = Boolean(ad.metadata?.seed?.isMock);
 
   return (
-    <article className="group relative overflow-hidden rounded-[28px] border border-[#7a0f11]/60 bg-[#090204] shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+    <article className="group relative overflow-hidden rounded-[28px] border border-[#7a0f11]/60 bg-[#090204] shadow-[0_20px_50px_rgba(0,0,0,0.5)] ring-1 ring-[#7a0f11]/25">
       <div className="relative h-72 w-full overflow-hidden">
         <img
           src={image}
