@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { ProfileType } from "@anuncios/shared";
+import type { MediaAsset, ProfileType } from "@anuncios/shared";
 import { useAuth } from "@/hooks/useAuth";
 import { mediaService, type UploadSignaturePayload } from "@/services/media.service";
 import {
@@ -23,6 +23,10 @@ type CloudinaryUploadWidgetResult = {
   info?: {
     secure_url?: string;
     public_id?: string;
+    width?: number;
+    height?: number;
+    bytes?: number;
+    format?: string;
   };
 };
 
@@ -98,15 +102,24 @@ export const PerfilMiAnuncio = () => {
     removeAvailabilityRange,
     updateAvailabilityRange,
     setAvatar,
+    addImage,
+    removeImage,
     saveDraft,
     publishAd,
     unpublishAd,
   } = form;
   const [newService, setNewService] = useState("");
+  const [galleryError, setGalleryError] = useState<string | null>(null);
   const avatarUploader = useAvatarWidget({
     accessToken,
     userId: user?.id,
     onAvatarChange: setAvatar,
+  });
+  const galleryUploader = useGalleryWidget({
+    accessToken,
+    userId: user?.id,
+    adId: draft.adId,
+    onImageAdded: addImage,
   });
 
   const canPublish = Boolean(draft.adId);
@@ -138,6 +151,17 @@ export const PerfilMiAnuncio = () => {
   const handleUnpublish = async () => {
     if (!canPublish) return;
     await unpublishAd();
+  };
+
+  const handleRemoveImage = async (mediaId: string) => {
+    if (!accessToken) return;
+    setGalleryError(null);
+    try {
+      await mediaService.deleteMedia(accessToken, mediaId);
+      removeImage(mediaId);
+    } catch (err) {
+      setGalleryError(err instanceof Error ? err.message : "No se pudo eliminar la imagen.");
+    }
   };
 
   const cardClass = "rounded-[24px] border border-[#8e1522] bg-[#0f0306] p-5 shadow-[0_25px_80px_rgba(0,0,0,0.55)]";
@@ -324,6 +348,46 @@ export const PerfilMiAnuncio = () => {
                 className={`${INPUT_CLASS} resize-none`}
                 placeholder="Describe tu estilo, servicios y experiencia..."
               />
+            </section>
+
+            <section className={cardClass}>
+              <CardHeader label="Galeria" title="Imagenes del anuncio" />
+              <p className="mt-2 text-sm text-white/60">Sube fotos para destacar tu perfil en el feed.</p>
+              <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {draft.images.map((image) => (
+                  <div
+                    key={image.id}
+                    className="group relative overflow-hidden rounded-[18px] border border-white/10 bg-black/40"
+                  >
+                    <img src={image.url} alt="Imagen del anuncio" className="h-44 w-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveImage(image.id)}
+                      className="absolute right-3 top-3 rounded-full border border-white/30 bg-black/60 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-white/80 opacity-0 transition group-hover:opacity-100"
+                    >
+                      Quitar
+                    </button>
+                  </div>
+                ))}
+                {!draft.images.length && (
+                  <div className="flex min-h-[140px] items-center justify-center rounded-[18px] border border-white/10 bg-black/20 text-sm text-white/50">
+                    Sin imagenes cargadas.
+                  </div>
+                )}
+              </div>
+              <div className="mt-4 flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  onClick={galleryUploader.open}
+                  disabled={!galleryUploader.isReady || galleryUploader.isUploading}
+                  className="rounded-full border border-white/30 px-6 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-white/80 transition hover:text-white disabled:opacity-50"
+                >
+                  {galleryUploader.isUploading ? "Subiendo..." : "Subir imagenes"}
+                </button>
+                {(galleryError || galleryUploader.error) && (
+                  <span className="text-xs text-[#ffb3b3]">{galleryError ?? galleryUploader.error}</span>
+                )}
+              </div>
             </section>
 
             <section className={cardClass}>
@@ -716,6 +780,131 @@ const useAvatarWidget = ({
           if (result.event === "success" && result.info?.secure_url && result.info.public_id) {
             onAvatarChange({ url: result.info.secure_url, publicId: result.info.public_id });
             setIsUploading(false);
+          }
+          if (result.event === "close" || result.event === "queues-end") {
+            setIsUploading(false);
+          }
+        },
+      );
+    }
+    widgetRef.current?.open();
+  };
+
+  return { open, isReady, isUploading, error };
+};
+
+const useGalleryWidget = ({
+  accessToken,
+  userId,
+  adId,
+  onImageAdded,
+}: {
+  accessToken?: string | null;
+  userId?: string;
+  adId?: string;
+  onImageAdded: (media: MediaAsset) => void;
+}) => {
+  const [isReady, setIsReady] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const widgetRef = useRef<CloudinaryUploadWidget | null>(null);
+
+  useEffect(() => {
+    if (!isBrowser()) return;
+    if (cloudinaryInstance()) {
+      setIsReady(true);
+      return () => {
+        widgetRef.current?.destroy();
+        widgetRef.current = null;
+      };
+    }
+    const script = document.createElement("script");
+    script.src = CLOUDINARY_WIDGET_URL;
+    script.async = true;
+    script.onload = () => setIsReady(true);
+    script.onerror = () => setError("No se pudo cargar el widget de imagenes");
+    document.body.appendChild(script);
+    return () => {
+      script.onload = null;
+      script.onerror = null;
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
+      widgetRef.current?.destroy();
+      widgetRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!widgetRef.current) return;
+    widgetRef.current.destroy();
+    widgetRef.current = null;
+  }, [adId]);
+
+  const open = async () => {
+    if (!accessToken || !CLOUDINARY_CLOUD_NAME || !CLOUDINARY_API_KEY) {
+      setError("Configura Cloudinary para subir imagenes");
+      return;
+    }
+    const cloud = cloudinaryInstance();
+    if (!cloud) {
+      setError("Widget no disponible aun");
+      return;
+    }
+
+    if (!widgetRef.current) {
+      widgetRef.current = cloud.createUploadWidget(
+        {
+          cloudName: CLOUDINARY_CLOUD_NAME,
+          apiKey: CLOUDINARY_API_KEY,
+          folder: `${CLOUDINARY_UPLOAD_BASE_FOLDER}/${userId ?? "sin-id"}`,
+          multiple: true,
+          sources: ["local", "url", "camera"],
+          maxImageFileSize: CLOUDINARY_MAX_FILE_SIZE,
+          uploadSignature: async (callback, paramsToSign) => {
+            try {
+              const sanitized = Object.fromEntries(
+                Object.entries(paramsToSign).filter(
+                  ([, value]) => typeof value === "string" || typeof value === "number",
+                ),
+              ) as UploadSignaturePayload;
+              const response = await mediaService.requestSignature(accessToken, sanitized);
+              callback(response.signature);
+            } catch {
+              setError("No se pudo obtener la firma de subida");
+              setIsUploading(false);
+            }
+          },
+        },
+        async (_error, result) => {
+          if (result.event === "upload-added") {
+            setIsUploading(true);
+          }
+          if (result.event === "success" && result.info?.secure_url && result.info.public_id) {
+            try {
+              const media = await mediaService.registerMedia(accessToken, {
+                publicId: result.info.public_id,
+                url: result.info.secure_url,
+                width: result.info.width,
+                height: result.info.height,
+                bytes: result.info.bytes,
+                format: result.info.format,
+                adId,
+              });
+              const mediaId = media.id ?? media._id;
+              if (mediaId) {
+                onImageAdded({
+                  id: mediaId,
+                  url: media.url,
+                  width: media.width ?? undefined,
+                  height: media.height ?? undefined,
+                  bytes: media.bytes ?? undefined,
+                  format: media.format ?? undefined,
+                });
+              }
+            } catch (err) {
+              setError(err instanceof Error ? err.message : "No se pudo registrar la imagen.");
+            }
           }
           if (result.event === "close" || result.event === "queues-end") {
             setIsUploading(false);

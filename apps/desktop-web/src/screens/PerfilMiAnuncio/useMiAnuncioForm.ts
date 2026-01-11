@@ -6,6 +6,7 @@ import type {
   AvailabilitySlot,
   AvailabilityStatus,
   ContactChannels,
+  MediaAsset,
   ProfileType,
   WeekDay,
 } from "@anuncios/shared";
@@ -39,6 +40,7 @@ type MiAnuncioDraft = {
   city: string;
   region: string;
   zone: string;
+  images: MediaAsset[];
   services: ServiceItem[];
   contacts: ContactChannels;
   availability: AvailabilitySlot[];
@@ -76,6 +78,7 @@ const createEmptyDraft = (): MiAnuncioDraft => ({
   city: "",
   region: "",
   zone: "",
+  images: [],
   services: DEFAULT_SERVICE_OPTIONS.map((label) => ({ label, active: false })),
   contacts: { ...defaultContacts },
   availability: defaultAvailability(),
@@ -151,6 +154,7 @@ function mapAdToDraft(ad: any): MiAnuncioDraft {
     city: ad.city ?? metadata?.location?.city ?? "",
     region: metadata?.location?.region ?? "",
     zone: metadata?.location?.zone ?? "",
+    images: Array.isArray(ad.images) ? ad.images : [],
     services: mergeServices(ad.services ?? []),
     contacts: {
       ...defaultContacts,
@@ -249,6 +253,7 @@ function buildPayload(state: MiAnuncioDraft) {
     tags,
     profileType: state.profileType,
     age: state.age,
+    imageIds: state.images.map((image) => image.id),
     metadata: buildMetadata(state),
   };
 }
@@ -400,6 +405,22 @@ export function useMiAnuncioForm(accessToken?: string | null) {
     setDraft((prev) => ({ ...prev, avatar }));
   }, []);
 
+  const addImage = useCallback((media: MediaAsset) => {
+    setDraft((prev) => {
+      if (prev.images.some((image) => image.id === media.id)) {
+        return prev;
+      }
+      return { ...prev, images: [...prev.images, media] };
+    });
+  }, []);
+
+  const removeImage = useCallback((mediaId: string) => {
+    setDraft((prev) => ({
+      ...prev,
+      images: prev.images.filter((image) => image.id !== mediaId),
+    }));
+  }, []);
+
   const saveDraft = useCallback(async () => {
     if (!accessToken) return;
     setSaving(true);
@@ -479,6 +500,8 @@ export function useMiAnuncioForm(accessToken?: string | null) {
     removeAvailabilityRange,
     updateAvailabilityRange,
     setAvatar,
+    addImage,
+    removeImage,
     saveDraft,
     publishAd,
     unpublishAd,

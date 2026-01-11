@@ -255,7 +255,7 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
           }`}
         >
           <div ref={topSentinelRef} aria-hidden="true" />
-          <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-8 px-4 pb-24 pt-8 sm:px-6 md:gap-10 md:pt-10 lg:px-10">
+          <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-6 px-3 pb-20 pt-6 sm:px-6 md:gap-10 md:pt-10 lg:px-10">
             <section className="space-y-6">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="w-full sm:w-auto sm:min-w-[220px]">
@@ -297,7 +297,7 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
                     <div className="mt-6 grid items-stretch gap-6 lg:grid-cols-[0.9fr,1.1fr]">
                       <div className="order-2 flex min-h-[0] flex-col justify-between lg:order-1 lg:min-h-[460px]">
                         <div className="space-y-3 text-center lg:text-left">
-                          <h1 className="text-3xl font-semibold leading-tight sm:text-4xl">
+                          <h1 className="text-2xl font-semibold leading-tight sm:text-3xl lg:text-4xl">
                             {heroAd.title}
                           </h1>
                           <div className="text-sm text-white/70">
@@ -334,7 +334,7 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
                         <img
                           src={heroImage}
                           alt={heroAd.title}
-                          className="h-[320px] w-full rounded-[40px] object-cover object-top shadow-[0_30px_80px_rgba(0,0,0,0.6)] sm:h-[420px] lg:h-[460px]"
+                          className="h-[260px] w-full rounded-[40px] object-cover object-top shadow-[0_30px_80px_rgba(0,0,0,0.6)] sm:h-[360px] lg:h-[460px]"
                         />
                       </div>
                     </div>
@@ -384,7 +384,7 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
             <section className="space-y-4">
               <h2 className="text-[19px] font-semibold tracking-[0.01em] text-white">Perfiles de la semana</h2>
               <div className="rounded-[28px] border border-[#7a0f11]/60 bg-[#090204] p-4 shadow-[0_25px_60px_rgba(0,0,0,0.5)] sm:p-6">
-                <div className="-mx-1 flex gap-4 overflow-x-auto px-1 pb-2 snap-x snap-mandatory md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:pb-0">
+                <div className="grid gap-4 md:grid-cols-3">
                   {displayedFavoriteAds.map((ad) => (
                     <FavoriteCard
                       key={ad.id}
@@ -453,7 +453,7 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
               </div>
 
               {displayedGridAds.length ? (
-                <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="mt-8 grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                   {displayedGridAds.map((ad) => (
                     <FeedCard
                       key={ad.id}
@@ -629,9 +629,9 @@ const FavoriteCard = ({ ad, isFavorite, onToggleFavorite }: FavoriteCardProps) =
   const isMock = Boolean(ad.metadata?.seed?.isMock);
 
   return (
-    <article className="relative w-[88%] min-w-[240px] snap-start overflow-hidden rounded-[20px] border border-[#d52b33]/60 bg-[linear-gradient(135deg,#3a0d15_0%,#200608_70%,#140405_100%)] p-3 shadow-[0_22px_50px_rgba(213,43,51,0.2)] sm:w-[320px] md:w-auto md:min-w-0">
+    <article className="relative overflow-hidden rounded-[20px] border border-[#d52b33]/60 bg-[linear-gradient(135deg,#3a0d15_0%,#200608_70%,#140405_100%)] p-2.5 shadow-[0_22px_50px_rgba(213,43,51,0.2)] sm:p-3">
       <div className="overflow-hidden rounded-[16px]">
-        <img src={image} alt={ad.title ?? "Anuncio destacado"} className="h-56 w-full rounded-[16px] object-cover object-[50%_20%]" />
+        <img src={image} alt={ad.title ?? "Anuncio destacado"} className="h-48 w-full rounded-[16px] object-cover object-[50%_20%] sm:h-56" />
       </div>
       <div className="mt-3 space-y-1">
         <h3 className="text-base font-semibold">{ad.title ?? "Anuncio destacado"}</h3>
@@ -675,7 +675,7 @@ const FeedCard = ({ ad, isFavorite, onToggleFavorite }: FeedCardProps) => {
 
   return (
     <article className="group relative overflow-hidden rounded-[28px] border border-[#7a0f11]/60 bg-[#090204] shadow-[0_20px_50px_rgba(0,0,0,0.5)] ring-1 ring-[#7a0f11]/25">
-      <div className="relative h-64 w-full overflow-hidden sm:h-72">
+      <div className="relative h-60 w-full overflow-hidden sm:h-72">
         <img
           src={image}
           alt={ad.title ?? "Anuncio"}
