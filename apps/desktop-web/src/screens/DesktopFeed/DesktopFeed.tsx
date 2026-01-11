@@ -16,6 +16,7 @@ import type { Ad, AdsQuery, FiltersCatalog, CitySummary } from "@/lib/ads";
 import { rankAds } from "@/lib/ranking";
 import type { GenderIdentity, GenderSex } from "@anuncios/shared";
 import { ASSETS } from "@/constants/assets";
+import { useAuth } from "@/hooks/useAuth";
 
 const FALLBACK_IMAGE = "https://res.cloudinary.com/dqhxthtby/image/upload/v1762882388/marina-hero.svg";
 
@@ -29,6 +30,7 @@ type PaginationMeta = {
 type Props = {
   ads: Ad[];
   heroAds: Ad[];
+  weeklyAds?: Ad[];
   filtersCatalog: FiltersCatalog;
   initialFilters: AdsQuery;
   isMock: boolean;
@@ -36,9 +38,10 @@ type Props = {
   citySummary: CitySummary[];
 };
 
-export const DesktopFeed = ({ ads, heroAds, filtersCatalog, initialFilters, pagination, citySummary }: Props) => {
+export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFilters, pagination, citySummary }: Props) => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { isAuthenticated } = useAuth();
   const ageConfig = filtersCatalog.age;
   const defaultAgeMax = ageConfig?.defaultValue ?? ageConfig.max;
   const [ageRange, setAgeRange] = useState({
@@ -102,8 +105,8 @@ export const DesktopFeed = ({ ads, heroAds, filtersCatalog, initialFilters, pagi
   const heroGenderLabel = formatGenderLabel(sex, identity);
 
   const favoritesStart = heroAds.length ? 0 : heroTotal;
-  const favoriteAds = ads.slice(favoritesStart, favoritesStart + 3);
-  const gridAds = ads.slice(favoritesStart + favoriteAds.length);
+  const favoriteAds = weeklyAds?.length ? weeklyAds : ads.slice(favoritesStart, favoritesStart + 3);
+  const gridAds = weeklyAds?.length ? ads : ads.slice(favoritesStart + favoriteAds.length);
   const displayedFavoriteAds = favoriteAds.length
     ? rankAds(favoriteAds, "weekly", rankingSeed)
     : heroShowcase.length
@@ -193,6 +196,10 @@ export const DesktopFeed = ({ ads, heroAds, filtersCatalog, initialFilters, pagi
   const servicesOptions = useMemo(() => filtersCatalog.services, [filtersCatalog.services]);
 
   const toggleFavorite = (id: string) => {
+    if (!isAuthenticated) {
+      setShowRegistration(true);
+      return;
+    }
     setFavoriteIds((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]));
   };
 
@@ -387,7 +394,7 @@ export const DesktopFeed = ({ ads, heroAds, filtersCatalog, initialFilters, pagi
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-lg font-semibold text-white">Las favoritas de ForoTrix</h2>
+              <h2 className="text-lg font-semibold text-white">Explora perfiles</h2>
 
               <div className="flex flex-wrap items-center gap-3">
                 <AgeRangeFilterControl
@@ -455,7 +462,7 @@ export const DesktopFeed = ({ ads, heroAds, filtersCatalog, initialFilters, pagi
               )}
 
               <PaginationControls
-                className="justify-center pt-8"
+                className="justify-center pt-8 w-full"
                 currentPage={currentPage}
                 totalPages={totalPages}
                 onPageChange={handlePageChange}
@@ -486,11 +493,11 @@ type PaginationControlsProps = {
 
 function PaginationControls({ className = "", currentPage, totalPages, onPageChange }: PaginationControlsProps) {
   const arrowButtonClass =
-    "flex h-10 w-10 items-center justify-center rounded-full border border-white/20 text-white transition hover:border-white/60 disabled:opacity-40";
+    "flex h-10 w-10 items-center justify-center rounded-full border border-white/30 text-white transition hover:border-white/60 disabled:opacity-40";
   const pages = getVisiblePages(totalPages, currentPage);
 
   return (
-    <div className={`inline-flex items-center gap-4 ${className}`}>
+    <div className={`inline-flex items-center gap-3 ${className}`}>
       <button
         type="button"
         onClick={() => onPageChange(currentPage - 1)}
@@ -501,7 +508,7 @@ function PaginationControls({ className = "", currentPage, totalPages, onPageCha
         &lt;
       </button>
 
-      <div className="inline-flex items-center gap-1">
+      <div className="inline-flex items-center gap-2">
         {pages.map((item, index) =>
           item === "ellipsis" ? (
             <span
@@ -517,8 +524,8 @@ function PaginationControls({ className = "", currentPage, totalPages, onPageCha
               onClick={() => onPageChange(item)}
               className={`flex h-10 w-10 items-center justify-center rounded-full border text-sm font-semibold transition ${
                 item === currentPage
-                  ? "border-rojo-cereza400 bg-rojo-cereza400/10 text-white"
-                  : "border-transparent text-white/70 hover:border-white/40"
+                  ? "border-rojo-cereza400 text-white"
+                  : "border-white/30 text-white/70 hover:border-white/60"
               }`}
               aria-label={`Ir a la pagina ${item}`}
             >
@@ -666,7 +673,7 @@ const FeedCard = ({ ad, isFavorite, onToggleFavorite }: FeedCardProps) => {
         <img
           src={image}
           alt={ad.title ?? "Anuncio"}
-          className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+          className="h-full w-full object-cover object-top transition duration-500 group-hover:scale-105"
         />
         <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
         {isMock && (
@@ -677,7 +684,11 @@ const FeedCard = ({ ad, isFavorite, onToggleFavorite }: FeedCardProps) => {
         <button
           type="button"
           onClick={onToggleFavorite}
-          className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full border border-white/40 bg-black/60 text-white transition hover:border-white/70"
+          className={`absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full border transition ${
+            isFavorite
+              ? "border-[#ec4c51] bg-[#ec4c51]/20 text-white"
+              : "border-white/30 bg-black/30 text-white hover:border-white/60"
+          }`}
           aria-label={isFavorite ? "Quitar de favoritos" : "Agregar a favoritos"}
         >
           <img src={isFavorite ? "/img/star-1-1.svg" : "/img/star-1-27.svg"} alt="" className="h-4 w-4" />

@@ -15,11 +15,26 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
   const heroSex = filters.sex ?? "female";
   const heroIdentity = filters.identity ?? "cis";
   const resolvedFilters = { ...filters, profileType: undefined, sex: heroSex, identity: heroIdentity };
-  const [catalog, adsResult, heroResult] = await Promise.all([
+  const [catalog, heroResult] = await Promise.all([
     fetchFiltersCatalog(),
-    fetchAds(resolvedFilters),
     fetchAds({ sex: heroSex, identity: heroIdentity, featured: true, limit: 3 }),
   ]);
+  const featuredIds = heroResult.ads.map((ad) => ad.id);
+  const weeklyResult = await fetchAds({
+    sex: heroSex,
+    identity: heroIdentity,
+    weekly: true,
+    featured: false,
+    limit: 3,
+    excludeIds: featuredIds,
+  });
+  const weeklyIds = weeklyResult.ads.map((ad) => ad.id);
+  const adsResult = await fetchAds({
+    ...resolvedFilters,
+    featured: false,
+    limit: 9,
+    excludeIds: [...featuredIds, ...weeklyIds],
+  });
 
   return (
     <>
@@ -27,6 +42,7 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
         <DesktopFeed
           ads={adsResult.ads}
           heroAds={heroResult.ads}
+          weeklyAds={weeklyResult.ads}
           filtersCatalog={catalog}
           initialFilters={resolvedFilters}
           isMock={adsResult.isMock}

@@ -316,6 +316,8 @@ export type ListFilters = {
   ageMin?: number;
   ageMax?: number;
   featured?: boolean;
+  weekly?: boolean;
+  excludeIds?: string[];
 };
 
 function clampPagination(page = 1, limit = 20) {
@@ -368,10 +370,13 @@ export async function createAd(ownerId: string, data: CreateAdInput) {
 }
 
 export async function listAds(filters: ListFilters, page = 1, limit = 20) {
-  const { text, city, plan, services, profileType, sex, identity, ageMin, ageMax, featured } = filters;
+  const { text, city, plan, services, profileType, sex, identity, ageMin, ageMax, featured, weekly, excludeIds } = filters;
   const { limit: safeLimit, skip, page: safePage } = clampPagination(page, limit);
 
   const query: FilterQuery<IAd> = { status: 'published' };
+  if (excludeIds && excludeIds.length) {
+    query._id = { $nin: excludeIds };
+  }
   if (city) query.city = city;
   if (plan) query.plan = plan;
   if (text) query.title = { $regex: text, $options: 'i' };
@@ -422,9 +427,13 @@ export async function listAds(filters: ListFilters, page = 1, limit = 20) {
   const cityCountersQuery: FilterQuery<IAd> = { ...query };
   delete cityCountersQuery.city;
 
+  const sort: Record<string, 1 | -1> = weekly
+    ? { 'metadata.ranking.favoritesWeekly': -1, createdAt: -1 }
+    : { plan: -1, createdAt: -1 };
+
   const [items, total, citySummary] = await Promise.all([
     Ad.find(query)
-      .sort({ plan: -1, createdAt: -1 })
+      .sort(sort)
       .skip(skip)
       .limit(safeLimit)
       .populate('images')

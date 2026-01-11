@@ -47,8 +47,10 @@ export type AdsQuery = {
   ageMin?: number;
   ageMax?: number;
   featured?: boolean;
+  weekly?: boolean;
   page?: number;
   limit?: number;
+  excludeIds?: string[];
 };
 
 export type FiltersCatalog = {
@@ -216,9 +218,11 @@ function buildQueryString(filters?: AdsQuery) {
   if (typeof filters.ageMin === "number") params.set("ageMin", String(filters.ageMin));
   if (typeof filters.ageMax === "number") params.set("ageMax", String(filters.ageMax));
   if (typeof filters.featured === "boolean") params.set("featured", String(filters.featured));
+  if (typeof filters.weekly === "boolean") params.set("weekly", String(filters.weekly));
   if (typeof filters.page === "number") params.set("page", String(filters.page));
   if (typeof filters.limit === "number") params.set("limit", String(filters.limit));
   filters.services?.forEach((service) => params.append("services", service));
+  filters.excludeIds?.forEach((id) => params.append("excludeIds", id));
 
   const query = params.toString();
   return query ? `?${query}` : "";

@@ -1,11 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { ASSETS } from "@/constants/assets";
+import { useAuth } from "@/hooks/useAuth";
 
 const NAV_LINKS = [
   { href: "/perfil/mi-anuncio", label: "Mi anuncio" },
@@ -20,6 +21,8 @@ const NAV_LINK_BASE_CLASS =
 
 export default function ProfileLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { isAuthenticated } = useAuth();
 
   const isActive = (href: string) => {
     if (href === "/anuncio") {
@@ -27,6 +30,16 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
     }
     return pathname === href;
   };
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.replace("/feed");
+    }
+  }, [isAuthenticated, router]);
+
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <div className="bg-collection-1-fondo-02 w-full overflow-x-auto">
@@ -82,4 +95,3 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
     </div>
   );
 }
-

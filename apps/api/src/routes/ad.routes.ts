@@ -10,6 +10,8 @@ import { AGE_FILTER_CONFIG, SERVICE_FILTER_OPTIONS } from '@anuncios/shared';
 const router = Router();
 const ownerRoles: UserRole[] = ['provider', 'agency'];
 
+const objectId = z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid id');
+
 const listQuerySchema = z
   .object({
     text: z.string().trim().min(2).max(120).optional(),
@@ -32,12 +34,22 @@ const listQuerySchema = z
       .union([z.literal('true'), z.literal('false')])
       .transform((val) => val === 'true')
       .optional(),
+    weekly: z
+      .union([z.literal('true'), z.literal('false')])
+      .transform((val) => val === 'true')
+      .optional(),
+    excludeIds: z.preprocess(
+      (value) => {
+        if (Array.isArray(value)) return value;
+        if (typeof value === 'string' && value.trim().length) return [value];
+        return undefined;
+      },
+      z.array(objectId).optional(),
+    ),
     page: z.coerce.number().int().min(1).optional(),
     limit: z.coerce.number().int().min(1).max(50).optional(),
   })
   .strict();
-
-const objectId = z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid id');
 
 const contactSchema = z
   .object({
@@ -203,10 +215,25 @@ const paginationSchema = z
 
 router.get('/', async (req, res, next) => {
   try {
-    const { text, city, plan, page = 1, limit = 20, services, profileType, sex, identity, ageMin, ageMax, featured } =
+    const {
+      text,
+      city,
+      plan,
+      page = 1,
+      limit = 20,
+      services,
+      profileType,
+      sex,
+      identity,
+      ageMin,
+      ageMax,
+      featured,
+      weekly,
+      excludeIds,
+    } =
       listQuerySchema.parse(req.query);
     const output = await service.listAds(
-      { text, city, plan, services, profileType, sex, identity, ageMin, ageMax, featured },
+      { text, city, plan, services, profileType, sex, identity, ageMin, ageMax, featured, weekly, excludeIds },
       page,
       limit,
     );
