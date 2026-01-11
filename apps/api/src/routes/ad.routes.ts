@@ -3,6 +3,7 @@ import createError from 'http-errors';
 import { z } from 'zod';
 import { requireAuth, type AuthenticatedRequest } from '../middlewares/auth';
 import * as service from '../services/ad.service';
+import * as commentService from '../services/comment.service';
 import type { UserRole } from '@anuncios/shared';
 import { adMutationLimiter } from '../middlewares/security';
 import { AGE_FILTER_CONFIG, SERVICE_FILTER_OPTIONS } from '@anuncios/shared';
@@ -213,6 +214,12 @@ const paginationSchema = z
   })
   .strict();
 
+const commentSchema = z
+  .object({
+    text: z.string().trim().min(2).max(500),
+  })
+  .strict();
+
 router.get('/', async (req, res, next) => {
   try {
     const {
@@ -256,6 +263,29 @@ router.get('/mine', requireAuth(ownerRoles), async (req, res, next) => {
     const { page, limit } = paginationSchema.parse(req.query);
     const output = await service.listOwnAds(user.sub, page, limit);
     res.json(output);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get('/:id/comments', async (req, res, next) => {
+  try {
+    const { page, limit } = paginationSchema.parse(req.query);
+    const adId = objectId.parse(req.params.id);
+    const output = await commentService.listComments(adId, page, limit);
+    res.json(output);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post('/:id/comments', adMutationLimiter, requireAuth(), async (req, res, next) => {
+  try {
+    const { user } = req as AuthenticatedRequest;
+    const adId = objectId.parse(req.params.id);
+    const { text } = commentSchema.parse(req.body);
+    const comment = await commentService.createComment(adId, user.sub, text);
+    res.status(201).json(comment);
   } catch (err) {
     next(err);
   }

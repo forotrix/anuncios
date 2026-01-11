@@ -8,6 +8,9 @@ import type { Ad } from "@/lib/ads";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { logEvent } from "@/services/eventLogger";
+import { useAuth } from "@/hooks/useAuth";
+import { commentService, type CommentItem } from "@/services/comment.service";
+import { isApiConfigured } from "@/services/httpClient";
 
 type Props = {
   ad: Ad;
@@ -17,15 +20,37 @@ type Props = {
 const FALLBACK_IMAGE = "https://res.cloudinary.com/dqhxthtby/image/upload/v1762882388/marina-hero.svg";
 const FALLBACK_SERVICES = ["Experiencias privadas", "Viajes", "Eventos", "Masajes", "Acompanamiento premium"];
 const FALLBACK_TAGS = ["Premium", "Discreta", "Disponible 24/7"];
-const SAMPLE_COMMENTS = [
-  { id: "c-1", author: "Usuario anonimo", text: "Hola amor, como estas?", time: "Hace 2h" },
-  { id: "c-2", author: "Invitado", text: "Hacemos videollamada?", time: "Hace 1d" },
-  { id: "c-3", author: "Alex", text: "Podemos ver fechas?", time: "Hace 3d" },
+const SAMPLE_COMMENTS: CommentItem[] = [
+  {
+    id: "c-1",
+    author: { id: "anon-1", name: "Usuario anonimo" },
+    text: "Hola amor, como estas?",
+    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: "c-2",
+    author: { id: "anon-2", name: "Invitado" },
+    text: "Hacemos videollamada?",
+    createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: "c-3",
+    author: { id: "anon-3", name: "Alex" },
+    text: "Podemos ver fechas?",
+    createdAt: new Date(Date.now() - 72 * 60 * 60 * 1000).toISOString(),
+  },
 ];
 
 export const Anuncio = ({ ad, isMock = false }: Props) => {
+  const { isAuthenticated, accessToken } = useAuth();
   const gallery = useMemo(() => buildGallery(ad), [ad]);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [comments, setComments] = useState<CommentItem[]>([]);
+  const [commentsTotal, setCommentsTotal] = useState(0);
+  const [commentsLoading, setCommentsLoading] = useState(false);
+  const [commentsError, setCommentsError] = useState<string | null>(null);
+  const [commentText, setCommentText] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     setActiveImageIndex(0);
@@ -34,6 +59,36 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
   useEffect(() => {
     logEvent("ad:view", { adId: ad.id, isMock });
   }, [ad.id, isMock]);
+
+  const canUseComments = isApiConfigured() && isValidObjectId(ad.id);
+
+  useEffect(() => {
+    let mounted = true;
+    if (!canUseComments) {
+      setComments(SAMPLE_COMMENTS);
+      setCommentsTotal(SAMPLE_COMMENTS.length);
+      return undefined;
+    }
+    setCommentsLoading(true);
+    setCommentsError(null);
+    commentService
+      .list(ad.id, { page: 1, limit: 20 })
+      .then((response) => {
+        if (!mounted) return;
+        setComments(response.items);
+        setCommentsTotal(response.total);
+      })
+      .catch((error) => {
+        if (!mounted) return;
+        setCommentsError(error instanceof Error ? error.message : "No se pudieron cargar los comentarios.");
+      })
+      .finally(() => {
+        if (mounted) setCommentsLoading(false);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, [ad.id, canUseComments]);
 
   const services = ad.services?.length ? ad.services : FALLBACK_SERVICES;
   const tags = ad.tags?.length ? ad.tags : FALLBACK_TAGS;
@@ -50,6 +105,30 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
   const isOwnerView = Boolean(attributes.ownerView);
   const hasMultipleImages = gallery.length > 1;
   const showMockBadge = Boolean(metadata?.seed?.isMock) || isMock;
+  const commentsToShow = comments.length ? comments : canUseComments ? [] : SAMPLE_COMMENTS;
+  const commentCount = canUseComments ? commentsTotal : commentsToShow.length;
+
+  const handleCommentSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!isAuthenticated || !accessToken || !canUseComments) return;
+    const trimmed = commentText.trim();
+    if (trimmed.length < 2) {
+      setCommentsError("Escribe un comentario mas largo.");
+      return;
+    }
+    setIsSubmitting(true);
+    setCommentsError(null);
+    try {
+      const created = await commentService.create(ad.id, trimmed, accessToken);
+      setComments((prev) => [created, ...prev]);
+      setCommentsTotal((prev) => prev + 1);
+      setCommentText("");
+    } catch (error) {
+      setCommentsError(error instanceof Error ? error.message : "No se pudo publicar el comentario.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const showPreviousImage = () => {
     if (!hasMultipleImages) return;
@@ -283,31 +362,47 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
               <div className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-[0.35em] text-white/60">Comentarios
                 </p>
-                <h2 className="text-xl font-semibold">3 Comentarios</h2>
+                <h2 className="text-xl font-semibold">{commentCount} Comentarios</h2>
               </div>
-              <form className="mt-6 space-y-3">
+              <form className="mt-6 space-y-3" onSubmit={handleCommentSubmit}>
                 <textarea
-                  placeholder="Dejar un comentario"
+                  placeholder={isAuthenticated ? "Dejar un comentario" : "Inicia sesion para comentar"}
                   className="w-full rounded-[18px] border border-white/15 bg-black/20 px-4 py-3 text-sm text-white outline-none focus:border-rojo-cereza400/70"
                   rows={3}
+                  value={commentText}
+                  onChange={(event) => setCommentText(event.target.value)}
+                  disabled={!isAuthenticated || !canUseComments || isSubmitting}
                 />
                 <button
-                  type="button"
-                  className="inline-flex items-center justify-center rounded-full bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] px-6 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white"
+                  type="submit"
+                  disabled={!isAuthenticated || !commentText.trim().length || !canUseComments || isSubmitting}
+                  className="inline-flex items-center justify-center rounded-full bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] px-6 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white disabled:opacity-50"
                 >
-                  Enviar
+                  {isSubmitting ? "Enviando..." : "Enviar"}
                 </button>
               </form>
+              {!isAuthenticated && (
+                <p className="mt-3 text-xs text-white/50">Debes iniciar sesion para comentar.</p>
+              )}
+              {commentsError && (
+                <p className="mt-3 text-xs text-[#ffb3b3]">{commentsError}</p>
+              )}
               <div className="mt-6 space-y-4 text-sm">
-                {SAMPLE_COMMENTS.map((comment) => (
-                  <div key={comment.id} className="rounded-2xl border border-white/5 bg-white/5 px-4 py-3">
-                    <div className="flex items-center justify-between text-xs text-white/60">
-                      <span>{comment.author}</span>
-                      <span>{comment.time}</span>
+                {commentsLoading ? (
+                  <p className="text-sm text-white/60">Cargando comentarios...</p>
+                ) : commentsToShow.length ? (
+                  commentsToShow.map((comment) => (
+                    <div key={comment.id} className="rounded-2xl border border-white/5 bg-white/5 px-4 py-3">
+                      <div className="flex items-center justify-between text-xs text-white/60">
+                        <span>{comment.author.name}</span>
+                        <span>{formatRelativeTime(comment.createdAt)}</span>
+                      </div>
+                      <p className="mt-2 text-white/80">{comment.text}</p>
                     </div>
-                    <p className="mt-2 text-white/80">{comment.text}</p>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <p className="text-sm text-white/60">Aun no hay comentarios.</p>
+                )}
               </div>
               <div className="mt-6 flex items-center justify-center gap-2 text-xs text-white/50">
                 {Array.from({ length: 6 }).map((_, index) => (
@@ -468,4 +563,20 @@ function formatAvailabilitySlot(slot: {
   }
 
   return `${slot.from ?? "10:00"} - ${slot.to ?? "18:00"}`;
+}
+
+function isValidObjectId(value: string) {
+  return /^[0-9a-fA-F]{24}$/.test(value);
+}
+
+function formatRelativeTime(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Reciente";
+  const diffMs = Date.now() - date.getTime();
+  const minutes = Math.floor(diffMs / 60000);
+  if (minutes < 60) return `Hace ${Math.max(1, minutes)}m`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `Hace ${hours}h`;
+  const days = Math.floor(hours / 24);
+  return `Hace ${days}d`;
 }
