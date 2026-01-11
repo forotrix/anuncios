@@ -286,7 +286,7 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
                   <>
                     <div className="flex flex-col gap-2 lg:flex-row lg:items-end lg:justify-between">
                       <div className="space-y-3">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-white/60">Perfiles destacados</p>
+                        <p className="text-[19px] font-semibold tracking-[0.01em] text-white">Perfiles destacados</p>
                       </div>
                     </div>
 
@@ -378,7 +378,7 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-lg font-semibold text-white">Perfiles de la semana</h2>
+              <h2 className="text-[19px] font-semibold tracking-[0.01em] text-white">Perfiles de la semana</h2>
               <div className="rounded-[28px] border border-[#7a0f11]/60 bg-[#090204] p-4 shadow-[0_25px_60px_rgba(0,0,0,0.5)] sm:p-6">
                 <div className="grid gap-4 md:grid-cols-3">
                   {displayedFavoriteAds.map((ad) => (
@@ -394,7 +394,7 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-lg font-semibold text-white">Explora perfiles</h2>
+              <h2 className="text-[19px] font-semibold tracking-[0.01em] text-white">Explora perfiles</h2>
 
               <div className="flex flex-wrap items-center gap-3">
                 <AgeRangeFilterControl
@@ -623,9 +623,9 @@ const FavoriteCard = ({ ad, isFavorite, onToggleFavorite }: FavoriteCardProps) =
   const isMock = Boolean(ad.metadata?.seed?.isMock);
 
   return (
-    <article className="relative overflow-hidden rounded-[20px] border border-[#d52b33]/60 bg-[linear-gradient(135deg,#3a0d15_0%,#200608_70%,#140405_100%)] p-3 shadow-[0_20px_50px_rgba(0,0,0,0.45)]">
+    <article className="relative overflow-hidden rounded-[20px] border border-[#d52b33]/60 bg-[linear-gradient(135deg,#3a0d15_0%,#200608_70%,#140405_100%)] p-3 shadow-[0_25px_60px_rgba(213,43,51,0.25)]">
       <div className="overflow-hidden rounded-[16px]">
-        <img src={image} alt={ad.title ?? "Anuncio destacado"} className="h-48 w-full rounded-[16px] object-cover object-top" />
+        <img src={image} alt={ad.title ?? "Anuncio destacado"} className="h-56 w-full rounded-[16px] object-cover object-top" />
       </div>
       <div className="mt-3 space-y-1">
         <h3 className="text-base font-semibold">{ad.title ?? "Anuncio destacado"}</h3>

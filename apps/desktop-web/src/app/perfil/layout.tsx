@@ -22,7 +22,7 @@ const NAV_LINK_BASE_CLASS =
 export default function ProfileLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
 
   const isActive = (href: string) => {
     if (href === "/anuncio") {
@@ -85,6 +85,13 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
                 </Link>
               );
             })}
+            <button
+              type="button"
+              onClick={logout}
+              className={`${NAV_LINK_BASE_CLASS} rounded-[14px] text-gris-claro hover:text-white`}
+            >
+              Salir
+            </button>
           </nav>
 
           {children}

@@ -36,7 +36,7 @@ export const SiteHeader = ({
   logoHref = "/feed",
   onRegisterClick,
 }: Props) => {
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const canToggleProfile = profileType && onProfileTypeChange;
   const canToggleGender = genderSex && genderIdentity && onGenderSexChange && onGenderIdentityChange;
   const pathname = usePathname();
@@ -115,18 +115,19 @@ export const SiteHeader = ({
             />
 
             {isAuthenticated ? (
-              <div className="absolute left-[1217px] top-1/2 hidden -translate-y-1/2 md:flex items-center gap-3">
-                <div className="rounded-full border border-white/30 px-4 py-2 text-xs text-white/80">
-                  {user?.name ?? user?.email ?? "Cuenta"}
-                </div>
-                <button
-                  type="button"
-                  onClick={logout}
-                  className="rounded-full border border-white/30 px-4 py-2 text-xs text-white/80 transition hover:border-white/60"
-                >
-                  Salir
-                </button>
-              </div>
+              <Link
+                href="/perfil/mi-anuncio"
+                className="absolute left-[1217px] top-1/2 hidden h-[66px] w-[273px] -translate-y-1/2 md:block"
+                aria-label="Mi cuenta"
+              >
+                <BotonChicas
+                  buttonStyleDivClassName="!mr-[-40.00px] !mt-[-3.00px] !tracking-[var(--h4-letter-spacing)] !ml-[-40.00px] !text-[length:var(--h4-font-size)] ![font-style:var(--h4-font-style)] ![white-space:unset] !font-[number:var(--h4-font-weight)] !font-h4 !leading-[var(--h4-line-height)]"
+                  buttonStyleStyleFilledIconNoClassName="!self-stretch !flex-[0_0_auto] !px-[70px] !py-3.5 !bg-blend-screen !flex !left-[unset] !bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] !bg-[unset] !w-full !top-[unset]"
+                  buttonStyleText="Mi cuenta"
+                  className="!relative !left-[unset] !top-[unset]"
+                  propiedad1="predeterminada"
+                />
+              </Link>
             ) : onRegisterClick ? (
               <BotonChicas
                 buttonStyleDivClassName="!mr-[-40.00px] !mt-[-3.00px] !tracking-[var(--h4-letter-spacing)] !ml-[-40.00px] !text-[length:var(--h4-font-size)] ![font-style:var(--h4-font-style)] ![white-space:unset] !font-[number:var(--h4-font-weight)] !font-h4 !leading-[var(--h4-line-height)]"
