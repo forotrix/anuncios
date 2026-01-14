@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { logEvent } from "@/services/eventLogger";
@@ -56,30 +54,7 @@ const CLOUDINARY_MAX_FILE_SIZE =
 
 const isBrowser = () => typeof window !== "undefined";
 
-const NAV_LINKS = [
-  { id: "mi-anuncio", label: "Mi anuncio" },
-  { id: "cuenta", label: "Cuenta", isActive: true },
-  { id: "suscripciones", label: "Suscripciones" },
-  { id: "estadisticas", label: "Estadisticas" },
-  { id: "ver-anuncio", label: "Ver anuncio" },
-];
-
-const PROFILE_NAV_LINKS = NAV_LINKS.map((link) => ({
-  href:
-    link.id === "mi-anuncio"
-      ? "/perfil/mi-anuncio"
-      : link.id === "cuenta"
-        ? "/perfil/cuenta"
-        : link.id === "suscripciones"
-          ? "/perfil/suscripciones"
-          : link.id === "estadisticas"
-            ? "/perfil/estadisticas"
-            : "/anuncio",
-  label: link.label,
-}));
-
 export const PerfilCuenta = () => {
-  const pathname = usePathname();
   const { user, accessToken, updateUser } = useAuth();
   const [profile, setProfile] = useState<AccountProfile | null>(null);
   const [profileForm, setProfileForm] = useState({ email: user?.email ?? "", name: user?.name ?? "" });
@@ -279,7 +254,7 @@ export const PerfilCuenta = () => {
 
   return (
     <div className="bg-[#020305] text-white">
-      <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-10 px-4 pb-24 pt-16 sm:px-6 lg:px-10">
+      <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-10 px-4 pb-24 pt-16 sm:px-6 lg:px-10 lg:pl-[260px]">
         <header className="space-y-3">
           <p className="text-xs uppercase tracking-[0.4em] text-white/60">Configuracion</p>
           <h1 className="font-h1-2-0 text-[length:var(--h1-2-0-font-size)] leading-[var(--h1-2-0-line-height)]">
@@ -295,54 +270,24 @@ export const PerfilCuenta = () => {
           )}
         </header>
 
-        <div className="grid gap-8 lg:grid-cols-[240px,1fr]">
-          <aside className="space-y-4">
-            <nav className="rounded-[28px] border border-white/10 bg-[#090a0f]/90 p-4 shadow-[0_12px_40px_rgba(0,0,0,0.45)]">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/50">Secciones</p>
-              <ul className="mt-3 space-y-2 text-sm font-semibold">
-                {PROFILE_NAV_LINKS.map((link) => {
-                  const isActive =
-                    pathname === link.href || (link.href === "/anuncio" && pathname.startsWith("/anuncio"));
-                  return (
-                    <li key={link.href}>
-                      <Link
-                        href={link.href}
-                        className={`flex w-full items-center justify-between rounded-2xl px-4 py-3 transition ${
-                          isActive ? "bg-rojo-cereza400/20 text-white" : "text-white/60 hover:bg-white/5"
-                        }`}
-                        aria-current={isActive ? "page" : undefined}
-                      >
-                        {link.label}
-                        {isActive && (
-                          <span className="text-[10px] uppercase tracking-[0.35em] text-rojo-cereza300">Activo</span>
-                        )}
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            </nav>
-
-            <section className={`${shellClass} text-center`}>
-              <div className="mx-auto flex h-40 w-40 items-center justify-center overflow-hidden rounded-full border border-white/15 bg-[#52040a]/60">
-                {profile?.avatarUrl ? (
-                  <img src={profile.avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
-                ) : (
-                  <span className="text-sm text-white/60">Sin avatar</span>
-                )}
-              </div>
-              <p className="mt-4 text-sm text-white/70">Este avatar se usa en tu perfil privado.</p>
-              <button
-                type="button"
-                onClick={openAvatarWidget}
-                disabled={!canUploadAvatar || isUploadingAvatar}
-                className="mt-4 w-full rounded-full border border-white/30 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/80 transition hover:text-white disabled:cursor-not-allowed disabled:opacity-50">
-                {isUploadingAvatar ? "Subiendo..." : "Cambiar avatar"}
-              </button>
-            </section>
-          </aside>
-
-          <div className="space-y-8">
+        <div className="space-y-8">
+          <section className={`${shellClass} text-center`}>
+            <div className="mx-auto flex h-40 w-40 items-center justify-center overflow-hidden rounded-full border border-white/15 bg-[#52040a]/60">
+              {profile?.avatarUrl ? (
+                <img src={profile.avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
+              ) : (
+                <span className="text-sm text-white/60">Sin avatar</span>
+              )}
+            </div>
+            <p className="mt-4 text-sm text-white/70">Este avatar se usa en tu perfil privado.</p>
+            <button
+              type="button"
+              onClick={openAvatarWidget}
+              disabled={!canUploadAvatar || isUploadingAvatar}
+              className="mt-4 w-full rounded-full border border-white/30 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/80 transition hover:text-white disabled:cursor-not-allowed disabled:opacity-50">
+              {isUploadingAvatar ? "Subiendo..." : "Cambiar avatar"}
+            </button>
+          </section>
             <section className={shellClass}>
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
@@ -484,7 +429,6 @@ export const PerfilCuenta = () => {
                 Cargando datos de la cuenta...
               </div>
             )}
-          </div>
         </div>
       </div>
     </div>

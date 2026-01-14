@@ -59,7 +59,8 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
           </Link>
 
           <nav
-            className="absolute left-[70px] top-[300px] z-10 flex w-[219px] flex-col rounded-[18px] bg-[#52040a]/70 p-2 backdrop-blur-sm"
+            className="absolute top-[300px] z-10 flex w-[219px] flex-col rounded-[18px] bg-[#52040a]/70 p-2 backdrop-blur-sm"
+            style={{ left: "calc(50% - 600px)" }}
             aria-label="Navegacion de perfil"
           >
             {NAV_LINKS.map((link, index) => {

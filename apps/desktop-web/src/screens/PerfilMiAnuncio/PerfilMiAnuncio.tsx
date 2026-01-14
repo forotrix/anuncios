@@ -72,14 +72,6 @@ const isBrowser = () => typeof window !== "undefined";
 const cloudinaryInstance = () =>
   (typeof window === "undefined" ? undefined : (window as CloudinaryGlobal).cloudinary);
 
-const NAV_LINKS = [
-  { id: "mi-anuncio", label: "Mi anuncio", isActive: true },
-  { id: "cuenta", label: "Cuenta", isActive: false },
-  { id: "suscripciones", label: "Suscripciones", isActive: false },
-  { id: "estadisticas", label: "Estadisticas", isActive: false },
-  { id: "ver-anuncio", label: "Ver anuncio", isActive: false },
-];
-
 export const PerfilMiAnuncio = () => {
   const { user, accessToken } = useAuth();
   const form = useMiAnuncioForm(accessToken);
@@ -195,31 +187,8 @@ export const PerfilMiAnuncio = () => {
 
   return (
     <div className="bg-[#020103] text-white">
-      <div className="mx-auto w-full max-w-[1200px] px-4 pb-20 pt-12 lg:px-8">
-        <div className="flex flex-col gap-6 lg:flex-row">
-          <aside className="w-full lg:w-60">
-            <div className="rounded-[28px] border border-[#460f16] bg-[#140103] p-4 shadow-[0_15px_40px_rgba(0,0,0,0.6)]">
-              <p className={`${labelClass} mb-4`}>Secciones</p>
-              <ul className="space-y-2 text-sm font-semibold">
-                {NAV_LINKS.map((link) => (
-                  <li key={link.id}>
-                    <button
-                      type="button"
-                      className={`flex w-full items-center justify-between rounded-2xl px-4 py-3 transition ${
-                        link.isActive ? "bg-[#b12130]/50 text-white" : "text-white/60 hover:bg-white/5"
-                      }`}
-                    >
-                      {link.label}
-                      {link.isActive && (
-                        <span className="text-[10px] uppercase tracking-[0.4em] text-[#ff9aa2]">Activo</span>
-                      )}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </aside>
-
+      <div className="mx-auto w-full max-w-[1200px] px-4 pb-20 pt-12 lg:px-8 lg:pl-[260px]">
+        <div className="flex flex-col gap-6">
           <div className="flex-1 space-y-6">
             <section className={`${cardClass} flex flex-col gap-6 lg:flex-row lg:items-center`}>
               <div className="flex flex-col items-center gap-4 text-center lg:w-[240px]">
