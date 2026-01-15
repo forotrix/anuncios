@@ -72,6 +72,19 @@ const defaultCustomRanges = (): AvailabilityRange[] => [{ from: "10:00", to: "18
 const buildTagState = (blueprint: TagBlueprint[]): SelectableTag[] =>
   blueprint.map((item) => ({ ...item, active: false }));
 
+const isAuthExpired = (err: unknown) => {
+  if (!err || typeof err !== "object") return false;
+  const status = (err as { status?: number }).status;
+  const message = (err as { message?: string }).message ?? "";
+  const normalized = message.toLowerCase();
+  return (
+    status === 401 ||
+    normalized.includes("sesion expirada") ||
+    normalized.includes("jwt expired") ||
+    normalized.includes("token invalido")
+  );
+};
+
 const createEmptyDraft = (): MiAnuncioDraft => ({
   profileName: "",
   description: "",
@@ -258,7 +271,10 @@ function buildPayload(state: MiAnuncioDraft) {
   };
 }
 
-export function useMiAnuncioForm(accessToken?: string | null) {
+export function useMiAnuncioForm(
+  accessToken?: string | null,
+  options: { onAuthExpired?: () => void } = {},
+) {
   const [draft, setDraft] = useState<MiAnuncioDraft>(() => createEmptyDraft());
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -433,12 +449,17 @@ export function useMiAnuncioForm(accessToken?: string | null) {
       setDraft(mapAdToDraft(result));
       logEvent("mi-anuncio:save", { adId: result.id });
     } catch (err) {
+      if (isAuthExpired(err)) {
+        setError(new Error("Tu sesion ha expirado. Inicia sesion de nuevo."));
+        options.onAuthExpired?.();
+        return;
+      }
       setError(err as Error);
       throw err;
     } finally {
       setSaving(false);
     }
-  }, [accessToken, draft]);
+  }, [accessToken, draft, options]);
 
   const publishAd = useCallback(async () => {
     if (!accessToken || !draft.adId) return;
@@ -449,12 +470,17 @@ export function useMiAnuncioForm(accessToken?: string | null) {
       setDraft(mapAdToDraft(result));
       logEvent("mi-anuncio:publish", { adId: result.id });
     } catch (err) {
+      if (isAuthExpired(err)) {
+        setError(new Error("Tu sesion ha expirado. Inicia sesion de nuevo."));
+        options.onAuthExpired?.();
+        return;
+      }
       setError(err as Error);
       throw err;
     } finally {
       setPublishState("idle");
     }
-  }, [accessToken, draft.adId]);
+  }, [accessToken, draft.adId, options]);
 
   const unpublishAd = useCallback(async () => {
     if (!accessToken || !draft.adId) return;
@@ -465,12 +491,17 @@ export function useMiAnuncioForm(accessToken?: string | null) {
       setDraft(mapAdToDraft(result));
       logEvent("mi-anuncio:unpublish", { adId: result.id });
     } catch (err) {
+      if (isAuthExpired(err)) {
+        setError(new Error("Tu sesion ha expirado. Inicia sesion de nuevo."));
+        options.onAuthExpired?.();
+        return;
+      }
       setError(err as Error);
       throw err;
     } finally {
       setPublishState("idle");
     }
-  }, [accessToken, draft.adId]);
+  }, [accessToken, draft.adId, options]);
 
   const meta = useMemo(
     () => ({

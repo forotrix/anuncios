@@ -73,8 +73,8 @@ const cloudinaryInstance = () =>
   (typeof window === "undefined" ? undefined : (window as CloudinaryGlobal).cloudinary);
 
 export const PerfilMiAnuncio = () => {
-  const { user, accessToken } = useAuth();
-  const form = useMiAnuncioForm(accessToken);
+  const { user, accessToken, logout } = useAuth();
+  const form = useMiAnuncioForm(accessToken, { onAuthExpired: logout });
   const {
     draft,
     loading,

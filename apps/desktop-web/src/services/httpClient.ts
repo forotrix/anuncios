@@ -31,9 +31,15 @@ async function handleResponse<T>(response: Response): Promise<T> {
     const payload = await response.json();
     if (typeof payload?.message === "string" && payload.message.trim().length > 0) {
       message = payload.message;
+    } else if (typeof payload?.error === "string" && payload.error.trim().length > 0) {
+      message = payload.error;
     }
   } catch {
     // ignore body parse errors
+  }
+
+  if (response.status === 401 && typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("auth:expired", { detail: message }));
   }
 
   const error = new Error(message) as ApiError;

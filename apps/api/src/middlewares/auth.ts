@@ -19,6 +19,12 @@ export function requireAuth(roles?: UserRole[]) {
 
       next();
     } catch (err) {
+      if (err instanceof Error && err.name === 'TokenExpiredError') {
+        return next(createError(401, 'Sesion expirada'));
+      }
+      if (err instanceof Error && err.name === 'JsonWebTokenError') {
+        return next(createError(401, 'Token invalido'));
+      }
       next(err);
     }
   };

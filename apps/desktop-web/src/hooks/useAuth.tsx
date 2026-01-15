@@ -94,6 +94,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, []);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const handleExpired = () => {
+      logout();
+    };
+    window.addEventListener("auth:expired", handleExpired as EventListener);
+    return () => {
+      window.removeEventListener("auth:expired", handleExpired as EventListener);
+    };
+  }, [logout]);
+
   const updateUser = useCallback(
     (updates: Partial<AuthResponse["user"]>) => {
       setSession((prev) => {
