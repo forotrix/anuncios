@@ -156,8 +156,8 @@ export const PerfilMiAnuncio = () => {
     }
   };
 
-  const cardClass = "rounded-[24px] border border-[#8e1522] bg-[#0f0306] p-5 shadow-[0_25px_80px_rgba(0,0,0,0.55)]";
-  const labelClass = "text-xs font-semibold uppercase tracking-[0.35em] text-[#ff9aa2]";
+  const cardClass = "rounded-[22px] border border-[#8e1522] bg-[#050102] p-5 shadow-[0_25px_80px_rgba(0,0,0,0.45)]";
+  const labelClass = "text-[11px] font-semibold uppercase tracking-[0.35em] text-[#ff9aa2]";
 
   const getSlotRanges = (slot: { status: string; from?: string; to?: string; ranges?: Array<{ from: string; to: string }> }) => {
     if (slot.status !== "custom") return [];
@@ -190,8 +190,10 @@ export const PerfilMiAnuncio = () => {
       <div className="mx-auto w-full max-w-[1200px] px-4 pb-20 pt-12 lg:px-8 lg:pl-[260px]">
         <div className="flex flex-col gap-6">
           <div className="flex-1 space-y-6">
-            <section className={`${cardClass} flex flex-col gap-6 lg:flex-row lg:items-center`}>
-              <div className="flex flex-col items-center gap-4 text-center lg:w-[240px]">
+            <section className="flex flex-col items-center gap-4 text-center">
+              <p className={labelClass}>Mi anuncio</p>
+              <h1 className="text-2xl font-semibold text-white">{headline}</h1>
+              <div className="flex flex-col items-center gap-3">
                 <AvatarSection
                   avatar={draft.avatar}
                   isReady={avatarUploader.isReady}
@@ -199,54 +201,46 @@ export const PerfilMiAnuncio = () => {
                   error={avatarUploader.error}
                   onOpen={avatarUploader.open}
                 />
-                <div className="w-full rounded-[18px] border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/70">
-                  Servicios activos: {meta.activeServices}
-                </div>
+                <p className="text-xs text-white/60">Servicios activos: {meta.activeServices}</p>
               </div>
-              <div className="flex-1 space-y-4">
-                <div>
-                  <p className={labelClass}>Resumen</p>
-                  <h1 className="text-3xl font-semibold">{headline}</h1>
-                  <p className="text-sm text-white/70">{statusMessage}</p>
-                </div>
-                <div className="flex flex-wrap gap-3">
+              <p className="text-sm text-white/60">{statusMessage}</p>
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                <button
+                  type="button"
+                  onClick={handleSave}
+                  disabled={saving || loading}
+                  className="rounded-full bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] px-6 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-white shadow-shadow-g disabled:opacity-60"
+                >
+                  {saving ? "Guardando..." : "Guardar"}
+                </button>
+                {draft.status === "published" ? (
                   <button
                     type="button"
-                    onClick={handleSave}
-                    disabled={saving || loading}
-                    className="rounded-full bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] px-6 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-white shadow-shadow-g disabled:opacity-60"
+                    onClick={handleUnpublish}
+                    disabled={!canPublish || publishState !== "idle"}
+                    className="rounded-full border border-white/30 px-6 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-white/80 transition hover:text-white disabled:opacity-50"
                   >
-                    {saving ? "Guardando..." : "Guardar"}
+                    {publishState === "unpublishing" ? "Actualizando..." : "Mover a borrador"}
                   </button>
-                  {draft.status === "published" ? (
-                    <button
-                      type="button"
-                      onClick={handleUnpublish}
-                      disabled={!canPublish || publishState !== "idle"}
-                      className="rounded-full border border-white/30 px-6 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-white/80 transition hover:text-white disabled:opacity-50"
-                    >
-                      {publishState === "unpublishing" ? "Actualizando..." : "Mover a borrador"}
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={handlePublish}
-                      disabled={!canPublish || publishState !== "idle"}
-                      className="rounded-full border border-white/30 px-6 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-white/80 transition hover:text-white disabled:opacity-50"
-                    >
-                      {publishState === "publishing" ? "Publicando..." : "Publicar anuncio"}
-                    </button>
-                  )}
-                </div>
-                {!draft.adId && (
-                  <p className="text-xs text-white/60">Guarda tu anuncio para habilitar la publicacion.</p>
-                )}
-                {error && (
-                  <p className="rounded-2xl border border-[#ff6161]/40 bg-[#360508] px-4 py-2 text-sm text-[#ffb3b3]">
-                    {error.message || "No se pudo guardar el anuncio, intenta nuevamente."}
-                  </p>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handlePublish}
+                    disabled={!canPublish || publishState !== "idle"}
+                    className="rounded-full border border-white/30 px-6 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-white/80 transition hover:text-white disabled:opacity-50"
+                  >
+                    {publishState === "publishing" ? "Publicando..." : "Publicar anuncio"}
+                  </button>
                 )}
               </div>
+              {!draft.adId && (
+                <p className="text-xs text-white/50">Guarda tu anuncio para habilitar la publicacion.</p>
+              )}
+              {error && (
+                <p className="rounded-2xl border border-[#ff6161]/40 bg-[#360508] px-4 py-2 text-sm text-[#ffb3b3]">
+                  {error.message || "No se pudo guardar el anuncio, intenta nuevamente."}
+                </p>
+              )}
             </section>
 
             <section className="grid gap-4 lg:grid-cols-2">
@@ -317,6 +311,9 @@ export const PerfilMiAnuncio = () => {
                 className={`${INPUT_CLASS} resize-none`}
                 placeholder="Describe tu estilo, servicios y experiencia..."
               />
+              <div className="mt-2 text-right text-[11px] text-white/50">
+                {draft.description.length}/500 caracteres
+              </div>
             </section>
 
             <section className={cardClass}>
@@ -392,6 +389,11 @@ export const PerfilMiAnuncio = () => {
             <section className={cardClass}>
               <CardHeader label="Servicios" title="Oferta activa" />
               <div className="mt-4 space-y-4">
+                <input
+                  aria-label="Buscar servicio"
+                  placeholder="Buscar"
+                  className="h-9 w-full rounded-full border border-white/20 bg-white/10 px-4 text-xs text-white/80 outline-none focus:border-rojo-cereza400/70 sm:w-[200px]"
+                />
                 <ServiceChips services={draft.services} onToggle={toggleService} onRemove={removeService} />
                 <div className="flex flex-col gap-3 md:flex-row">
                   <input
@@ -431,10 +433,10 @@ export const PerfilMiAnuncio = () => {
                   const ranges = getSlotRanges(slot as any);
                   const rangesError = slot.status === "custom" ? validateRanges(ranges) : null;
                   return (
-                    <div key={value} className="grid gap-3 rounded-2xl border border-white/5 p-4 sm:grid-cols-[150px,1fr]">
+                    <div key={value} className="grid gap-3 rounded-2xl border border-[#4a0c14] bg-[#140306] p-4 sm:grid-cols-[140px,1fr]">
                       <div>
                         <p className="text-sm font-semibold">{label}</p>
-                        <p className="text-xs text-white/60">
+                        <p className="text-xs text-white/40">
                           {slot.status === "custom"
                             ? "Selecciona el horario manualmente."
                             : slot.status === "unavailable"
@@ -454,7 +456,7 @@ export const PerfilMiAnuncio = () => {
                               ranges: status === "custom" ? (ranges.length ? ranges : [{ from: "10:00", to: "18:00" }]) : undefined,
                             });
                           }}
-                          className="rounded-[16px] border border-white/15 bg-transparent px-4 py-2 text-sm outline-none focus:border-[#ff4d5d]"
+                          className="rounded-full border border-[#a01722] bg-[#2a060a] px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-white/80 outline-none focus:border-[#ff4d5d]"
                         >
                           {AVAILABILITY_STATUS_OPTIONS.map((option) => (
                             <option key={option.value} value={option.value}>
@@ -470,23 +472,23 @@ export const PerfilMiAnuncio = () => {
                                   type="time"
                                   value={range.from ?? ""}
                                   onChange={(event) => updateAvailabilityRange(value, index, { from: event.target.value })}
-                                  className="flex-1 rounded-[16px] border border-white/15 bg-transparent px-4 py-2 text-sm outline-none focus:border-[#ff4d5d]"
+                                  className="flex-1 rounded-full border border-[#a01722] bg-[#2a060a] px-3 py-2 text-xs text-white outline-none focus:border-[#ff4d5d]"
                                 />
                                 <span className="text-xs text-white/60">a</span>
                                 <input
                                   type="time"
                                   value={range.to ?? ""}
                                   onChange={(event) => updateAvailabilityRange(value, index, { to: event.target.value })}
-                                  className="flex-1 rounded-[16px] border border-white/15 bg-transparent px-4 py-2 text-sm outline-none focus:border-[#ff4d5d]"
+                                  className="flex-1 rounded-full border border-[#a01722] bg-[#2a060a] px-3 py-2 text-xs text-white outline-none focus:border-[#ff4d5d]"
                                 />
                                 {ranges.length > 1 && (
                                   <button
                                     type="button"
                                     onClick={() => removeAvailabilityRange(value, index)}
-                                    className="rounded-full border border-white/20 px-3 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/70 transition hover:text-white"
+                                    className="rounded-full border border-[#a01722] px-3 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/70 transition hover:text-white"
                                     aria-label="Eliminar tramo"
                                   >
-                                    −
+                                    -
                                   </button>
                                 )}
                               </div>
@@ -496,7 +498,7 @@ export const PerfilMiAnuncio = () => {
                                 type="button"
                                 onClick={() => addAvailabilityRange(value)}
                                 disabled={ranges.length >= 5}
-                                className="rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/70 transition hover:text-white disabled:opacity-50"
+                                className="rounded-full border border-[#a01722] px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/70 transition hover:text-white disabled:opacity-50"
                               >
                                 Agregar tramo
                               </button>
@@ -569,10 +571,11 @@ const CardHeader = ({ label, title }: { label: string; title: string }) => (
 );
 
 const FormLabel = ({ text }: { text: string }) => (
-  <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">{text}</p>
+  <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/70">{text}</p>
 );
 
-const INPUT_CLASS = "mt-2 w-full rounded-[16px] border border-[#a01722] bg-[#1a0508] px-4 py-3 text-sm text-white outline-none focus:border-[#ff4d5d]";
+const INPUT_CLASS =
+  "mt-2 w-full rounded-[14px] border border-[#a01722] bg-[#2a060a] px-4 py-2.5 text-sm text-white placeholder:text-white/40 outline-none focus:border-[#ff4d5d]";
 
 const Field = ({
   label,
@@ -608,16 +611,16 @@ const ServiceChips = ({
   onToggle: (label: string) => void;
   onRemove: (label: string) => void;
 }) => (
-  <div className="flex flex-wrap gap-3">
+  <div className="flex flex-wrap gap-2">
     {services.map((service) => (
       <button
         type="button"
         key={service.label}
         onClick={() => onToggle(service.label)}
-        className={`group flex items-center gap-2 rounded-full border px-4 py-2 text-sm transition ${
+        className={`group flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] uppercase tracking-[0.2em] transition ${
           service.active
-            ? "border-[#ff6f7c] bg-[#ff6f7c]/15 text-white"
-            : "border-white/15 text-white/70 hover:border-white/40 hover:text-white"
+            ? "border-[#ff6f7c] bg-[#9f0f1b] text-white shadow-[0_0_20px_rgba(255,85,95,0.2)]"
+            : "border-[#5a1a22] text-white/70 hover:border-[#ff6f7c]/60 hover:text-white"
         }`}
       >
         {service.label}
@@ -656,8 +659,8 @@ const TagBoard = ({
           onClick={() => onToggle(tag.id)}
           className={`rounded-full border px-3 py-1 text-xs font-semibold transition ${
             tag.active
-              ? "border-[#ff6f7c] bg-[#ff6f7c]/15 text-white"
-              : "border-white/15 text-white/70 hover:border-white/40 hover:text-white"
+              ? "border-[#ff6f7c] bg-[#9f0f1b] text-white"
+              : "border-[#4f141b] text-white/70 hover:border-[#ff6f7c]/60 hover:text-white"
           }`}
         >
           {tag.label}

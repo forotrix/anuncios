@@ -126,7 +126,6 @@ export const PerfilSuscripciones = () => {
               ))}
             </section>
           </div>
-        </div>
       </div>
     </div>
   );

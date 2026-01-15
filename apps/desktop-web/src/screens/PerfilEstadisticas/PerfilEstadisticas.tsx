@@ -142,7 +142,6 @@ export const PerfilEstadisticas = () => {
               <TopAdsTable ads={summary.topAds} loading={loading} />
             </section>
           </div>
-        </div>
       </div>
     </div>
   );
