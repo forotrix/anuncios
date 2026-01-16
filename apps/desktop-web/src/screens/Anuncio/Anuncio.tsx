@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { ContactChannels } from "@anuncios/shared";
 import type { Ad } from "@/lib/ads";
 import { SiteHeader } from "@/components/layout/SiteHeader";
@@ -51,6 +51,8 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
   const [commentsError, setCommentsError] = useState<string | null>(null);
   const [commentText, setCommentText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isAtTop, setIsAtTop] = useState(true);
+  const topSentinelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setActiveImageIndex(0);
@@ -59,6 +61,19 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
   useEffect(() => {
     logEvent("ad:view", { adId: ad.id, isMock });
   }, [ad.id, isMock]);
+
+  useEffect(() => {
+    const sentinel = topSentinelRef.current;
+    if (!sentinel) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsAtTop(entry.isIntersecting);
+      },
+      { threshold: 0 },
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, []);
 
   const canUseComments = isApiConfigured() && isValidObjectId(ad.id);
 
@@ -149,11 +164,16 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
   ];
 
   return (
-    <div className="bg-[#020305] text-white">
+    <div className="bg-black text-white">
       <div className="flex min-h-screen w-full flex-col">
         <SiteHeader profileType={ad.profileType ?? "chicas"} logoHref="/feed" />
 
-        <main className="w-full flex-1">
+        <main
+          className={`w-full flex-1 transition-[padding-top] duration-200 ease-out ${
+            isAtTop ? "pt-[72px] md:pt-[168px]" : ""
+          }`}
+        >
+          <div ref={topSentinelRef} aria-hidden="true" />
           <div className="mx-auto w-full max-w-[1180px] px-4 pb-16 pt-10 sm:px-6 lg:px-8">
             <div className="mb-8 flex flex-wrap items-center gap-3 text-sm text-white/70">
               <Link href="/feed" className="inline-flex items-center rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em]">

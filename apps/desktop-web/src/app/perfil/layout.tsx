@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { SiteHeader } from "@/components/layout/SiteHeader";
@@ -23,6 +23,8 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
   const pathname = usePathname();
   const router = useRouter();
   const { isAuthenticated, logout } = useAuth();
+  const [isAtTop, setIsAtTop] = useState(true);
+  const topSentinelRef = useRef<HTMLDivElement>(null);
 
   const isActive = (href: string) => {
     if (href === "/anuncio") {
@@ -37,15 +39,28 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
     }
   }, [isAuthenticated, router]);
 
+  useEffect(() => {
+    const sentinel = topSentinelRef.current;
+    if (!sentinel) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsAtTop(entry.isIntersecting);
+      },
+      { threshold: 0 },
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, []);
+
   if (!isAuthenticated) {
     return null;
   }
 
   return (
-    <div className="bg-collection-1-fondo-02 w-full overflow-x-auto">
+    <div className="bg-black w-full overflow-x-auto">
       <div className="mx-auto flex min-h-screen min-w-[1440px] flex-col" data-model-id="421:3496">
         <div className="relative flex-1">
-          <div className="absolute left-0 top-0 h-[4.73%] w-full bg-[#070e0f]" />
+          <div className="absolute left-0 top-0 h-[4.73%] w-full bg-black" />
 
           <SiteHeader logoHref="/feed" />
 
@@ -95,7 +110,14 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
             </button>
           </nav>
 
-          {children}
+          <main
+            className={`transition-[padding-top] duration-200 ease-out ${
+              isAtTop ? "pt-[72px] md:pt-[168px]" : ""
+            }`}
+          >
+            <div ref={topSentinelRef} aria-hidden="true" />
+            {children}
+          </main>
         </div>
 
         <SiteFooter />

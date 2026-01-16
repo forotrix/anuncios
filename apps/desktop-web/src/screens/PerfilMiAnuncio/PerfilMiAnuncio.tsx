@@ -186,8 +186,8 @@ export const PerfilMiAnuncio = () => {
   };
 
   return (
-    <div className="bg-[#020103] text-white">
-      <div className="mx-auto w-full max-w-[1200px] px-4 pb-20 pt-12 lg:px-8 lg:pl-[260px]">
+    <div className="bg-black text-white">
+      <div className="mx-auto w-full max-w-[1200px] px-4 pb-20 pt-8 lg:px-8 lg:pl-[260px]">
         <div className="flex flex-col gap-6">
           <div className="flex-1 space-y-6">
             <section className="flex flex-col items-center gap-4 text-center">

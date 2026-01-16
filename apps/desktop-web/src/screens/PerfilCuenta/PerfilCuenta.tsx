@@ -63,6 +63,7 @@ export const PerfilCuenta = () => {
   const [profileStatus, setProfileStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
   const [passwordStatus, setPasswordStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [activeSection, setActiveSection] = useState<"security" | "account" | "avatar" | "danger" | null>(null);
   const [isWidgetReady, setIsWidgetReady] = useState(false);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const widgetRef = useRef<CloudinaryUploadWidget | null>(null);
@@ -116,9 +117,11 @@ export const PerfilCuenta = () => {
   }, []);
 
   const canUploadAvatar = Boolean(accessToken && CLOUDINARY_CLOUD_NAME && CLOUDINARY_API_KEY && isWidgetReady);
-  const shellClass = "rounded-[26px] border border-white/10 bg-[#07080c]/80 p-6 shadow-[0_18px_60px_rgba(0,0,0,0.45)]";
+  const shellClass = "rounded-[30px] border border-[#ec4c51] bg-[#07080c]/80 p-6 shadow-[0_18px_60px_rgba(0,0,0,0.45)]";
   const neutralButtonClass =
     "flex w-full items-center justify-between rounded-full border border-white/25 bg-[#2a2c33] px-6 py-3 text-sm font-semibold text-white/85 transition hover:text-white";
+  const compactButtonClass =
+    "flex w-full items-center justify-between rounded-full border border-white/20 bg-[#2a2c33] px-5 py-2.5 text-sm font-semibold text-white/85 transition hover:text-white";
   const destructiveButtonClass =
     "flex w-full items-center justify-between rounded-full bg-[#a30009] px-6 py-3 text-sm font-semibold text-white shadow-[0_10px_30px_rgba(163,0,9,0.5)] transition hover:bg-[#c00010]";
 
@@ -253,111 +256,30 @@ export const PerfilCuenta = () => {
   };
 
   return (
-    <div className="bg-[#020305] text-white">
-      <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-10 px-4 pb-24 pt-16 sm:px-6 lg:px-10 lg:pl-[260px]">
-        <header className="space-y-3">
-          <p className="text-xs uppercase tracking-[0.4em] text-white/60">Configuracion</p>
-          <h1 className="font-h1-2-0 text-[length:var(--h1-2-0-font-size)] leading-[var(--h1-2-0-line-height)]">
-            Datos de la cuenta
-          </h1>
-          <p className="max-w-3xl text-white/70">
-            Mantiene al dia tu informacion personal, contrasenas y avatar para navegar seguro en el panel.
-          </p>
-          {errorMessage && (
-            <p className="rounded-2xl border border-[#ff6161]/30 bg-[#360508]/80 px-4 py-3 text-sm text-[#ffb3b3]">
-              {errorMessage}
-            </p>
-          )}
-        </header>
-
-        <div className="space-y-8">
-          <section className={`${shellClass} text-center`}>
-            <div className="mx-auto flex h-40 w-40 items-center justify-center overflow-hidden rounded-full border border-white/15 bg-[#52040a]/60">
-              {profile?.avatarUrl ? (
-                <img src={profile.avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
-              ) : (
-                <span className="text-sm text-white/60">Sin avatar</span>
-              )}
-            </div>
-            <p className="mt-4 text-sm text-white/70">Este avatar se usa en tu perfil privado.</p>
-            <button
-              type="button"
-              onClick={openAvatarWidget}
-              disabled={!canUploadAvatar || isUploadingAvatar}
-              className="mt-4 w-full rounded-full border border-white/30 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/80 transition hover:text-white disabled:cursor-not-allowed disabled:opacity-50">
-              {isUploadingAvatar ? "Subiendo..." : "Cambiar avatar"}
-            </button>
-          </section>
-            <section className={shellClass}>
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <h2 className="text-lg font-semibold">Contrasena y seguridad</h2>
-                  <p className="text-sm text-white/60">Actualiza tu contrasena y revisa sesiones activas.</p>
-                </div>
-                {passwordStatus === "success" && (
-                  <span className="text-xs uppercase tracking-[0.3em] text-emerald-300">Actualizada</span>
-                )}
-                {passwordStatus === "error" && (
-                  <span className="text-xs uppercase tracking-[0.3em] text-rojo-pasion200">Error</span>
+    <div className="bg-black text-white">
+      <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-10 px-4 pb-24 pt-8 sm:px-6 lg:px-10 lg:pl-[260px]">
+        <section className={shellClass}>
+          <div className="space-y-6">
+            <div className="rounded-2xl border border-white/10 bg-black/30 p-5 text-center">
+              <div className="mx-auto flex h-40 w-40 items-center justify-center overflow-hidden rounded-full border border-white/15 bg-[#52040a]/60">
+                {profile?.avatarUrl ? (
+                  <img src={profile.avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
+                ) : (
+                  <span className="text-sm text-white/60">Sin avatar</span>
                 )}
               </div>
-
-              <form
-                className="mt-6 space-y-4"
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  void handlePasswordSubmit();
-                }}
+              <p className="mt-4 text-sm text-white/70">Este avatar se usa en tu perfil privado.</p>
+              <button
+                type="button"
+                onClick={openAvatarWidget}
+                disabled={!canUploadAvatar || isUploadingAvatar}
+                className="mt-4 w-full rounded-full border border-white/30 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/80 transition hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <div className="grid gap-4 md:grid-cols-3">
-                  <label className="flex flex-col gap-2 text-sm text-white/70">
-                    Actual
-                    <input
-                      type="password"
-                      value={passwordForm.current}
-                      onChange={(event) => setPasswordForm((prev) => ({ ...prev, current: event.target.value }))}
-                      className="rounded-2xl border border-white/20 bg-[#111219]/80 px-4 py-3 text-white outline-none focus:border-rojo-cereza400/60"
-                      disabled={!accessToken}
-                    />
-                  </label>
-                  <label className="flex flex-col gap-2 text-sm text-white/70">
-                    Nueva
-                    <input
-                      type="password"
-                      value={passwordForm.next}
-                      onChange={(event) => setPasswordForm((prev) => ({ ...prev, next: event.target.value }))}
-                      className="rounded-2xl border border-white/20 bg-[#111219]/80 px-4 py-3 text-white outline-none focus:border-rojo-cereza400/60"
-                      disabled={!accessToken}
-                    />
-                  </label>
-                  <label className="flex flex-col gap-2 text-sm text-white/70">
-                    Confirmar
-                    <input
-                      type="password"
-                      value={passwordForm.confirm}
-                      onChange={(event) => setPasswordForm((prev) => ({ ...prev, confirm: event.target.value }))}
-                      className="rounded-2xl border border-white/20 bg-[#111219]/80 px-4 py-3 text-white outline-none focus:border-rojo-cereza400/60"
-                      disabled={!accessToken}
-                    />
-                  </label>
-                </div>
-                <button
-                  type="submit"
-                  disabled={!accessToken || passwordStatus === "saving"}
-                  className="rounded-full border border-white/20 px-6 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-white/80 transition hover:text-white disabled:opacity-50">
-                  {passwordStatus === "saving" ? "Actualizando..." : "Actualizar contrasena"}
-                </button>
-              </form>
+                {isUploadingAvatar ? "Subiendo..." : "Cambiar avatar"}
+              </button>
+            </div>
 
-              <div className="mt-6 space-y-3">
-                <button type="button" className={neutralButtonClass}>
-                  <span>Sesiones activas</span>
-                  <span className="text-xl leading-none">›</span>
-                </button>
-              </div>
-            </section>
-
-            <section className={shellClass}>
+            <div className="rounded-2xl border border-white/10 bg-black/30 p-5">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <h2 className="text-lg font-semibold">Cuenta</h2>
@@ -402,34 +324,132 @@ export const PerfilCuenta = () => {
                   <button
                     type="submit"
                     disabled={!accessToken || profileStatus === "saving" || loading}
-                    className="rounded-full bg-brand-gradient px-6 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-white shadow-shadow-g disabled:opacity-50">
+                    className="rounded-full bg-brand-gradient px-6 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-white shadow-shadow-g disabled:opacity-50"
+                  >
                     {profileStatus === "saving" ? "Guardando..." : "Guardar cambios"}
                   </button>
                 </div>
               </form>
-            </section>
+            </div>
 
-            <section className={`${shellClass} border border-[#ff4c4c]/50`}>
-              <div className="space-y-3">
-                <h2 className="text-lg font-semibold">Acciones criticas</h2>
-                <p className="text-sm text-white/65">Si deseas cerrar sesion o eliminar definitivamente tu cuenta.</p>
-                <button type="button" className={neutralButtonClass}>
-                  <span>Cerrar sesion</span>
-                  <span className="text-xl leading-none">›</span>
-                </button>
-                <button type="button" className={destructiveButtonClass}>
-                  <span>Eliminar cuenta</span>
-                  <span className="text-xl leading-none">›</span>
-                </button>
+            <button
+              type="button"
+              onClick={() => setActiveSection((prev) => (prev === "security" ? null : "security"))}
+              className={compactButtonClass}
+            >
+              <span>Contrasena y seguridad</span>
+              <span className="text-xl leading-none">&gt;</span>
+            </button>
+            {activeSection === "security" && (
+              <div className="rounded-2xl border border-white/10 bg-black/30 p-5">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <h2 className="text-lg font-semibold">Contrasena y seguridad</h2>
+                    <p className="text-sm text-white/60">Actualiza tu contrasena y revisa sesiones activas.</p>
+                  </div>
+                  {passwordStatus === "success" && (
+                    <span className="text-xs uppercase tracking-[0.3em] text-emerald-300">Actualizada</span>
+                  )}
+                  {passwordStatus === "error" && (
+                    <span className="text-xs uppercase tracking-[0.3em] text-rojo-pasion200">Error</span>
+                  )}
+                </div>
+
+                <form
+                  className="mt-6 space-y-4"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    void handlePasswordSubmit();
+                  }}
+                >
+                  <div className="grid gap-4 md:grid-cols-3">
+                    <label className="flex flex-col gap-2 text-sm text-white/70">
+                      Actual
+                      <input
+                        type="password"
+                        value={passwordForm.current}
+                        onChange={(event) => setPasswordForm((prev) => ({ ...prev, current: event.target.value }))}
+                        className="rounded-2xl border border-white/20 bg-[#111219]/80 px-4 py-3 text-white outline-none focus:border-rojo-cereza400/60"
+                        disabled={!accessToken}
+                      />
+                    </label>
+                    <label className="flex flex-col gap-2 text-sm text-white/70">
+                      Nueva
+                      <input
+                        type="password"
+                        value={passwordForm.next}
+                        onChange={(event) => setPasswordForm((prev) => ({ ...prev, next: event.target.value }))}
+                        className="rounded-2xl border border-white/20 bg-[#111219]/80 px-4 py-3 text-white outline-none focus:border-rojo-cereza400/60"
+                        disabled={!accessToken}
+                      />
+                    </label>
+                    <label className="flex flex-col gap-2 text-sm text-white/70">
+                      Confirmar
+                      <input
+                        type="password"
+                        value={passwordForm.confirm}
+                        onChange={(event) => setPasswordForm((prev) => ({ ...prev, confirm: event.target.value }))}
+                        className="rounded-2xl border border-white/20 bg-[#111219]/80 px-4 py-3 text-white outline-none focus:border-rojo-cereza400/60"
+                        disabled={!accessToken}
+                      />
+                    </label>
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={!accessToken || passwordStatus === "saving"}
+                    className="rounded-full border border-white/20 px-6 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-white/80 transition hover:text-white disabled:opacity-50"
+                  >
+                    {passwordStatus === "saving" ? "Actualizando..." : "Actualizar contrasena"}
+                  </button>
+                </form>
+
+                <div className="mt-6 space-y-3">
+                  <button type="button" className={neutralButtonClass}>
+                    <span>Sesiones activas</span>
+                    <span className="text-xl leading-none">&gt;</span>
+                  </button>
+                </div>
               </div>
-            </section>
+            )}
+
+            <button
+              type="button"
+              onClick={() => setActiveSection((prev) => (prev === "danger" ? null : "danger"))}
+              className={compactButtonClass}
+            >
+              <span>Cerrar y eliminar</span>
+              <span className="text-xl leading-none">&gt;</span>
+            </button>
+            {activeSection === "danger" && (
+              <div className="rounded-2xl border border-[#ff4c4c]/50 bg-black/30 p-5">
+                <div className="space-y-3">
+                  <h2 className="text-lg font-semibold">Cerrar y eliminar</h2>
+                  <p className="text-sm text-white/65">Si deseas cerrar sesion o eliminar definitivamente tu cuenta.</p>
+                  <button type="button" className={neutralButtonClass}>
+                    <span>Cerrar sesion</span>
+                    <span className="text-xl leading-none">&gt;</span>
+                  </button>
+                  <button type="button" className={destructiveButtonClass}>
+                    <span>Eliminar cuenta</span>
+                    <span className="text-xl leading-none">&gt;</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {errorMessage && (
+              <p className="rounded-2xl border border-[#ff6161]/30 bg-[#360508]/80 px-4 py-3 text-sm text-[#ffb3b3]">
+                {errorMessage}
+              </p>
+            )}
 
             {loading && (
               <div className="rounded-2xl border border-white/10 bg-[#120208]/80 px-4 py-3 text-sm text-white/60">
                 Cargando datos de la cuenta...
               </div>
             )}
-        </div>
+          </div>
+        </section>
       </div>
     </div>
   );

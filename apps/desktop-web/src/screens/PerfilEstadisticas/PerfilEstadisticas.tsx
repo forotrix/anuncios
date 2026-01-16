@@ -20,6 +20,77 @@ const EMPTY_SUMMARY: AnalyticsSummary = {
   topAds: [],
 };
 
+const buildMockSummary = (daysCount: number): AnalyticsSummary => {
+  const today = new Date();
+  const days = Array.from({ length: daysCount }).map((_, index) => {
+    const date = new Date(today);
+    date.setDate(today.getDate() - ((daysCount - 1) - index));
+    return date;
+  });
+
+  const pseudoRandom = (seed: number) => {
+    const value = Math.sin(seed) * 10000;
+    return value - Math.floor(value);
+  };
+
+  const viewSeries = days.map((date, index) => {
+    const base = 120 + index * 12;
+    const jitter = pseudoRandom((index + 1) * 37.7 + daysCount * 11.3);
+    const factor = 0.9 + jitter * 0.2;
+    return {
+      date: date.toISOString().slice(0, 10),
+      value: Math.max(20, Math.round(base * factor)),
+    };
+  });
+
+  const contactSeries = days.map((date, index) => {
+    const base = 10 + index * 2;
+    const jitter = pseudoRandom((index + 1) * 19.1 + daysCount * 7.4);
+    const factor = 0.9 + jitter * 0.2;
+    return {
+      date: date.toISOString().slice(0, 10),
+      value: Math.max(2, Math.round(base * factor)),
+    };
+  });
+
+  const totalViews = viewSeries.reduce((acc, point) => acc + point.value, 0);
+  const totalContacts = contactSeries.reduce((acc, point) => acc + point.value, 0);
+  const scale = Math.max(1, daysCount / 7);
+  const channelJitter = (seed: number) => 0.9 + pseudoRandom(seed) * 0.2;
+
+  return {
+    totalViews,
+    totalContacts,
+    viewSeries,
+    contactSeries,
+    contactsByChannel: {
+      whatsapp: Math.max(5, Math.round(54 * scale * channelJitter(daysCount * 2.3))),
+      telegram: Math.max(3, Math.round(23 * scale * channelJitter(daysCount * 3.1))),
+      phone: Math.max(2, Math.round(17 * scale * channelJitter(daysCount * 4.2))),
+    },
+    topAds: [
+      {
+        adId: "mock-1",
+        title: "Masajes relajantes en Barcelona",
+        views: Math.round(450 * scale * channelJitter(daysCount * 1.2)),
+        contacts: Math.round(38 * scale * channelJitter(daysCount * 1.8)),
+      },
+      {
+        adId: "mock-2",
+        title: "Experiencias premium en Madrid",
+        views: Math.round(380 * scale * channelJitter(daysCount * 2.6)),
+        contacts: Math.round(31 * scale * channelJitter(daysCount * 2.9)),
+      },
+      {
+        adId: "mock-3",
+        title: "Spa y bienestar Valencia",
+        views: Math.round(220 * scale * channelJitter(daysCount * 3.3)),
+        contacts: Math.round(18 * scale * channelJitter(daysCount * 3.7)),
+      },
+    ],
+  };
+};
+
 export const PerfilEstadisticas = () => {
   const { accessToken } = useAuth();
   const [range, setRange] = useState(RANGE_OPTIONS[0]);
@@ -40,6 +111,12 @@ export const PerfilEstadisticas = () => {
   });
 
   const summary = data ?? EMPTY_SUMMARY;
+  const isSummaryEmpty =
+    summary.viewSeries.length === 0 &&
+    summary.contactSeries.length === 0 &&
+    Object.keys(summary.contactsByChannel).length === 0 &&
+    summary.topAds.length === 0;
+  const effectiveSummary = isSummaryEmpty ? buildMockSummary(range.days) : summary;
   const isAuthenticated = Boolean(accessToken);
 
   const handleRangeChange = (option: (typeof RANGE_OPTIONS)[number]) => {
@@ -48,23 +125,10 @@ export const PerfilEstadisticas = () => {
   };
 
   return (
-    <div className="bg-[#020305] text-white">
-      <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-10 px-4 pb-24 pt-16 sm:px-6 lg:px-10 lg:pl-[260px]">
-        <header className="space-y-4">
-          <div className="flex flex-wrap items-center gap-4 text-xs uppercase tracking-[0.35em] text-white/60">
-            <span>Panel privado</span>
-            <span className="hidden h-1 w-1 rounded-full bg-white/40 sm:inline-flex" />
-            <span className="text-white/40">Estadisticas</span>
-          </div>
-          <div className="flex flex-wrap items-center justify-between gap-6">
-            <div className="space-y-2">
-              <h1 className="font-h1-2-0 text-[length:var(--h1-2-0-font-size)] leading-[var(--h1-2-0-line-height)]">
-                Estadisticas de rendimiento
-              </h1>
-              <p className="max-w-3xl text-white/70">
-                Monitorea las visualizaciones, contactos generados y anuncios con mejor desempeno para optimizar tus campanas.
-              </p>
-            </div>
+    <div className="bg-black text-white">
+      <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-10 px-4 pb-24 pt-8 sm:px-6 lg:px-10 lg:pl-[260px]">
+        <section className="rounded-[32px] border border-[#ec4c51] bg-[#0b0d10]/80 px-6 py-6 shadow-[0_25px_60px_rgba(0,0,0,0.35)]">
+          <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex flex-wrap items-center gap-3">
               {RANGE_OPTIONS.map((option) => (
                 <button
@@ -87,61 +151,51 @@ export const PerfilEstadisticas = () => {
                 Actualizar
               </button>
             </div>
+            {loading && <span className="text-xs text-white/60">Actualizando...</span>}
           </div>
+
           {!isAuthenticated && (
-            <p className="rounded-lg bg-[#2d070b]/70 px-4 py-2 text-sm text-[#ffb3b3]">
+            <p className="mt-4 rounded-lg bg-[#2d070b]/70 px-4 py-2 text-sm text-[#ffb3b3]">
               Inicia sesion para ver tus metricas reales.
             </p>
           )}
           {error && (
-            <p className="rounded-lg bg-[#2d070b] px-4 py-2 text-sm text-[#ffb3b3]">
+            <p className="mt-4 rounded-lg bg-[#2d070b] px-4 py-2 text-sm text-[#ffb3b3]">
               No se pudieron cargar las estadisticas. Intenta nuevamente.
             </p>
           )}
-        </header>
 
-        <div className="space-y-8">
-            <section className="rounded-[32px] border border-white/10 bg-panel-gradient px-6 py-6 shadow-[0_25px_60px_rgba(0,0,0,0.35)]">
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.35em] text-white/60">Resumen rapido</p>
-                  <h2 className="mt-2 text-xl font-semibold">Ultimos {range.days} dias</h2>
-                  <p className="text-sm text-white/60">Estos son los indicadores principales del periodo seleccionado.</p>
-                </div>
-                {loading && <span className="text-xs text-white/60">Actualizando...</span>}
-              </div>
-              <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <MetricCard title="Visualizaciones" value={summary.totalViews} subtitle={`Ultimos ${range.days} dias`} />
-                <MetricCard title="Contactos" value={summary.totalContacts} subtitle="Clicks a canales" />
-                <MetricCard
-                  title="Contactos/100 visitas"
-                  value={summary.totalViews ? ((summary.totalContacts / summary.totalViews) * 100).toFixed(1) : "0.0"}
-                  subtitle="Tasa de conversion"
-                />
-                <MetricCard title="Anuncios destacados" value={summary.topAds.length} subtitle="Con mejor rendimiento" />
-              </div>
-            </section>
-
-            <section className="grid gap-6 lg:grid-cols-[2fr,1fr]">
-              <ChartCard
-                title="Tendencia de visualizaciones"
-                runs={summary.viewSeries}
-                contacts={summary.contactSeries}
-                loading={loading}
-              />
-              <ContactsCard contactsByChannel={summary.contactsByChannel} loading={loading} />
-            </section>
-
-            <section className="rounded-[32px] border border-white/10 bg-panel-gradient px-6 py-6 shadow-[0_25px_60px_rgba(0,0,0,0.35)]">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-lg font-semibold">Top anuncios</h2>
-                  <p className="text-sm text-white/60">Ordenados por contactos generados en el periodo seleccionado.</p>
-                </div>
-              </div>
-              <TopAdsTable ads={summary.topAds} loading={loading} />
-            </section>
+          <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <MetricCard title="Visualizaciones" value={effectiveSummary.totalViews} subtitle={`Ultimos ${range.days} dias`} />
+            <MetricCard title="Contactos" value={effectiveSummary.totalContacts} subtitle="Clicks a canales" />
+            <MetricCard
+              title="Contactos/100 visitas"
+              value={effectiveSummary.totalViews ? ((effectiveSummary.totalContacts / effectiveSummary.totalViews) * 100).toFixed(1) : "0.0"}
+              subtitle="Tasa de conversion"
+            />
+            <MetricCard title="Anuncios destacados" value={effectiveSummary.topAds.length} subtitle="Con mejor rendimiento" />
           </div>
+
+          <div className="mt-8 grid gap-6 lg:grid-cols-[2fr,1fr]">
+            <ChartCard
+              title="Tendencia de visualizaciones"
+              runs={effectiveSummary.viewSeries}
+              contacts={effectiveSummary.contactSeries}
+              loading={loading}
+            />
+            <ContactsCard contactsByChannel={effectiveSummary.contactsByChannel} loading={loading} />
+          </div>
+
+          <div className="mt-8">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-semibold">Top anuncios</h2>
+                <p className="text-sm text-white/60">Ordenados por contactos generados en el periodo seleccionado.</p>
+              </div>
+            </div>
+            <TopAdsTable ads={effectiveSummary.topAds} loading={loading} />
+          </div>
+        </section>
       </div>
     </div>
   );
@@ -156,7 +210,7 @@ const MetricCard = ({
   value: string | number;
   subtitle?: string;
 }) => (
-  <div className="rounded-[28px] border border-white/10 bg-[#12040a]/80 px-5 py-4 shadow-[0_25px_60px_rgba(0,0,0,0.35)]">
+  <div className="rounded-[24px] border border-[#2b0b12]/50 bg-[#0e1014]/80 px-5 py-4 shadow-[0_20px_50px_rgba(0,0,0,0.35)]">
     <p className="text-xs uppercase tracking-[0.3em] text-white/60">{title}</p>
     <p className="mt-2 text-3xl font-semibold text-white">{value}</p>
     {subtitle && <p className="text-xs text-white/60">{subtitle}</p>}
@@ -180,7 +234,7 @@ const ChartCard = ({
   }, [runs, contacts]);
 
   return (
-    <div className="rounded-[32px] border border-white/10 bg-[#0d0508]/80 px-6 py-6 shadow-[0_25px_60px_rgba(0,0,0,0.35)]">
+    <div className="rounded-[24px] border border-[#2b0b12]/50 bg-[#0e1014]/80 px-6 py-6 shadow-[0_20px_50px_rgba(0,0,0,0.35)]">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">{title}</h2>
         {loading && <span className="text-xs text-white/60">Actualizando...</span>}
@@ -231,7 +285,7 @@ const ContactsCard = ({
   const total = Object.values(contactsByChannel).reduce((acc, value) => acc + value, 0);
 
   return (
-    <div className="rounded-[32px] border border-white/10 bg-[#12040a]/80 px-6 py-6 shadow-[0_25px_60px_rgba(0,0,0,0.35)]">
+    <div className="rounded-[24px] border border-[#2b0b12]/50 bg-[#0e1014]/80 px-6 py-6 shadow-[0_20px_50px_rgba(0,0,0,0.35)]">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">Canales de contacto</h2>
         {loading && <span className="text-xs text-white/60">Actualizando...</span>}
