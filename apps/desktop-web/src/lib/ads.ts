@@ -243,54 +243,36 @@ export async function fetchAds(filters?: AdsQuery): Promise<AdsResult> {
   }
 
   const query = buildQueryString(filters);
-
-  try {
-    const response = await fetch(`${API_BASE_URL}/ads${query}`, {
-      cache: "no-store",
-      headers: { Accept: "application/json" },
-    });
-    if (!response.ok) throw new Error(`Respuesta ${response.status}`);
-    const payload = await response.json();
-    const { items, total, page, pages, limit, cities } = parseBackendResponse(payload);
-    const mappedAds = items.map(mapBackendAd);
-    const citySummary = cities.length ? cities : buildCitySummaryFromAds(mappedAds);
-    return { ads: mappedAds, isMock: false, total, page, pages, limit, citySummary };
-  } catch (error) {
-    console.warn("[desktop-web] No se pudo contactar con la API, usando mocks", error);
-    const citySummary = buildCitySummaryFromAds(FALLBACK_ADS);
-    return {
-      ads: FALLBACK_ADS,
-      isMock: true,
-      total: FALLBACK_ADS.length,
-      page: 1,
-      pages: 1,
-      limit: filters?.limit ?? 9,
-      citySummary,
-    };
-  }
+  const response = await fetch(`${API_BASE_URL}/ads${query}`, {
+    cache: "no-store",
+    headers: { Accept: "application/json" },
+  });
+  if (!response.ok) throw new Error(`Respuesta ${response.status}`);
+  const payload = await response.json();
+  const { items, total, page, pages, limit, cities } = parseBackendResponse(payload);
+  const mappedAds = items.map(mapBackendAd);
+  const citySummary = cities.length ? cities : buildCitySummaryFromAds(mappedAds);
+  return { ads: mappedAds, isMock: false, total, page, pages, limit, citySummary };
 }
+
 
 export async function fetchFiltersCatalog(): Promise<FiltersCatalog> {
   if (!API_BASE_URL) {
     return { services: SERVICE_FILTER_OPTIONS, age: AGE_FILTER_CONFIG };
   }
 
-  try {
-    const response = await fetch(`${API_BASE_URL}/ads/filters`, {
-      cache: "no-store",
-      headers: { Accept: "application/json" },
-    });
-    if (!response.ok) throw new Error(`Respuesta ${response.status}`);
-    const payload = (await response.json()) as Partial<FiltersCatalog>;
-    return {
-      services: payload.services ?? SERVICE_FILTER_OPTIONS,
-      age: payload.age ?? AGE_FILTER_CONFIG,
-    };
-  } catch (error) {
-    console.warn("[desktop-web] No se pudo obtener el catálogo de filtros, usando mocks", error);
-    return { services: SERVICE_FILTER_OPTIONS, age: AGE_FILTER_CONFIG };
-  }
+  const response = await fetch(`${API_BASE_URL}/ads/filters`, {
+    cache: "no-store",
+    headers: { Accept: "application/json" },
+  });
+  if (!response.ok) throw new Error(`Respuesta ${response.status}`);
+  const payload = (await response.json()) as Partial<FiltersCatalog>;
+  return {
+    services: payload.services ?? SERVICE_FILTER_OPTIONS,
+    age: payload.age ?? AGE_FILTER_CONFIG,
+  };
 }
+
 
 
 
@@ -336,20 +318,13 @@ export async function fetchAdById(id: string): Promise<{ ad: Ad; isMock: boolean
     return { ad: fallback, isMock: true };
   }
 
-  try {
-    const response = await fetch(`${API_BASE_URL}/ads/${id}`, {
-      cache: "no-store",
-      headers: { Accept: "application/json" },
-    });
-    if (!response.ok) {
-      throw new Error(`Respuesta ${response.status}`);
-    }
-    const payload = (await response.json()) as BackendAd;
-    return { ad: mapBackendAd(payload), isMock: false };
-  } catch (error) {
-    console.warn("[desktop-web] No se pudo obtener el anuncio, usando mocks", error);
-    const fallback = FALLBACK_ADS.find((ad) => ad.id === id) ?? FALLBACK_ADS[0];
-    if (!fallback) throw error;
-    return { ad: fallback, isMock: true };
+  const response = await fetch(`${API_BASE_URL}/ads/${id}`, {
+    cache: "no-store",
+    headers: { Accept: "application/json" },
+  });
+  if (!response.ok) {
+    throw new Error(`Respuesta ${response.status}`);
   }
+  const payload = (await response.json()) as BackendAd;
+  return { ad: mapBackendAd(payload), isMock: false };
 }
