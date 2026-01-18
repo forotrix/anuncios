@@ -16,10 +16,54 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ForoTrix Desktop",
+  title: "ForoTrix",
   description:
-    "Stack unificado en Next.js para las pantallas de Anima reutilizando componentes compartidos.",
-  metadataBase: new URL("https://forotrix.local"),
+    "ForoTrix conecta perfiles verificados y anuncios premium con herramientas seguras para descubrir, contactar y gestionar experiencias.",
+  metadataBase: new URL("https://forotrix.com"),
+  applicationName: "ForoTrix",
+  creator: "ForoTrix",
+  publisher: "ForoTrix",
+  keywords: [
+    "forotrix",
+    "anuncios premium",
+    "perfiles verificados",
+    "companionship",
+    "experiencias vip",
+    "escorts",
+    "citas privadas",
+  ],
+  alternates: {
+    canonical: "/",
+    languages: {
+      "es-ES": "/",
+    },
+  },
+  openGraph: {
+    title: "ForoTrix",
+    description:
+      "ForoTrix conecta perfiles verificados y anuncios premium con herramientas seguras para descubrir, contactar y gestionar experiencias.",
+    url: "https://forotrix.com",
+    siteName: "ForoTrix",
+    locale: "es_ES",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ForoTrix",
+    description:
+      "ForoTrix conecta perfiles verificados y anuncios premium con herramientas seguras para descubrir, contactar y gestionar experiencias.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-snippet": -1,
+      "max-image-preview": "large",
+      "max-video-preview": -1,
+    },
+  },
 };
 
 export default function RootLayout({
