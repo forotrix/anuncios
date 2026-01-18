@@ -144,6 +144,10 @@ export const PerfilMiAnuncio = () => {
   const syncAvatarToProfile = async (nextAvatar: AvatarMedia | null) => {
     if (!accessToken) return;
     setAvatarError(null);
+    updateUser({
+      avatarUrl: nextAvatar?.url ?? null,
+      avatarPublicId: nextAvatar?.publicId ?? null,
+    });
     try {
       const updated = await profileService.updateProfile(accessToken, { avatar: nextAvatar });
       updateUser({
@@ -225,7 +229,11 @@ export const PerfilMiAnuncio = () => {
               <h1 className="text-2xl font-semibold text-white">{headline}</h1>
               <div className="flex flex-col items-center gap-3">
                 <AvatarSection
-                  avatar={draft.avatar}
+                  avatar={
+                    user?.avatarUrl && user?.avatarPublicId
+                      ? { url: user.avatarUrl, publicId: user.avatarPublicId }
+                      : null
+                  }
                   isReady={avatarUploader.isReady}
                   isUploading={avatarUploader.isUploading}
                   error={avatarError ?? avatarUploader.error}
