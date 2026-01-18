@@ -124,4 +124,14 @@ router.patch('/password', requireAuth(), async (req, res, next) => {
   }
 });
 
+router.delete('/account', requireAuth(), async (req, res, next) => {
+  try {
+    const { user } = req as AuthenticatedRequest;
+    await service.deleteAccount(user.sub);
+    res.status(204).end();
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default router;

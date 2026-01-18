@@ -91,4 +91,11 @@ export const profileService = {
     }
     await authorizedJsonRequest<undefined>("/auth/password", token, "PATCH", payload);
   },
+  async deleteAccount(token: string | null | undefined): Promise<void> {
+    ensureAccessToken(token);
+    if (!isApiConfigured()) {
+      return;
+    }
+    await authorizedRequest<undefined>("/auth/account", token, "DELETE");
+  },
 };

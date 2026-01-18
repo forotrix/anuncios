@@ -55,7 +55,7 @@ const CLOUDINARY_MAX_FILE_SIZE =
 const isBrowser = () => typeof window !== "undefined";
 
 export const PerfilCuenta = () => {
-  const { user, accessToken, updateUser } = useAuth();
+  const { user, accessToken, updateUser, logout } = useAuth();
   const [profile, setProfile] = useState<AccountProfile | null>(null);
   const [profileForm, setProfileForm] = useState({ email: user?.email ?? "", name: user?.name ?? "" });
   const [passwordForm, setPasswordForm] = useState({ current: "", next: "", confirm: "" });
@@ -187,6 +187,19 @@ export const PerfilCuenta = () => {
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : "No se pudo actualizar la contrasena.");
       setPasswordStatus("error");
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!accessToken) return;
+    const confirmed = window.confirm("Esta accion eliminara tu cuenta y anuncios. Deseas continuar?");
+    if (!confirmed) return;
+    setErrorMessage(null);
+    try {
+      await profileService.deleteAccount(accessToken);
+      logout();
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "No se pudo eliminar la cuenta.");
     }
   };
 
@@ -425,11 +438,11 @@ export const PerfilCuenta = () => {
                 <div className="space-y-3">
                   <h2 className="text-lg font-semibold">Cerrar y eliminar</h2>
                   <p className="text-sm text-white/65">Si deseas cerrar sesion o eliminar definitivamente tu cuenta.</p>
-                  <button type="button" className={neutralButtonClass}>
+                  <button type="button" className={neutralButtonClass} onClick={logout}>
                     <span>Cerrar sesion</span>
                     <span className="text-xl leading-none">&gt;</span>
                   </button>
-                  <button type="button" className={destructiveButtonClass}>
+                  <button type="button" className={destructiveButtonClass} onClick={handleDeleteAccount}>
                     <span>Eliminar cuenta</span>
                     <span className="text-xl leading-none">&gt;</span>
                   </button>

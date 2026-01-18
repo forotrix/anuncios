@@ -44,6 +44,10 @@ export const SiteHeader = ({
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const handleRegisterClick = onRegisterClick ?? openRegister;
+  const isProviderRole = user?.role === "provider" || user?.role === "agency";
+  const handleProviderRequired = () => {
+    window.alert("Solo disponible para anunciantes (provider/agency).");
+  };
 
   useEffect(() => {
     setIsMobileMenuOpen(false);
@@ -112,14 +116,22 @@ export const SiteHeader = ({
               buttonStyleDivClassName="!mr-[-20.50px] !mt-[-3.00px] !tracking-[var(--h4-letter-spacing)] !ml-[-20.50px] !text-[length:var(--h4-font-size)] ![font-style:var(--h4-font-style)] ![white-space:unset] !font-[number:var(--h4-font-weight)] !font-h4 !leading-[var(--h4-line-height)]"
               buttonStyleStyleFilledIconNoClassName="!self-stretch !flex-[0_0_auto] !px-[70px] !py-3.5 !flex !left-[unset] !w-full !top-[unset] !rounded-[30px] !bg-black"
               buttonStyleText="Anuncia"
-              className="!absolute !left-[1012px] !top-1/2 !hidden md:!block !-translate-y-1/2 !p-[3px] !gap-0 !items-stretch !rounded-[32px] !bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)]"
+              className={`!absolute !left-[1012px] !top-1/2 !hidden md:!block !-translate-y-1/2 !p-[3px] !gap-0 !items-stretch !rounded-[32px] ${
+                isAuthenticated && !isProviderRole
+                  ? "!bg-[#2a0b0e] !opacity-60 !cursor-not-allowed"
+                  : "!bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)]"
+              }`}
               propiedad1="predeterminada"
-              {...(isAuthenticated ? { to: "/perfil/mi-anuncio" } : { onClick: handleRegisterClick })}
+              {...(isAuthenticated
+                ? isProviderRole
+                  ? { to: "/perfil/mi-anuncio" }
+                  : { onClick: handleProviderRequired }
+                : { onClick: handleRegisterClick })}
             />
 
             {isAuthenticated ? (
               <Link
-                href="/perfil/mi-anuncio"
+                href={isProviderRole ? "/perfil/mi-anuncio" : "/perfil/cuenta"}
                 className="absolute left-[1217px] top-1/2 hidden h-[66px] w-[273px] -translate-y-1/2 md:block"
                 aria-label="Mi cuenta"
               >
@@ -196,13 +208,26 @@ export const SiteHeader = ({
 
             <div className="mt-auto space-y-3">
               {isAuthenticated ? (
-                <Link
-                  href="/perfil/mi-anuncio"
-                  className="inline-flex w-full items-center justify-center rounded-full border border-white/20 bg-white/5 px-6 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-white/85 transition hover:border-white/40 hover:text-white"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Anuncia
-                </Link>
+                isProviderRole ? (
+                  <Link
+                    href="/perfil/mi-anuncio"
+                    className="inline-flex w-full items-center justify-center rounded-full border border-white/20 bg-white/5 px-6 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-white/85 transition hover:border-white/40 hover:text-white"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Anuncia
+                  </Link>
+                ) : (
+                  <button
+                    type="button"
+                    className="inline-flex w-full cursor-not-allowed items-center justify-center rounded-full border border-white/10 bg-[#1a0a0b] px-6 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-white/50"
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      handleProviderRequired();
+                    }}
+                  >
+                    Anuncia
+                  </button>
+                )
               ) : onRegisterClick ? (
                 <button
                   type="button"
@@ -229,7 +254,7 @@ export const SiteHeader = ({
 
               {isAuthenticated ? (
                 <Link
-                  href="/perfil/mi-anuncio"
+                  href={isProviderRole ? "/perfil/mi-anuncio" : "/perfil/cuenta"}
                   className="inline-flex w-full items-center justify-center rounded-full bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] px-6 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-white shadow-shadow-g"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >

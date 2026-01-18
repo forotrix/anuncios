@@ -10,10 +10,10 @@ import { useAuth } from "@/hooks/useAuth";
 import { adService } from "@/services/ad.service";
 
 const NAV_LINKS = [
-  { href: "/perfil/mi-anuncio", label: "Mi anuncio" },
+  { href: "/perfil/mi-anuncio", label: "Mi anuncio", requiresProvider: true },
   { href: "/perfil/cuenta", label: "Cuenta" },
-  { href: "/perfil/suscripciones", label: "Subscripciones" },
-  { href: "/perfil/estadisticas", label: "Estadisticas" },
+  { href: "/perfil/suscripciones", label: "Subscripciones", requiresProvider: true },
+  { href: "/perfil/estadisticas", label: "Estadisticas", requiresProvider: true },
 ] as const;
 
 const NAV_LINK_BASE_CLASS =
@@ -22,8 +22,10 @@ const NAV_LINK_BASE_CLASS =
 export default function ProfileLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { isAuthenticated, logout, accessToken } = useAuth();
+  const { isAuthenticated, logout, accessToken, user } = useAuth();
   const [ownAdId, setOwnAdId] = useState<string | null>(null);
+  const [roleNotice, setRoleNotice] = useState<string | null>(null);
+  const isProviderRole = user?.role === "provider" || user?.role === "agency";
   const [isAtTop, setIsAtTop] = useState(true);
   const topSentinelRef = useRef<HTMLDivElement>(null);
 
@@ -41,7 +43,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
   }, [isAuthenticated, router]);
 
   useEffect(() => {
-    if (!isAuthenticated || !accessToken) {
+    if (!isAuthenticated || !accessToken || !isProviderRole) {
       setOwnAdId(null);
       return;
     }
@@ -63,7 +65,17 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
     return () => {
       isActive = false;
     };
-  }, [isAuthenticated, accessToken]);
+  }, [isAuthenticated, accessToken, isProviderRole]);
+
+  useEffect(() => {
+    if (!roleNotice) return;
+    const timer = window.setTimeout(() => setRoleNotice(null), 3000);
+    return () => window.clearTimeout(timer);
+  }, [roleNotice]);
+
+  const handleProviderRequired = () => {
+    setRoleNotice("Solo disponible para anunciantes (provider/agency).");
+  };
 
   useEffect(() => {
     const sentinel = topSentinelRef.current;
@@ -112,6 +124,19 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
                   : index === NAV_LINKS.length - 1
                     ? "rounded-b-[18px]"
                     : "rounded-[14px]";
+              if (link.requiresProvider && !isProviderRole) {
+                return (
+                  <button
+                    key={link.href}
+                    type="button"
+                    className={`${NAV_LINK_BASE_CLASS} ${roundedClass} cursor-not-allowed bg-[#1a0a0b] text-white/50`}
+                    onClick={handleProviderRequired}
+                  >
+                    {link.label}
+                  </button>
+                );
+              }
+
               return (
                 <Link
                   key={link.href}
@@ -127,16 +152,27 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
                 </Link>
               );
             })}
-            <Link
-              href={ownAdId ? `/anuncio/${ownAdId}` : "/perfil/mi-anuncio"}
-              className={`${NAV_LINK_BASE_CLASS} rounded-[14px] ${
-                pathname.startsWith("/anuncio")
-                  ? "bg-[#870005] text-white shadow-[0_0_10px_rgba(135,0,5,0.45)]"
-                  : "text-gris-claro hover:text-white"
-              }`}
-            >
-              Ver anuncio
-            </Link>
+            {isProviderRole ? (
+              <Link
+                href={ownAdId ? `/anuncio/${ownAdId}` : "/perfil/mi-anuncio"}
+                className={`${NAV_LINK_BASE_CLASS} rounded-[14px] ${
+                  pathname.startsWith("/anuncio")
+                    ? "bg-[#870005] text-white shadow-[0_0_10px_rgba(135,0,5,0.45)]"
+                    : "text-gris-claro hover:text-white"
+                }`}
+              >
+                Ver anuncio
+              </Link>
+            ) : (
+              <button
+                type="button"
+                className={`${NAV_LINK_BASE_CLASS} rounded-[14px] cursor-not-allowed bg-[#1a0a0b] text-white/50`}
+                onClick={handleProviderRequired}
+              >
+                Ver anuncio
+              </button>
+            )}
+            {roleNotice && <p className="px-3 pt-2 text-[11px] text-white/60">{roleNotice}</p>}
             <button
               type="button"
               onClick={logout}

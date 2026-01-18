@@ -3,6 +3,12 @@ import createError from 'http-errors';
 import bcrypt from 'bcryptjs';
 import { type HydratedDocument } from 'mongoose';
 import { User, type IUser } from '../models/User';
+import { Ad } from '../models/Ad';
+import { Media } from '../models/Media';
+import { Comment } from '../models/Comment';
+import { mediaStorage } from '../storage';
+import { detachMediaFromAd } from './media.service';
+import { recordAudit } from './audit.service';
 import { signAccess, signRefresh, verifyRefresh, hashToken, compareToken, type AccessPayload, type RefreshPayload } from '../utils/jwt';
 import type { ContactChannels, UserRole } from '@anuncios/shared';
 
@@ -181,4 +187,34 @@ export async function updatePassword(userId: string, currentPassword: string, ne
 
   user.password = newPassword;
   await user.save();
+}
+
+export async function deleteAccount(userId: string) {
+  const user = (await User.findById(userId)) as UserDocument | null;
+  if (!user) throw createError(404, 'User not found');
+
+  const ads = await Ad.find({ owner: userId }, { _id: 1 }).lean();
+  if (ads.length) {
+    await Promise.all(ads.map((ad) => detachMediaFromAd(ad._id.toString())));
+    await Ad.deleteMany({ owner: userId });
+  }
+
+  const orphanMedia = await Media.find({ owner: userId }).lean();
+  if (orphanMedia.length) {
+    await Promise.all(
+      orphanMedia.map(async (item) => {
+        await mediaStorage().deleteAsset(item.publicId);
+        await Media.deleteOne({ _id: item._id });
+      }),
+    );
+  }
+
+  await Comment.deleteMany({ author: userId });
+  await User.findByIdAndDelete(userId);
+
+  await recordAudit({
+    action: 'account:delete',
+    actorId: userId,
+    targetId: userId,
+  });
 }
