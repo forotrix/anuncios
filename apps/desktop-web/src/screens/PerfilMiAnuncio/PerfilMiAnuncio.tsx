@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { MediaAsset, ProfileType } from "@anuncios/shared";
 import { useAuth } from "@/hooks/useAuth";
 import { mediaService, type UploadSignaturePayload } from "@/services/media.service";
+import { profileService } from "@/services/profile.service";
 import {
   AVAILABILITY_STATUS_OPTIONS,
   DEFAULT_SERVICE_OPTIONS,
@@ -73,7 +74,7 @@ const cloudinaryInstance = () =>
   (typeof window === "undefined" ? undefined : (window as CloudinaryGlobal).cloudinary);
 
 export const PerfilMiAnuncio = () => {
-  const { user, accessToken, logout } = useAuth();
+  const { user, accessToken, logout, updateUser } = useAuth();
   const form = useMiAnuncioForm(accessToken, { onAuthExpired: logout });
   const {
     draft,
@@ -102,10 +103,14 @@ export const PerfilMiAnuncio = () => {
   } = form;
   const [newService, setNewService] = useState("");
   const [galleryError, setGalleryError] = useState<string | null>(null);
+  const [avatarError, setAvatarError] = useState<string | null>(null);
   const avatarUploader = useAvatarWidget({
     accessToken,
     userId: user?.id,
-    onAvatarChange: setAvatar,
+    onAvatarChange: (media) => {
+      setAvatar(media);
+      void syncAvatarToProfile(media);
+    },
   });
   const galleryUploader = useGalleryWidget({
     accessToken,
@@ -124,6 +129,31 @@ export const PerfilMiAnuncio = () => {
     if (draft.status === "published") return "Tu anuncio esta publicado y visible en el feed.";
     return "Tu anuncio esta en borrador. Publicalo cuando estes listo.";
   }, [loading, saving, publishState, draft.status]);
+
+  useEffect(() => {
+    if (!user) return;
+    const nextAvatar =
+      user.avatarUrl && user.avatarPublicId
+        ? { url: user.avatarUrl, publicId: user.avatarPublicId }
+        : null;
+    if (!nextAvatar && !draft.avatar) return;
+    if (nextAvatar?.url === draft.avatar?.url && nextAvatar?.publicId === draft.avatar?.publicId) return;
+    setAvatar(nextAvatar);
+  }, [user, draft.avatar, setAvatar]);
+
+  const syncAvatarToProfile = async (nextAvatar: AvatarMedia | null) => {
+    if (!accessToken) return;
+    setAvatarError(null);
+    try {
+      const updated = await profileService.updateProfile(accessToken, { avatar: nextAvatar });
+      updateUser({
+        avatarUrl: updated.avatarUrl,
+        avatarPublicId: updated.avatarPublicId,
+      });
+    } catch (err) {
+      setAvatarError(err instanceof Error ? err.message : "No se pudo actualizar el avatar.");
+    }
+  };
 
   const handleAddService = () => {
     if (!newService.trim()) return;
@@ -198,8 +228,12 @@ export const PerfilMiAnuncio = () => {
                   avatar={draft.avatar}
                   isReady={avatarUploader.isReady}
                   isUploading={avatarUploader.isUploading}
-                  error={avatarUploader.error}
+                  error={avatarError ?? avatarUploader.error}
                   onOpen={avatarUploader.open}
+                  onRemove={() => {
+                    setAvatar(null);
+                    void syncAvatarToProfile(null);
+                  }}
                 />
                 <p className="text-xs text-white/60">Servicios activos: {meta.activeServices}</p>
               </div>
@@ -533,12 +567,14 @@ export const PerfilMiAnuncio = () => {
 const AvatarSection = ({
   avatar,
   onOpen,
+  onRemove,
   isReady,
   isUploading,
   error,
 }: {
   avatar: AvatarMedia | null;
   onOpen: () => void;
+  onRemove: () => void;
   isReady: boolean;
   isUploading: boolean;
   error: string | null;
@@ -559,6 +595,16 @@ const AvatarSection = ({
     >
       {isUploading ? "Subiendo..." : "Cambiar foto"}
     </button>
+    {avatar?.url && (
+      <button
+        type="button"
+        onClick={onRemove}
+        disabled={isUploading}
+        className="rounded-full border border-white/15 px-4 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-white/60 transition hover:text-white disabled:opacity-50"
+      >
+        Quitar foto
+      </button>
+    )}
     {error && <p className="text-xs text-[#ffb3b3]">{error}</p>}
   </div>
 );
