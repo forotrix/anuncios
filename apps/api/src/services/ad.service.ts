@@ -518,6 +518,7 @@ export async function updateAd(ownerId: string, id: string, data: UpdateAdInput)
 
   let response;
   if (imageIds) {
+    await ad.save();
     const updated = await replaceAdMedia(ownerId, ad.id, imageIds);
     response = serializeAd(updated.toObject());
   } else {

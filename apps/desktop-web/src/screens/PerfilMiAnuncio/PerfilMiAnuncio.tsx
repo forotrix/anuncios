@@ -608,15 +608,15 @@ const ServiceChips = ({
   onRemove,
 }: {
   services: ServiceItem[];
-  onToggle: (label: string) => void;
-  onRemove: (label: string) => void;
+  onToggle: (serviceId: string) => void;
+  onRemove: (serviceId: string) => void;
 }) => (
   <div className="flex flex-wrap gap-2">
     {services.map((service) => (
       <button
         type="button"
-        key={service.label}
-        onClick={() => onToggle(service.label)}
+        key={service.id}
+        onClick={() => onToggle(service.id)}
         className={`group flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] uppercase tracking-[0.2em] transition ${
           service.active
             ? "border-[#ff6f7c] bg-[#9f0f1b] text-white shadow-[0_0_20px_rgba(255,85,95,0.2)]"
@@ -624,11 +624,11 @@ const ServiceChips = ({
         }`}
       >
         {service.label}
-        {!DEFAULT_SERVICE_OPTIONS.includes(service.label) && (
+        {!DEFAULT_SERVICE_OPTIONS.some((option) => option.id === service.id) && (
           <span
             onClick={(event) => {
               event.stopPropagation();
-              onRemove(service.label);
+              onRemove(service.id);
             }}
             className="ml-1 text-xs text-white/50 transition hover:text-white"
           >

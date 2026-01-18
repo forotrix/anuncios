@@ -27,6 +27,7 @@ export type AvatarMedia = {
 };
 
 export type ServiceItem = {
+  id: string;
   label: string;
   active: boolean;
 };
@@ -92,7 +93,7 @@ const createEmptyDraft = (): MiAnuncioDraft => ({
   region: "",
   zone: "",
   images: [],
-  services: DEFAULT_SERVICE_OPTIONS.map((label) => ({ label, active: false })),
+  services: DEFAULT_SERVICE_OPTIONS.map((option) => ({ id: option.id, label: option.label, active: false })),
   contacts: { ...defaultContacts },
   availability: defaultAvailability(),
   seed: null,
@@ -106,15 +107,17 @@ const createEmptyDraft = (): MiAnuncioDraft => ({
 });
 
 function mergeServices(active: string[]): ServiceItem[] {
-  const normalized = new Set(DEFAULT_SERVICE_OPTIONS.map((label) => label.toLowerCase()));
-  const base = DEFAULT_SERVICE_OPTIONS.map((label) => ({
-    label,
-    active: active.map((item) => item.toLowerCase()).includes(label.toLowerCase()),
+  const normalized = new Set(DEFAULT_SERVICE_OPTIONS.map((option) => option.id.toLowerCase()));
+  const activeSet = new Set(active.map((item) => item.toLowerCase()));
+  const base = DEFAULT_SERVICE_OPTIONS.map((option) => ({
+    id: option.id,
+    label: option.label,
+    active: activeSet.has(option.id.toLowerCase()),
   }));
 
-  active.forEach((label) => {
-    if (!normalized.has(label.toLowerCase())) {
-      base.push({ label, active: true });
+  active.forEach((id) => {
+    if (!normalized.has(id.toLowerCase())) {
+      base.push({ id, label: id, active: true });
     }
   });
 
@@ -252,7 +255,7 @@ function buildMetadata(state: MiAnuncioDraft): AdMetadata | null {
 }
 
 function buildPayload(state: MiAnuncioDraft) {
-  const services = state.services.filter((service) => service.active).map((service) => service.label);
+  const services = state.services.filter((service) => service.active).map((service) => service.id);
   const tags = [
     ...state.dataTags.filter((tag) => tag.active).map((tag) => tag.label),
     ...state.socialTags.filter((tag) => tag.active).map((tag) => tag.label),
@@ -320,32 +323,43 @@ export function useMiAnuncioForm(
     }));
   }, []);
 
-  const toggleService = useCallback((label: string) => {
+  const toggleService = useCallback((serviceId: string) => {
     setDraft((prev) => ({
       ...prev,
       services: prev.services.map((service) =>
-        service.label === label ? { ...service, active: !service.active } : service,
+        service.id === serviceId ? { ...service, active: !service.active } : service,
       ),
     }));
   }, []);
 
   const addService = useCallback((label: string) => {
-    if (!label.trim()) return;
+    const trimmed = label.trim();
+    if (!trimmed) return;
+    const normalizedId = trimmed
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
     setDraft((prev) => {
-      if (prev.services.some((service) => service.label.toLowerCase() === label.toLowerCase())) {
+      if (
+        prev.services.some(
+          (service) =>
+            service.id.toLowerCase() === normalizedId ||
+            service.label.toLowerCase() === trimmed.toLowerCase(),
+        )
+      ) {
         return prev;
       }
       return {
         ...prev,
-        services: [...prev.services, { label, active: true }],
+        services: [...prev.services, { id: normalizedId || trimmed.toLowerCase(), label: trimmed, active: true }],
       };
     });
   }, []);
 
-  const removeService = useCallback((label: string) => {
+  const removeService = useCallback((serviceId: string) => {
     setDraft((prev) => ({
       ...prev,
-      services: prev.services.filter((service) => service.label !== label),
+      services: prev.services.filter((service) => service.id !== serviceId),
     }));
   }, []);
 

@@ -1,23 +1,7 @@
 import type { AvailabilityStatus, WeekDay } from "@anuncios/shared";
+import { SERVICE_FILTER_OPTIONS } from "@anuncios/shared";
 
-export const DEFAULT_SERVICE_OPTIONS = [
-  "Masajes",
-  "Spa",
-  "BDSM",
-  "Parejas",
-  "Sado",
-  "Virtual",
-  "Juegos de roles",
-  "Fetichismos",
-  "Oral",
-  "Novia",
-  "Lenceria",
-  "Videollamada",
-  "Juguetes eroticos",
-  "Viajes",
-  "Rolplay",
-  "Posturas",
-];
+export const DEFAULT_SERVICE_OPTIONS = SERVICE_FILTER_OPTIONS;
 
 export const REGION_OPTIONS = [
   "Andalucia",

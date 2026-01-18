@@ -22,7 +22,7 @@ const NAV_LINK_BASE_CLASS =
 export default function ProfileLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { isAuthenticated, logout, accessToken, user } = useAuth();
+  const { isAuthenticated, isReady, logout, accessToken, user } = useAuth();
   const [ownAdId, setOwnAdId] = useState<string | null>(null);
   const [roleNotice, setRoleNotice] = useState<string | null>(null);
   const isProviderRole = user?.role === "provider" || user?.role === "agency";
@@ -37,10 +37,11 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
   };
 
   useEffect(() => {
+    if (!isReady) return;
     if (!isAuthenticated) {
       router.replace("/feed");
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, isReady, router]);
 
   useEffect(() => {
     if (!isAuthenticated || !accessToken || !isProviderRole) {
@@ -90,6 +91,9 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
     return () => observer.disconnect();
   }, []);
 
+  if (!isReady) {
+    return null;
+  }
   if (!isAuthenticated) {
     return null;
   }

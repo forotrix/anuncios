@@ -17,6 +17,7 @@ type AuthContextValue = {
   refreshToken: string | null;
   isAuthenticated: boolean;
   isRemembered: boolean;
+  isReady: boolean;
   login: (session: AuthResponse, remember?: boolean) => void;
   logout: () => void;
   updateUser: (updates: Partial<AuthResponse["user"]>) => void;
@@ -44,18 +45,21 @@ const emptySession: PersistedSession = {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [session, setSession] = useState<PersistedSession>(emptySession);
   const [isRemembered, setIsRemembered] = useState(false);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     const stored = window.localStorage.getItem(STORAGE_KEY) ?? window.sessionStorage.getItem(SESSION_KEY);
-    if (!stored) return;
-    try {
-      const parsed = JSON.parse(stored) as PersistedSession;
-      setSession(parsed);
-      setIsRemembered(Boolean(window.localStorage.getItem(STORAGE_KEY)));
-    } catch {
-      // ignore corrupted storage
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored) as PersistedSession;
+        setSession(parsed);
+        setIsRemembered(Boolean(window.localStorage.getItem(STORAGE_KEY)));
+      } catch {
+        // ignore corrupted storage
+      }
     }
+    setIsReady(true);
   }, []);
 
   const persistSession = useCallback((next: PersistedSession, remember: boolean) => {
@@ -127,11 +131,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
       refreshToken: session.refreshToken,
       isAuthenticated: Boolean(session.user && session.accessToken),
       isRemembered,
+      isReady,
       login,
       logout,
       updateUser,
     }),
-    [session, isRemembered, login, logout, updateUser],
+    [session, isRemembered, isReady, login, logout, updateUser],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
