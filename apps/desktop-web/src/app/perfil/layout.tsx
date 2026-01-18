@@ -9,12 +9,18 @@ import { ASSETS } from "@/constants/assets";
 import { useAuth } from "@/hooks/useAuth";
 import { adService } from "@/services/ad.service";
 
-const NAV_LINKS = [
+type NavLink = {
+  href: string;
+  label: string;
+  requiresProvider?: boolean;
+};
+
+const NAV_LINKS: NavLink[] = [
   { href: "/perfil/mi-anuncio", label: "Mi anuncio", requiresProvider: true },
   { href: "/perfil/cuenta", label: "Cuenta" },
   { href: "/perfil/suscripciones", label: "Subscripciones", requiresProvider: true },
   { href: "/perfil/estadisticas", label: "Estadisticas", requiresProvider: true },
-] as const;
+];
 
 const NAV_LINK_BASE_CLASS =
   "font-h5 font-[number:var(--h5-font-weight)] text-[length:var(--h5-font-size)] tracking-[var(--h5-letter-spacing)] leading-[var(--h5-line-height)] [font-style:var(--h5-font-style)] transition-colors duration-150 px-5 py-3 rounded-[14px]";

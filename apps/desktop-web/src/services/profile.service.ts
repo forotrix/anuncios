@@ -96,6 +96,6 @@ export const profileService = {
     if (!isApiConfigured()) {
       return;
     }
-    await authorizedRequest<undefined>("/auth/account", token, "DELETE");
+    await authorizedRequest<undefined>("/auth/account", token, { method: "DELETE" });
   },
 };
