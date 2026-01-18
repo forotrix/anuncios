@@ -7,13 +7,13 @@ import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { ASSETS } from "@/constants/assets";
 import { useAuth } from "@/hooks/useAuth";
+import { adService } from "@/services/ad.service";
 
 const NAV_LINKS = [
   { href: "/perfil/mi-anuncio", label: "Mi anuncio" },
   { href: "/perfil/cuenta", label: "Cuenta" },
   { href: "/perfil/suscripciones", label: "Subscripciones" },
   { href: "/perfil/estadisticas", label: "Estadisticas" },
-  { href: "/anuncio", label: "Ver anuncio" },
 ] as const;
 
 const NAV_LINK_BASE_CLASS =
@@ -22,7 +22,8 @@ const NAV_LINK_BASE_CLASS =
 export default function ProfileLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, accessToken } = useAuth();
+  const [ownAdId, setOwnAdId] = useState<string | null>(null);
   const [isAtTop, setIsAtTop] = useState(true);
   const topSentinelRef = useRef<HTMLDivElement>(null);
 
@@ -38,6 +39,31 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
       router.replace("/feed");
     }
   }, [isAuthenticated, router]);
+
+  useEffect(() => {
+    if (!isAuthenticated || !accessToken) {
+      setOwnAdId(null);
+      return;
+    }
+    let isActive = true;
+    const loadOwnAd = async () => {
+      try {
+        const response = await adService.fetchOwnAds(accessToken, { page: 1, limit: 1 });
+        const firstAd = response.items?.[0];
+        if (isActive) {
+          setOwnAdId(firstAd?.id ?? null);
+        }
+      } catch {
+        if (isActive) {
+          setOwnAdId(null);
+        }
+      }
+    };
+    loadOwnAd();
+    return () => {
+      isActive = false;
+    };
+  }, [isAuthenticated, accessToken]);
 
   useEffect(() => {
     const sentinel = topSentinelRef.current;
@@ -101,6 +127,16 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
                 </Link>
               );
             })}
+            <Link
+              href={ownAdId ? `/anuncio/${ownAdId}` : "/perfil/mi-anuncio"}
+              className={`${NAV_LINK_BASE_CLASS} rounded-[14px] ${
+                pathname.startsWith("/anuncio")
+                  ? "bg-[#870005] text-white shadow-[0_0_10px_rgba(135,0,5,0.45)]"
+                  : "text-gris-claro hover:text-white"
+              }`}
+            >
+              Ver anuncio
+            </Link>
             <button
               type="button"
               onClick={logout}

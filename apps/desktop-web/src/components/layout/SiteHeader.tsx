@@ -8,6 +8,7 @@ import { GenderToggleStack } from "@/components/GenderToggleStack";
 import { BotonChicas } from "@/components/BotonChicas";
 import { ASSETS } from "@/constants/assets";
 import { useAuth } from "@/hooks/useAuth";
+import { useAuthModal } from "@/hooks/useAuthModal";
 import { useEffect, useState } from "react";
 
 type Props = {
@@ -37,10 +38,12 @@ export const SiteHeader = ({
   onRegisterClick,
 }: Props) => {
   const { isAuthenticated, user } = useAuth();
+  const { openRegister } = useAuthModal();
   const canToggleProfile = profileType && onProfileTypeChange;
   const canToggleGender = genderSex && genderIdentity && onGenderSexChange && onGenderIdentityChange;
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const handleRegisterClick = onRegisterClick ?? openRegister;
 
   useEffect(() => {
     setIsMobileMenuOpen(false);
@@ -111,7 +114,7 @@ export const SiteHeader = ({
               buttonStyleText="Anuncia"
               className="!absolute !left-[1012px] !top-1/2 !hidden md:!block !-translate-y-1/2 !p-[3px] !gap-0 !items-stretch !rounded-[32px] !bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)]"
               propiedad1="predeterminada"
-              {...(isAuthenticated ? { to: "/perfil/mi-anuncio" } : { onClick: onRegisterClick })}
+              {...(isAuthenticated ? { to: "/perfil/mi-anuncio" } : { onClick: handleRegisterClick })}
             />
 
             {isAuthenticated ? (
@@ -135,22 +138,17 @@ export const SiteHeader = ({
                 buttonStyleText="Registrarse"
                 className="!absolute !left-[1217px] !top-1/2 !hidden md:!block !-translate-y-1/2"
                 propiedad1="predeterminada"
-                onClick={onRegisterClick}
+                onClick={handleRegisterClick}
               />
             ) : (
-              <Link
-                href="/auth/registro"
-                className="absolute left-[1217px] top-1/2 hidden h-[66px] w-[273px] -translate-y-1/2 md:block"
-                aria-label="Registrarse"
-              >
-                <BotonChicas
-                  buttonStyleDivClassName="!mr-[-40.00px] !mt-[-3.00px] !tracking-[var(--h4-letter-spacing)] !ml-[-40.00px] !text-[length:var(--h4-font-size)] ![font-style:var(--h4-font-style)] ![white-space:unset] !font-[number:var(--h4-font-weight)] !font-h4 !leading-[var(--h4-line-height)]"
-                  buttonStyleStyleFilledIconNoClassName="!self-stretch !flex-[0_0_auto] !px-[70px] !py-3.5 !bg-blend-screen !flex !left-[unset] !bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] !bg-[unset] !w-full !top-[unset]"
-                  buttonStyleText="Registrarse"
-                  className="!relative !left-[unset] !top-[unset]"
-                  propiedad1="predeterminada"
-                />
-              </Link>
+              <BotonChicas
+                buttonStyleDivClassName="!mr-[-40.00px] !mt-[-3.00px] !tracking-[var(--h4-letter-spacing)] !ml-[-40.00px] !text-[length:var(--h4-font-size)] ![font-style:var(--h4-font-style)] ![white-space:unset] !font-[number:var(--h4-font-weight)] !font-h4 !leading-[var(--h4-line-height)]"
+                buttonStyleStyleFilledIconNoClassName="!self-stretch !flex-[0_0_auto] !px-[70px] !py-3.5 !bg-blend-screen !flex !left-[unset] !bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] !bg-[unset] !w-full !top-[unset]"
+                buttonStyleText="Registrarse"
+                className="!absolute !left-[1217px] !top-1/2 !hidden md:!block !-translate-y-1/2"
+                propiedad1="predeterminada"
+                onClick={handleRegisterClick}
+              />
             )}
           </div>
         </div>
@@ -217,13 +215,16 @@ export const SiteHeader = ({
                   Anuncia
                 </button>
               ) : (
-                <Link
-                  href="/auth/registro"
+                <button
+                  type="button"
                   className="inline-flex w-full items-center justify-center rounded-full border border-white/20 bg-white/5 px-6 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-white/85 transition hover:border-white/40 hover:text-white"
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    handleRegisterClick();
+                  }}
                 >
                   Anuncia
-                </Link>
+                </button>
               )}
 
               {isAuthenticated ? (
@@ -246,13 +247,16 @@ export const SiteHeader = ({
                   Registrarse
                 </button>
               ) : (
-                <Link
-                  href="/auth/registro"
+                <button
+                  type="button"
                   className="inline-flex w-full items-center justify-center rounded-full bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] px-6 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-white shadow-shadow-g"
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    handleRegisterClick();
+                  }}
                 >
                   Registrarse
-                </Link>
+                </button>
               )}
             </div>
           </aside>

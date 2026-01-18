@@ -5,7 +5,6 @@ import Link from "next/link";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CitySelector } from "@/components/CitySelector";
-import { RegistrationModal } from "@/components/RegistrationModal/RegistrationModal";
 import { SearchInput } from "@/components/SearchInput";
 import { AgeRangeFilterControl } from "@/components/AgeRangeFilterControl";
 import { ServiceFilterDropdown } from "@/components/ServiceFilterDropdown";
@@ -17,6 +16,7 @@ import { rankAds } from "@/lib/ranking";
 import type { GenderIdentity, GenderSex } from "@anuncios/shared";
 import { ASSETS } from "@/constants/assets";
 import { useAuth } from "@/hooks/useAuth";
+import { useAuthModal } from "@/hooks/useAuthModal";
 
 const FALLBACK_IMAGE = "https://res.cloudinary.com/dqhxthtby/image/upload/v1762882388/marina-hero.svg";
 
@@ -42,13 +42,13 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
   const router = useRouter();
   const searchParams = useSearchParams();
   const { isAuthenticated } = useAuth();
+  const { openRegister } = useAuthModal();
   const ageConfig = filtersCatalog.age;
   const defaultAgeMax = ageConfig?.defaultValue ?? ageConfig.max;
   const [ageRange, setAgeRange] = useState({
     min: initialFilters.ageMin ?? ageConfig.min,
     max: initialFilters.ageMax ?? defaultAgeMax,
   });
-  const [showRegistration, setShowRegistration] = useState(false);
   const [isAgeOpen, setIsAgeOpen] = useState(false);
   const [selectedServices, setSelectedServices] = useState<string[]>(initialFilters.services ?? []);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
@@ -197,7 +197,7 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
 
   const toggleFavorite = (id: string) => {
     if (!isAuthenticated) {
-      setShowRegistration(true);
+      openRegister();
       return;
     }
     setFavoriteIds((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]));
@@ -246,7 +246,7 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
           onGenderSexChange={handleSexToggle}
           onGenderIdentityChange={handleIdentityToggle}
           logoHref={logoHref}
-          onRegisterClick={() => setShowRegistration(true)}
+          onRegisterClick={openRegister}
         />
 
         <main
@@ -480,12 +480,6 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
         <SiteFooter />
       </div>
 
-      {showRegistration && (
-        <RegistrationModal
-          onClose={() => setShowRegistration(false)}
-          variant="default"
-        />
-      )}
     </div>
   );
 };
