@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { BotonChicas } from "@/components/BotonChicas";
 import { CarouselIndicators } from "@/components/CarouselIndicators";
 import type { Ad } from "@/lib/ads";
+import { SERVICE_FILTER_OPTIONS } from "@anuncios/shared";
 
 type Slide = {
   id: string;
@@ -57,6 +58,10 @@ type Props = {
 };
 
 export const DestacadaWrapper = ({ ads }: Props) => {
+  const serviceLabelMap = useMemo(
+    () => Object.fromEntries(SERVICE_FILTER_OPTIONS.map((option) => [option.id, option.label])),
+    [],
+  );
   const slides = useMemo<Slide[]>(() => {
     if (!ads.length) {
       return FALLBACK_SLIDES;
@@ -72,7 +77,11 @@ export const DestacadaWrapper = ({ ads }: Props) => {
         description: ad.description ?? fallback.description,
         tags:
           ad.tags && ad.tags.length
-            ? ad.tags.slice(0, 3).map((tag) => (tag.startsWith("#") ? tag : `#${tag}`))
+            ? ad.tags.slice(0, 3).map((raw) => {
+                const cleaned = raw.startsWith("#") ? raw.slice(1) : raw;
+                const label = serviceLabelMap[cleaned] ?? cleaned;
+                return `#${label}`;
+              })
             : [...fallback.tags],
         image: ad.images?.[0]?.url ?? fallback.image,
         link: ad.id ? `/anuncio/${ad.id}` : undefined,
@@ -111,7 +120,7 @@ export const DestacadaWrapper = ({ ads }: Props) => {
       }));
 
     return [...slidesFromAds, ...filler];
-  }, [ads]);
+  }, [ads, serviceLabelMap]);
 
   const sliderRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);

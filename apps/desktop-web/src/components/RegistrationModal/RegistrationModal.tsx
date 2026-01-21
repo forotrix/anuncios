@@ -261,7 +261,7 @@ export const RegistrationModal = ({ onClose, variant = "default" }: Props) => {
       {renderPasswordField("Confirma tu contrasena", "confirmPassword", isConfirmVisible, () => setIsConfirmVisible((prev) => !prev))}
 
       <div className={styles.formGroup}>
-        <label className={styles.label}>Ubicacion</label>
+        <label className={styles.label}>Ubicación</label>
         <div className={styles.inputWrapper}>
           <input
             type="text"
@@ -311,7 +311,7 @@ export const RegistrationModal = ({ onClose, variant = "default" }: Props) => {
       <div className={styles.title}>Entrar</div>
 
       {renderEmailField()}
-      {renderPasswordField("Contrasena", "password", isPasswordVisible, () => setIsPasswordVisible((prev) => !prev))}
+      {renderPasswordField("Contraseña", "password", isPasswordVisible, () => setIsPasswordVisible((prev) => !prev))}
 
       <div className={styles.formFooter}>
         <div className={styles.checkboxRow}>

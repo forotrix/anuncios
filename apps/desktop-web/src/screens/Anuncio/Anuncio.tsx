@@ -610,3 +610,4 @@ function formatRelativeTime(value: string) {
   const days = Math.floor(hours / 24);
   return `Hace ${days}d`;
 }
+

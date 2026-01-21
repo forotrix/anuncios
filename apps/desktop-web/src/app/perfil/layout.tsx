@@ -18,8 +18,8 @@ type NavLink = {
 const NAV_LINKS: NavLink[] = [
   { href: "/perfil/mi-anuncio", label: "Mi anuncio", requiresProvider: true },
   { href: "/perfil/cuenta", label: "Cuenta" },
-  { href: "/perfil/suscripciones", label: "Subscripciones", requiresProvider: true },
-  { href: "/perfil/estadisticas", label: "Estadisticas", requiresProvider: true },
+  { href: "/perfil/suscripciones", label: "Suscripciones", requiresProvider: true },
+  { href: "/perfil/estadisticas", label: "Estadísticas", requiresProvider: true },
 ];
 
 const NAV_LINK_BASE_CLASS =

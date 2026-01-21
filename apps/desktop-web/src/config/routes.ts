@@ -56,7 +56,7 @@ export const PAGE_DEFINITIONS: PageDefinition[] = [
   {
     id: "perfil-suscripciones",
     href: "/perfil/suscripciones",
-    label: "Perfil | Subscripciones",
+    label: "Perfil | Suscripciones",
     title: "Gestiona tus planes activos",
     description:
       "Vista con el mismo diseño exportado desde Figma para revisar los tiers de planes.",

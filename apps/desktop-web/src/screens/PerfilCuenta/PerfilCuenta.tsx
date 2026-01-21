@@ -164,12 +164,12 @@ export const PerfilCuenta = () => {
   const handlePasswordSubmit = async () => {
     if (!accessToken) return;
     if (!passwordForm.current || !passwordForm.next) {
-      setErrorMessage("Completa las contrasenas.");
+      setErrorMessage("Completa las contraseñas.");
       setPasswordStatus("error");
       return;
     }
     if (passwordForm.next !== passwordForm.confirm) {
-      setErrorMessage("Las contrasenas nuevas no coinciden.");
+      setErrorMessage("Las contraseñas nuevas no coinciden.");
       setPasswordStatus("error");
       return;
     }
@@ -185,7 +185,7 @@ export const PerfilCuenta = () => {
       setPasswordStatus("success");
       logEvent("account:update-password", { userId: profile?.id });
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "No se pudo actualizar la contrasena.");
+      setErrorMessage(error instanceof Error ? error.message : "No se pudo actualizar la contraseña.");
       setPasswordStatus("error");
     }
   };
@@ -350,15 +350,15 @@ export const PerfilCuenta = () => {
               onClick={() => setActiveSection((prev) => (prev === "security" ? null : "security"))}
               className={compactButtonClass}
             >
-              <span>Contrasena y seguridad</span>
+              <span>Contraseña y seguridad</span>
               <span className="text-xl leading-none">&gt;</span>
             </button>
             {activeSection === "security" && (
               <div className="rounded-2xl border border-white/10 bg-black/30 p-5">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <h2 className="text-lg font-semibold">Contrasena y seguridad</h2>
-                    <p className="text-sm text-white/60">Actualiza tu contrasena y revisa sesiones activas.</p>
+                    <h2 className="text-lg font-semibold">Contraseña y seguridad</h2>
+                    <p className="text-sm text-white/60">Actualiza tu contraseña y revisa sesiones activas.</p>
                   </div>
                   {passwordStatus === "success" && (
                     <span className="text-xs uppercase tracking-[0.3em] text-emerald-300">Actualizada</span>
@@ -412,7 +412,7 @@ export const PerfilCuenta = () => {
                     disabled={!accessToken || passwordStatus === "saving"}
                     className="rounded-full border border-white/20 px-6 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-white/80 transition hover:text-white disabled:opacity-50"
                   >
-                    {passwordStatus === "saving" ? "Actualizando..." : "Actualizar contrasena"}
+                    {passwordStatus === "saving" ? "Actualizando..." : "Actualizar contraseña"}
                   </button>
                 </form>
 
