@@ -10,7 +10,12 @@ const defaultLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-const allowlist = new Set(env.cors.originAllowlist.map((origin) => origin.toLowerCase()));
+const defaultAllowlist = env.cors.originAllowlist.length
+  ? []
+  : ['https://forotrix.com', 'https://www.forotrix.com'];
+const allowlist = new Set(
+  [...env.cors.originAllowlist, ...defaultAllowlist].map((origin) => origin.toLowerCase()),
+);
 const vercelPreviewRegex = /^https:\/\/[a-z0-9-]+\.vercel\.app$/i;
 
 function isAllowedOrigin(origin?: string | null) {

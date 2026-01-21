@@ -4,6 +4,7 @@ import { security } from './middlewares/security';
 import { errorHandler } from './middlewares/error';
 import routes from './routes';
 export const app = express();
+app.set('trust proxy', 1);
 app.use(express.json({ limit:'1mb' }));
 app.use(httpLogger);
 app.use(security);
