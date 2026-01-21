@@ -410,7 +410,7 @@ async function main() {
   await connectDB();
   await cleanupSeedData();
   await insertSampleAds();
-  await generateAndInsertMockAds(100);
+  await generateAndInsertMockAds(400);
   await normalizeAllTitles();
 
   console.info('New seed data inserted successfully');
