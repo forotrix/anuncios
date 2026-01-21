@@ -161,7 +161,7 @@ export const PerfilEstadisticas = () => {
           )}
           {error && (
             <p className="mt-4 rounded-lg bg-[#2d070b] px-4 py-2 text-sm text-[#ffb3b3]">
-              No se pudieron cargar las estadisticas. Intenta nuevamente.
+              No se pudieron cargar las estadísticas. Intenta nuevamente.
             </p>
           )}
 
@@ -350,10 +350,10 @@ const TopAdsTable = ({
       <table className="w-full table-auto text-left text-sm text-white">
         <thead className="text-white/60">
           <tr>
-            <th className="px-3 py-2 font-semibold">Titulo</th>
+            <th className="px-3 py-2 font-semibold">Título</th>
             <th className="px-3 py-2 font-semibold">Visualizaciones</th>
             <th className="px-3 py-2 font-semibold">Contactos</th>
-            <th className="px-3 py-2 font-semibold">Conversion</th>
+            <th className="px-3 py-2 font-semibold">Conversión</th>
           </tr>
         </thead>
         <tbody>
@@ -378,4 +378,5 @@ function formatDateLabel(isoDate: string) {
   const [year, month, day] = isoDate.split("-");
   return `${day}/${month}`;
 }
+
 

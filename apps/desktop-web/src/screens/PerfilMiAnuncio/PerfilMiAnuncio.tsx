@@ -277,7 +277,7 @@ export const PerfilMiAnuncio = () => {
                 )}
               </div>
               {!draft.adId && (
-                <p className="text-xs text-white/50">Guarda tu anuncio para habilitar la publicación.</p>
+                <p className="text-xs text-white/50">Guarda tu anuncio para habilitar la publicacion.</p>
               )}
               {error && (
                 <p className="rounded-2xl border border-[#ff6161]/40 bg-[#360508] px-4 py-2 text-sm text-[#ffb3b3]">
@@ -297,7 +297,7 @@ export const PerfilMiAnuncio = () => {
                     placeholder="+34 600 000 000"
                   />
                   <Field
-                    label="Teléfono"
+                    label="Telegram"
                     value={draft.contacts.telegram ?? ""}
                     onChange={(value) => updateContacts("telegram", value)}
                     placeholder="@usuario"
@@ -321,7 +321,7 @@ export const PerfilMiAnuncio = () => {
                     placeholder="Barcelona"
                   />
                   <div>
-                  <FormLabel text="Categoría de perfil" />
+                    <FormLabel text="Región" />
                     <select
                       value={draft.region}
                       onChange={(event) => updateField("region", event.target.value)}
@@ -417,16 +417,14 @@ export const PerfilMiAnuncio = () => {
                 />
                 <div className="md:col-span-2">
                   <FormLabel text="Categoría de perfil" />
-                  <div className="mt-2 flex flex-wrap items-center gap-3">
+                  <div className="mt-2 flex flex-col items-start gap-3">
                     <GenderToggleStack
                       sex={draft.genderSex}
                       identity={draft.genderIdentity}
                       onSexChange={(next) => updateField("genderSex", next)}
                       onIdentityChange={(next) => updateField("genderIdentity", next)}
                       gapClassName="gap-3"
-                      className="items-center"
-                      orientation="row"
-                      size="compact"
+                      className="items-start"
                     />
                     <p className="text-xs text-white/50">
                       Define el género y la identidad del perfil (chicas, chicos, chicas trans, chicos trans).
@@ -466,7 +464,7 @@ export const PerfilMiAnuncio = () => {
             <section className={cardClass}>
               <CardHeader label="Tags visuales" title="Destaca atributos" />
               <div className="mt-4 grid gap-6 md:grid-cols-2">
-                <TagBoard title="Características" tags={draft.dataTags} onToggle={toggleDataTag} />
+                <TagBoard title="Caracteristicas" tags={draft.dataTags} onToggle={toggleDataTag} />
                 <TagBoard title="Estilo" tags={draft.socialTags} onToggle={toggleSocialTag} />
               </div>
             </section>
@@ -653,7 +651,7 @@ const Field = ({
   type?: string;
 }) => (
   <div>
-                  <FormLabel text="Categoría de perfil" />
+    <FormLabel text={label} />
     <input
       type={type}
       value={value}
@@ -712,7 +710,7 @@ const TagBoard = ({
   onToggle: (id: string) => void;
 }) => (
   <div>
-                  <FormLabel text="Categoría de perfil" />
+    <FormLabel text={title} />
     <div className="mt-3 flex flex-wrap gap-2">
       {tags.map((tag) => (
         <button
@@ -774,7 +772,7 @@ const useAvatarWidget = ({
 
   const open = async () => {
     if (!accessToken || !CLOUDINARY_CLOUD_NAME || !CLOUDINARY_API_KEY) {
-      setError("Configura Cloudinary para subir imagenes");
+                  {galleryUploader.isUploading ? "Subiendo..." : "Subir imágenes"}
       return;
     }
     const cloud = cloudinaryInstance();
@@ -877,7 +875,7 @@ const useGalleryWidget = ({
 
   const open = async () => {
     if (!accessToken || !CLOUDINARY_CLOUD_NAME || !CLOUDINARY_API_KEY) {
-      setError("Configura Cloudinary para subir imagenes");
+                  {galleryUploader.isUploading ? "Subiendo..." : "Subir imágenes"}
       return;
     }
     const cloud = cloudinaryInstance();
@@ -951,11 +949,3 @@ const useGalleryWidget = ({
 
   return { open, isReady, isUploading, error };
 };
-
-
-
-
-
-
-
-
