@@ -277,7 +277,7 @@ export const PerfilMiAnuncio = () => {
                 )}
               </div>
               {!draft.adId && (
-                <p className="text-xs text-white/50">Guarda tu anuncio para habilitar la publicacion.</p>
+                <p className="text-xs text-white/50">Guarda tu anuncio para habilitar la publicación.</p>
               )}
               {error && (
                 <p className="rounded-2xl border border-[#ff6161]/40 bg-[#360508] px-4 py-2 text-sm text-[#ffb3b3]">
@@ -297,7 +297,7 @@ export const PerfilMiAnuncio = () => {
                     placeholder="+34 600 000 000"
                   />
                   <Field
-                    label="Telegram"
+                    label="Teléfono"
                     value={draft.contacts.telegram ?? ""}
                     onChange={(value) => updateContacts("telegram", value)}
                     placeholder="@usuario"
@@ -312,7 +312,7 @@ export const PerfilMiAnuncio = () => {
               </article>
 
               <article className={cardClass}>
-                <CardHeader label="Ubicacion" title="Zona de trabajo" />
+                <CardHeader label="Ubicación" title="Zona de trabajo" />
                 <div className="mt-4 space-y-4">
                   <Field
                     label="Ciudad"
@@ -321,13 +321,13 @@ export const PerfilMiAnuncio = () => {
                     placeholder="Barcelona"
                   />
                   <div>
-                    <FormLabel text="Region" />
+                    <FormLabel text="Región" />
                     <select
                       value={draft.region}
                       onChange={(event) => updateField("region", event.target.value)}
                       className={INPUT_CLASS}
                     >
-                      <option value="">Selecciona region</option>
+                      <option value="">Selecciona región</option>
                       {REGION_OPTIONS.map((region) => (
                         <option key={region} value={region}>
                           {region}
@@ -346,7 +346,7 @@ export const PerfilMiAnuncio = () => {
             </section>
 
             <section className={cardClass}>
-              <CardHeader label="Sobre mi" title="Presentacion" />
+              <CardHeader label="Sobre mí" title="Presentación" />
               <textarea
                 value={draft.description}
                 onChange={(event) => updateField("description", event.target.value)}
@@ -380,7 +380,7 @@ export const PerfilMiAnuncio = () => {
                 ))}
                 {!draft.images.length && (
                   <div className="flex min-h-[140px] items-center justify-center rounded-[18px] border border-white/10 bg-black/20 text-sm text-white/50">
-                    Sin imagenes cargadas.
+                    Sin imágenes cargadas.
                   </div>
                 )}
               </div>
@@ -391,7 +391,7 @@ export const PerfilMiAnuncio = () => {
                   disabled={!galleryUploader.isReady || galleryUploader.isUploading}
                   className="rounded-full border border-white/30 px-6 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-white/80 transition hover:text-white disabled:opacity-50"
                 >
-                  {galleryUploader.isUploading ? "Subiendo..." : "Subir imagenes"}
+                  {galleryUploader.isUploading ? "Subiendo..." : "Subir imágenes"}
                 </button>
                 {(galleryError || galleryUploader.error) && (
                   <span className="text-xs text-[#ffb3b3]">{galleryError ?? galleryUploader.error}</span>
@@ -400,7 +400,7 @@ export const PerfilMiAnuncio = () => {
             </section>
 
             <section className={cardClass}>
-              <CardHeader label="Datos" title="Informacion basica" />
+              <CardHeader label="Datos" title="Información básica" />
               <div className="mt-4 grid gap-4 md:grid-cols-2">
                 <Field
                   label="Nombre o titulo"
@@ -416,18 +416,20 @@ export const PerfilMiAnuncio = () => {
                   type="number"
                 />
                 <div className="md:col-span-2">
-                  <FormLabel text="Categoria de perfil" />
-                  <div className="mt-2 flex flex-col items-start gap-3">
+                  <FormLabel text="Categoría de perfil" />
+                  <div className="mt-2 flex flex-wrap items-center gap-3">
                     <GenderToggleStack
                       sex={draft.genderSex}
                       identity={draft.genderIdentity}
                       onSexChange={(next) => updateField("genderSex", next)}
                       onIdentityChange={(next) => updateField("genderIdentity", next)}
                       gapClassName="gap-3"
-                      className="items-start"
+                      className="items-center"
+                      orientation="row"
+                      size="compact"
                     />
                     <p className="text-xs text-white/50">
-                      Define el genero y la identidad del perfil (chicas, chicos, chicas trans, chicos trans).
+                      Define el género y la identidad del perfil (chicas, chicos, chicas trans, chicos trans).
                     </p>
                   </div>
                 </div>
@@ -464,7 +466,7 @@ export const PerfilMiAnuncio = () => {
             <section className={cardClass}>
               <CardHeader label="Tags visuales" title="Destaca atributos" />
               <div className="mt-4 grid gap-6 md:grid-cols-2">
-                <TagBoard title="Caracteristicas" tags={draft.dataTags} onToggle={toggleDataTag} />
+                <TagBoard title="Características" tags={draft.dataTags} onToggle={toggleDataTag} />
                 <TagBoard title="Estilo" tags={draft.socialTags} onToggle={toggleSocialTag} />
               </div>
             </section>
@@ -949,3 +951,9 @@ const useGalleryWidget = ({
 
   return { open, isReady, isUploading, error };
 };
+
+
+
+
+
+
