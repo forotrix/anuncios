@@ -109,6 +109,25 @@ export function AuthProvider({ children }: AuthProviderProps) {
     };
   }, [logout]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const handleRefresh = (event: Event) => {
+      const detail = (event as CustomEvent<AuthResponse>).detail;
+      if (!detail?.access || !detail?.refresh) return;
+      const nextSession: PersistedSession = {
+        user: detail.user ?? session.user,
+        accessToken: detail.access,
+        refreshToken: detail.refresh,
+      };
+      setSession(nextSession);
+      persistSession(nextSession, isRemembered);
+    };
+    window.addEventListener("auth:refresh", handleRefresh as EventListener);
+    return () => {
+      window.removeEventListener("auth:refresh", handleRefresh as EventListener);
+    };
+  }, [persistSession, isRemembered, session.user]);
+
   const updateUser = useCallback(
     (updates: Partial<AuthResponse["user"]>) => {
       setSession((prev) => {

@@ -427,36 +427,49 @@ export async function listAds(filters: ListFilters, page = 1, limit = 20) {
   const cityCountersQuery: FilterQuery<IAd> = { ...query };
   delete cityCountersQuery.city;
 
-  const sort: Record<string, 1 | -1> = weekly
-    ? { 'metadata.ranking.favoritesWeekly': -1, createdAt: -1 }
-    : { plan: -1, createdAt: -1 };
+  const weeklySort: Record<string, 1 | -1> = { 'metadata.ranking.favoritesWeekly': -1, createdAt: -1 };
+  const defaultSort: Record<string, 1 | -1> = { plan: -1, createdAt: -1 };
 
-  const [items, total, citySummary] = await Promise.all([
-    Ad.find(query)
-      .sort(sort)
-      .skip(skip)
-      .limit(safeLimit)
-      .populate('images')
-      .lean(),
-    Ad.countDocuments(query),
-    Ad.aggregate([
-      { $match: cityCountersQuery },
-      {
-        $group: {
-          _id: { $ifNull: ['$city', 'Sin zona'] },
-          count: { $sum: 1 },
+  const runQuery = (sort: Record<string, 1 | -1>) =>
+    Promise.all([
+      Ad.find(query)
+        .sort(sort)
+        .skip(skip)
+        .limit(safeLimit)
+        .populate('images')
+        .lean(),
+      Ad.countDocuments(query),
+      Ad.aggregate([
+        { $match: cityCountersQuery },
+        {
+          $group: {
+            _id: { $ifNull: ['$city', 'Sin zona'] },
+            count: { $sum: 1 },
+          },
         },
-      },
-      {
-        $project: {
-          _id: 0,
-          city: '$_id',
-          count: 1,
+        {
+          $project: {
+            _id: 0,
+            city: '$_id',
+            count: 1,
+          },
         },
-      },
-      { $sort: { count: -1, city: 1 } },
-    ]),
-  ]);
+        { $sort: { count: -1, city: 1 } },
+      ]),
+    ]);
+
+  let items: IAd[];
+  let total: number;
+  let citySummary: Array<{ city: string; count: number }>;
+
+  try {
+    [items, total, citySummary] = await runQuery(weekly ? weeklySort : defaultSort);
+  } catch (error) {
+    if (!weekly) {
+      throw error;
+    }
+    [items, total, citySummary] = await runQuery(defaultSort);
+  }
 
   return {
     items: items.map(serializeAd),
@@ -492,6 +505,13 @@ export async function listOwnAds(ownerId: string, page = 1, limit = 20) {
 export async function getPublicAd(id: string) {
   const ad = await Ad.findOne({ _id: id, status: 'published' }).populate('images').lean();
   if (!ad) throw createError(404, 'Not found');
+  return serializeAd(ad);
+}
+
+export async function getOwnerAd(ownerId: string, id: string) {
+  const ad = await Ad.findOne({ _id: id, owner: ownerId }).populate('images').lean();
+  if (!ad) throw createError(404, 'Not found');
+  if (ad.status === 'blocked') throw createError(403, 'Ad blocked by admin');
   return serializeAd(ad);
 }
 

@@ -30,6 +30,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
   const router = useRouter();
   const { isAuthenticated, isReady, logout, accessToken, user } = useAuth();
   const [ownAdId, setOwnAdId] = useState<string | null>(null);
+  const [ownAdPreviewId, setOwnAdPreviewId] = useState<string | null>(null);
   const [roleNotice, setRoleNotice] = useState<string | null>(null);
   const isProviderRole = user?.role === "provider" || user?.role === "agency";
   const [isAtTop, setIsAtTop] = useState(true);
@@ -52,6 +53,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
   useEffect(() => {
     if (!isAuthenticated || !accessToken || !isProviderRole) {
       setOwnAdId(null);
+      setOwnAdPreviewId(null);
       return;
     }
     let isActive = true;
@@ -60,11 +62,13 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
         const response = await adService.fetchOwnAds(accessToken, { page: 1, limit: 1 });
         const firstAd = response.items?.[0];
         if (isActive) {
-          setOwnAdId(firstAd?.id ?? null);
+          setOwnAdId(firstAd && firstAd.status === "published" ? firstAd.id : null);
+          setOwnAdPreviewId(firstAd?.id ?? null);
         }
       } catch {
         if (isActive) {
           setOwnAdId(null);
+          setOwnAdPreviewId(null);
         }
       }
     };
@@ -164,7 +168,13 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
             })}
             {isProviderRole ? (
               <Link
-                href={ownAdId ? `/anuncio/${ownAdId}` : "/perfil/mi-anuncio"}
+                href={
+                  ownAdId
+                    ? `/anuncio/${ownAdId}`
+                    : ownAdPreviewId
+                      ? `/anuncio/preview/${ownAdPreviewId}`
+                      : "/perfil/mi-anuncio"
+                }
                 className={`${NAV_LINK_BASE_CLASS} rounded-[14px] ${
                   pathname.startsWith("/anuncio")
                     ? "bg-[#870005] text-white shadow-[0_0_10px_rgba(135,0,5,0.45)]"

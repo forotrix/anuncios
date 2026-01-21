@@ -328,3 +328,27 @@ export async function fetchAdById(id: string): Promise<{ ad: Ad; isMock: boolean
   const payload = (await response.json()) as BackendAd;
   return { ad: mapBackendAd(payload), isMock: false };
 }
+
+export async function fetchOwnAdById(
+  id: string,
+  token: string,
+): Promise<{ ad: Ad; isMock: boolean }> {
+  if (!id) {
+    throw new Error("Id de anuncio requerido");
+  }
+  if (!API_BASE_URL) {
+    throw new Error("API URL not configured");
+  }
+  const response = await fetch(`${API_BASE_URL}/ads/${id}/owner`, {
+    cache: "no-store",
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  if (!response.ok) {
+    throw new Error(`Respuesta ${response.status}`);
+  }
+  const payload = (await response.json()) as BackendAd;
+  return { ad: mapBackendAd(payload), isMock: false };
+}

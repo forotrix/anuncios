@@ -279,6 +279,17 @@ router.get('/:id/comments', async (req, res, next) => {
   }
 });
 
+router.get('/:id/owner', requireAuth(ownerRoles), async (req, res, next) => {
+  try {
+    const { user } = req as AuthenticatedRequest;
+    const adId = objectId.parse(req.params.id);
+    const ad = await service.getOwnerAd(user.sub, adId);
+    res.json(ad);
+  } catch (err) {
+    next(err);
+  }
+});
+
 router.post('/:id/comments', adMutationLimiter, requireAuth(), async (req, res, next) => {
   try {
     const { user } = req as AuthenticatedRequest;
