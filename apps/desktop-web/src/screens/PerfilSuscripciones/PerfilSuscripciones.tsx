@@ -64,7 +64,7 @@ export const PerfilSuscripciones = () => {
 
   return (
     <div className="bg-black text-white">
-      <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-10 px-4 pb-24 pt-8 sm:px-6 lg:px-10 lg:pl-[260px]">
+      <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-10 px-4 pb-24 sm:px-6 lg:px-10">
         <header className="space-y-3">
           <p className="text-xs uppercase tracking-[0.4em] text-white/60">Planes</p>
         </header>

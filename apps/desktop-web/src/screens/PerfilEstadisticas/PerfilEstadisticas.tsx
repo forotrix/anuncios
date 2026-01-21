@@ -7,8 +7,8 @@ import type { AnalyticsSummary } from "@anuncios/shared";
 import { logEvent } from "@/services/eventLogger";
 
 const RANGE_OPTIONS = [
-  { id: "7", label: "7 dias", days: 7 },
-  { id: "30", label: "30 dias", days: 30 },
+  { id: "7", label: "7 días", days: 7 },
+  { id: "30", label: "30 días", days: 30 },
 ];
 
 const EMPTY_SUMMARY: AnalyticsSummary = {
@@ -126,7 +126,7 @@ export const PerfilEstadisticas = () => {
 
   return (
     <div className="bg-black text-white">
-      <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-10 px-4 pb-24 pt-8 sm:px-6 lg:px-10 lg:pl-[260px]">
+      <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-10 px-4 pb-24 sm:px-6 lg:px-10">
         <section className="rounded-[32px] border border-[#ec4c51] bg-[#0b0d10]/80 px-6 py-6 shadow-[0_25px_60px_rgba(0,0,0,0.35)]">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex flex-wrap items-center gap-3">
@@ -166,12 +166,12 @@ export const PerfilEstadisticas = () => {
           )}
 
           <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <MetricCard title="Visualizaciones" value={effectiveSummary.totalViews} subtitle={`Ultimos ${range.days} dias`} />
+            <MetricCard title="Visualizaciones" value={effectiveSummary.totalViews} subtitle={`Últimos ${range.days} días`} />
             <MetricCard title="Contactos" value={effectiveSummary.totalContacts} subtitle="Clicks a canales" />
             <MetricCard
               title="Contactos/100 visitas"
               value={effectiveSummary.totalViews ? ((effectiveSummary.totalContacts / effectiveSummary.totalViews) * 100).toFixed(1) : "0.0"}
-              subtitle="Tasa de conversion"
+              subtitle="Tasa de conversión"
             />
             <MetricCard title="Anuncios destacados" value={effectiveSummary.topAds.length} subtitle="Con mejor rendimiento" />
           </div>
@@ -228,10 +228,27 @@ const ChartCard = ({
   contacts: AnalyticsSummary["contactSeries"];
   loading: boolean;
 }) => {
-  const maxValue = useMemo(() => {
-    const values = [...runs.map((point) => point.value), ...contacts.map((point) => point.value)];
-    return Math.max(10, ...values);
+  const displaySeries = useMemo(() => {
+    if (runs.length <= 10) {
+      return { runs, contacts };
+    }
+    const maxPoints = 10;
+    const step = (runs.length - 1) / (maxPoints - 1);
+    const indexes = Array.from({ length: maxPoints }, (_, index) => Math.round(index * step)).filter(
+      (value, index, arr) => index === 0 || value > arr[index - 1],
+    );
+    const sampledRuns = indexes.map((idx) => runs[idx]);
+    const sampledContacts = indexes.map((idx) => contacts[idx] ?? { date: runs[idx].date, value: 0 });
+    return { runs: sampledRuns, contacts: sampledContacts };
   }, [runs, contacts]);
+
+  const maxValue = useMemo(() => {
+    const values = [
+      ...displaySeries.runs.map((point) => point.value),
+      ...displaySeries.contacts.map((point) => point.value),
+    ];
+    return Math.max(10, ...values);
+  }, [displaySeries]);
 
   return (
     <div className="rounded-[24px] border border-[#2b0b12]/50 bg-[#0e1014]/80 px-6 py-6 shadow-[0_20px_50px_rgba(0,0,0,0.35)]">
@@ -241,11 +258,11 @@ const ChartCard = ({
       </div>
       <div className="mt-5 h-64 w-full">
         <div className="flex h-full items-end gap-3">
-          {runs.length === 0 ? (
+          {displaySeries.runs.length === 0 ? (
             <p className="text-sm text-white/60">Sin datos en este periodo.</p>
           ) : (
-            runs.map((point, index) => {
-              const contact = contacts[index];
+            displaySeries.runs.map((point, index) => {
+              const contact = displaySeries.contacts[index];
               const viewHeight = (point.value / maxValue) * 100;
               const contactHeight = contact ? (contact.value / maxValue) * 100 : 0;
               return (

@@ -270,7 +270,7 @@ export const PerfilCuenta = () => {
 
   return (
     <div className="bg-black text-white">
-      <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-10 px-4 pb-24 pt-8 sm:px-6 lg:px-10 lg:pl-[260px]">
+      <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-10 px-4 pb-24 sm:px-6 lg:px-10">
         <section className={shellClass}>
           <div className="space-y-6">
             <div className="rounded-2xl border border-white/10 bg-black/30 p-5 text-center">
