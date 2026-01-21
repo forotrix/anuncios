@@ -9,6 +9,7 @@ import type {
   GenderIdentity,
   GenderSex,
   MediaAsset,
+  ProfileType,
   WeekDay,
 } from "@anuncios/shared";
 import { adService } from "@/services/ad.service";
@@ -268,7 +269,7 @@ function buildPayload(state: MiAnuncioDraft) {
     ...state.socialTags.filter((tag) => tag.active).map((tag) => tag.label),
   ];
 
-  const profileType =
+  const profileType: ProfileType | undefined =
     state.genderSex === "female" && state.genderIdentity === "trans"
       ? "trans"
       : state.genderSex === "female" && state.genderIdentity === "cis"
