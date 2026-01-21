@@ -132,7 +132,7 @@ export const AgeRangeFilterControl = ({
             />
           </div>
 
-          <div className="mt-2 font-legal text-soft">De {normalizedMin} a {normalizedMax} a¤os</div>
+          <div className="mt-2 font-legal text-soft">De {normalizedMin} a {normalizedMax} años</div>
 
           <div className="flex w-full justify-end">
             <button type="button" className="font-legal text-rojo-cereza300" onClick={handleApply}>

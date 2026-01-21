@@ -6,8 +6,9 @@ import type {
   AvailabilitySlot,
   AvailabilityStatus,
   ContactChannels,
+  GenderIdentity,
+  GenderSex,
   MediaAsset,
-  ProfileType,
   WeekDay,
 } from "@anuncios/shared";
 import { adService } from "@/services/ad.service";
@@ -47,11 +48,11 @@ type MiAnuncioDraft = {
   availability: AvailabilitySlot[];
   seed?: AdMetadata["seed"] | null;
   ranking?: AdMetadata["ranking"] | null;
-  gender?: AdMetadata["gender"] | null;
   dataTags: SelectableTag[];
   socialTags: SelectableTag[];
   avatar: AvatarMedia | null;
-  profileType: ProfileType;
+  genderSex: GenderSex;
+  genderIdentity: GenderIdentity;
   age?: number;
   status: AdStatus;
 };
@@ -80,7 +81,7 @@ const isAuthExpired = (err: unknown) => {
   const normalized = message.toLowerCase();
   return (
     status === 401 ||
-    normalized.includes("sesion expirada") ||
+    normalized.includes("sesión expirada") ||
     normalized.includes("jwt expired") ||
     normalized.includes("token invalido")
   );
@@ -98,11 +99,11 @@ const createEmptyDraft = (): MiAnuncioDraft => ({
   availability: defaultAvailability(),
   seed: null,
   ranking: null,
-  gender: null,
   dataTags: buildTagState(DATA_TAGS_BLUEPRINT),
   socialTags: buildTagState(SOCIAL_TAGS_BLUEPRINT),
   avatar: null,
-  profileType: "chicas",
+  genderSex: "female",
+  genderIdentity: "cis",
   status: "draft",
 });
 
@@ -162,6 +163,11 @@ function mapAdToDraft(ad: any): MiAnuncioDraft {
   const attributes = (metadata?.attributes as Record<string, unknown>) ?? {};
   const activeDataTags = Array.isArray(attributes.dataTags) ? (attributes.dataTags as string[]) : ad.tags ?? [];
   const activeSocialTags = Array.isArray(attributes.socialTags) ? (attributes.socialTags as string[]) : [];
+  const fallbackGender =
+    ad.profileType === "trans"
+      ? { sex: "female" as const, identity: "trans" as const }
+      : { sex: "female" as const, identity: "cis" as const };
+  const gender = metadata?.gender ?? fallbackGender;
 
   return {
     adId: ad.id,
@@ -179,7 +185,6 @@ function mapAdToDraft(ad: any): MiAnuncioDraft {
     availability: mapMetadataToAvailability(metadata),
     seed: metadata?.seed ?? null,
     ranking: metadata?.ranking ?? null,
-    gender: metadata?.gender ?? null,
     dataTags: mergeTags(DATA_TAGS_BLUEPRINT, activeDataTags),
     socialTags: mergeTags(SOCIAL_TAGS_BLUEPRINT, activeSocialTags),
     avatar:
@@ -189,7 +194,8 @@ function mapAdToDraft(ad: any): MiAnuncioDraft {
             publicId: String(attributes.avatarPublicId),
           }
         : null,
-    profileType: ad.profileType ?? "chicas",
+    genderSex: gender.sex,
+    genderIdentity: gender.identity,
     age: ad.age ?? undefined,
     status: ad.status ?? "draft",
   };
@@ -247,9 +253,10 @@ function buildMetadata(state: MiAnuncioDraft): AdMetadata | null {
   if (state.ranking) {
     metadata.ranking = state.ranking;
   }
-  if (state.gender) {
-    metadata.gender = state.gender;
-  }
+  metadata.gender = {
+    sex: state.genderSex,
+    identity: state.genderIdentity,
+  };
 
   return metadata;
 }
@@ -261,13 +268,20 @@ function buildPayload(state: MiAnuncioDraft) {
     ...state.socialTags.filter((tag) => tag.active).map((tag) => tag.label),
   ];
 
+  const profileType =
+    state.genderSex === "female" && state.genderIdentity === "trans"
+      ? "trans"
+      : state.genderSex === "female" && state.genderIdentity === "cis"
+        ? "chicas"
+        : undefined;
+
   return {
     title: state.profileName || "Mi anuncio",
     description: state.description || "Sin descripcion",
     city: state.city || undefined,
     services,
     tags,
-    profileType: state.profileType,
+    ...(profileType ? { profileType } : {}),
     age: state.age,
     imageIds: state.images.map((image) => image.id),
     metadata: buildMetadata(state),
@@ -464,7 +478,7 @@ export function useMiAnuncioForm(
       logEvent("mi-anuncio:save", { adId: result.id });
     } catch (err) {
       if (isAuthExpired(err)) {
-        setError(new Error("Tu sesion ha expirado. Inicia sesion de nuevo."));
+        setError(new Error("Tu sesión ha expirado. Inicia sesión de nuevo."));
         options.onAuthExpired?.();
         return;
       }
@@ -485,7 +499,7 @@ export function useMiAnuncioForm(
       logEvent("mi-anuncio:publish", { adId: result.id });
     } catch (err) {
       if (isAuthExpired(err)) {
-        setError(new Error("Tu sesion ha expirado. Inicia sesion de nuevo."));
+        setError(new Error("Tu sesión ha expirado. Inicia sesión de nuevo."));
         options.onAuthExpired?.();
         return;
       }
@@ -506,7 +520,7 @@ export function useMiAnuncioForm(
       logEvent("mi-anuncio:unpublish", { adId: result.id });
     } catch (err) {
       if (isAuthExpired(err)) {
-        setError(new Error("Tu sesion ha expirado. Inicia sesion de nuevo."));
+        setError(new Error("Tu sesión ha expirado. Inicia sesión de nuevo."));
         options.onAuthExpired?.();
         return;
       }

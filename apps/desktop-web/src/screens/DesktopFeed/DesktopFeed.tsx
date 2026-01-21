@@ -98,7 +98,7 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
   const heroTotal = heroShowcase.length;
   const heroAd = heroShowcase[heroIndex] ?? heroShowcase[0] ?? ads[0] ?? null;
   const heroMeta = heroAd
-    ? [heroAd.age ? `${heroAd.age} anos` : null, heroAd.city ?? null].filter(Boolean).join(" / ")
+    ? [heroAd.age ? `${heroAd.age} años` : null, heroAd.city ?? null].filter(Boolean).join(" / ")
     : "";
   const heroTags = buildTagList(heroAd).slice(0, 4);
   const heroImage = heroAd ? getAdImage(heroAd) : FALLBACK_IMAGE;
@@ -270,7 +270,7 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
                   />
                 </div>
                 <div className="inline-flex h-[42px] items-center gap-2 self-end rounded-full border border-white/50 bg-transparent px-4 text-white shadow-[0_6px_20px_rgba(0,0,0,0.45)] sm:self-auto">
-                  <img src={ASSETS.flagEs} alt="Espana" className="h-6 w-8 rounded-sm object-cover" />
+                  <img src={ASSETS.flagEs} alt="España" className="h-6 w-8 rounded-sm object-cover" />
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 20 20"
@@ -301,7 +301,7 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
                             {heroAd.title}
                           </h1>
                           <div className="text-sm text-white/70">
-                            <p>{heroAd.age ? `${heroAd.age} anos` : "Sin edad"}</p>
+                            <p>{heroAd.age ? `${heroAd.age} años` : "Sin edad"}</p>
                             <p>{heroAd.city ?? "Sin ciudad"}</p>
                           </div>
                           <p className="text-sm text-white/70 sm:max-w-[420px]">
@@ -596,7 +596,7 @@ function buildCityOptions(summary: CitySummary[], ads: Ad[]) {
   }
 
   if (!base.length) {
-    return [{ city: "", label: "Espana", count: 0, isAll: true }];
+    return [{ city: "", label: "España", count: 0, isAll: true }];
   }
   const normalized = base
     .map((item) => ({
@@ -607,7 +607,7 @@ function buildCityOptions(summary: CitySummary[], ads: Ad[]) {
     .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
 
   const total = normalized.reduce((sum, option) => sum + option.count, 0);
-  return [{ city: "", label: "Espana", count: total, isAll: true }, ...normalized];
+  return [{ city: "", label: "España", count: total, isAll: true }, ...normalized];
 }
 
 type FavoriteCardProps = {
@@ -618,7 +618,7 @@ type FavoriteCardProps = {
 
 const FavoriteCard = ({ ad, isFavorite, onToggleFavorite }: FavoriteCardProps) => {
   const image = getAdImage(ad);
-  const subtitle = [ad.city ?? "Sin ciudad", ad.age ? `${ad.age} anos` : null].filter(Boolean).join(" / ");
+  const subtitle = [ad.city ?? "Sin ciudad", ad.age ? `${ad.age} años` : null].filter(Boolean).join(" / ");
   const tags = buildTagList(ad).slice(0, 2);
   const isMock = Boolean(ad.metadata?.seed?.isMock);
 
@@ -664,7 +664,7 @@ type FeedCardProps = {
 const FeedCard = ({ ad, isFavorite, onToggleFavorite }: FeedCardProps) => {
   const image = getAdImage(ad);
   const subtitle = ad.city ?? "Sin ciudad";
-  const titleLine = `${ad.title ?? "Anuncio"}${ad.age ? `, ${ad.age} anos` : ""}`;
+  const titleLine = `${ad.title ?? "Anuncio"}${ad.age ? `, ${ad.age} años` : ""}`;
   const isMock = Boolean(ad.metadata?.seed?.isMock);
 
   return (
@@ -725,7 +725,7 @@ function getAdImage(ad?: Ad | null) {
 function formatPlanLabel(plan?: string | null) {
   if (plan === "premium") return "Plan premium";
   if (plan === "featured") return "Plan destacado";
-  return "Plan basico";
+  return "Plan básico";
 }
 
 function formatGenderLabel(sex: GenderSex, identity: GenderIdentity) {

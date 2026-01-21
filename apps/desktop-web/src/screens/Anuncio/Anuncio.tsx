@@ -18,25 +18,25 @@ type Props = {
 };
 
 const FALLBACK_IMAGE = "https://res.cloudinary.com/dqhxthtby/image/upload/v1762882388/marina-hero.svg";
-const FALLBACK_SERVICES = ["Experiencias privadas", "Viajes", "Eventos", "Masajes", "Acompanamiento premium"];
+const FALLBACK_SERVICES = ["Experiencias privadas", "Viajes", "Eventos", "Masajes", "Acompañamiento premium"];
 const FALLBACK_TAGS = ["Premium", "Discreta", "Disponible 24/7"];
 const SAMPLE_COMMENTS: CommentItem[] = [
   {
     id: "c-1",
-    author: { id: "anon-1", name: "Usuario anonimo" },
-    text: "Hola amor, como estas?",
+    author: { id: "anon-1", name: "Usuario anónimo" },
+    text: "Hola amor, ¿cómo estás?",
     createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
   },
   {
     id: "c-2",
     author: { id: "anon-2", name: "Invitado" },
-    text: "Hacemos videollamada?",
+    text: "¿Hacemos videollamada?",
     createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
   },
   {
     id: "c-3",
     author: { id: "anon-3", name: "Alex" },
-    text: "Podemos ver fechas?",
+    text: "¿Podemos ver fechas?",
     createdAt: new Date(Date.now() - 72 * 60 * 60 * 1000).toISOString(),
   },
 ];
@@ -109,7 +109,7 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
   const tags = ad.tags?.length ? ad.tags : FALLBACK_TAGS;
   const priceRange = formatPriceRange(ad.priceFrom, ad.priceTo);
   const lastUpdate = formatUpdatedAt(ad.updatedAt);
-  const profileLabel = formatProfileType(ad.profileType);
+  const profileLabel = formatProfileLabel(ad.metadata?.gender?.sex, ad.metadata?.gender?.identity, ad.profileType);
   const planLabel = formatPlan(ad.plan);
   const activeImage = gallery[activeImageIndex];
   const metadata = ad.metadata ?? null;
@@ -128,7 +128,7 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
     if (!isAuthenticated || !accessToken || !canUseComments) return;
     const trimmed = commentText.trim();
     if (trimmed.length < 2) {
-      setCommentsError("Escribe un comentario mas largo.");
+      setCommentsError("Escribe un comentario más largo.");
       return;
     }
     setIsSubmitting(true);
@@ -166,7 +166,7 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
   return (
     <div className="bg-black text-white">
       <div className="flex min-h-screen w-full flex-col">
-        <SiteHeader profileType={ad.profileType ?? "chicas"} logoHref="/feed" />
+        <SiteHeader logoHref="/feed" />
 
         <main
           className={`w-full flex-1 transition-[padding-top] duration-200 ease-out ${
@@ -233,8 +233,8 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
                       )}
                     </div>
                     <p className="text-base text-white/70">
-                      {locationInfo?.city ?? ad.city ?? "Sin ciudad"}
-                      {ad.age ? ` / ${ad.age} anos` : ""}
+      {locationInfo?.city ?? ad.city ?? "Sin ciudad"}
+      {ad.age ? ` / ${ad.age} años` : ""}
                     </p>
                   </div>
                   {isOwnerView && (
@@ -281,7 +281,7 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
             <section className="mt-12 space-y-5">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.35em] text-white/60">Galeria</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.35em] text-white/60">Galería</p>
                   <h2 className="text-2xl font-semibold">Momentos destacados</h2>
                 </div>
                 {hasMultipleImages && (
@@ -332,8 +332,8 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
               <article className="rounded-[32px] border border-white/10 bg-[#08090d]/80 p-6 shadow-[0_25px_60px_rgba(0,0,0,0.45)]">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.35em] text-white/60">Disponibilidad
-                    </p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.35em] text-white/60">Disponibilidad
+                  </p>
                     <h2 className="text-xl font-semibold">Agenda semanal</h2>
                   </div>
                 </div>
@@ -359,8 +359,8 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
               <article className="rounded-[32px] border border-white/10 bg-[#08090d]/80 p-6 shadow-[0_25px_60px_rgba(0,0,0,0.45)]">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.35em] text-white/60">Servicios
-                    </p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.35em] text-white/60">Servicios
+                  </p>
                     <h2 className="text-xl font-semibold">Experiencias</h2>
                   </div>
                   <span className="text-sm text-white/60">{services.length} opciones</span>
@@ -386,7 +386,7 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
               </div>
               <form className="mt-6 space-y-3" onSubmit={handleCommentSubmit}>
                 <textarea
-                  placeholder={isAuthenticated ? "Dejar un comentario" : "Inicia sesion para comentar"}
+                  placeholder={isAuthenticated ? "Dejar un comentario" : "Inicia sesión para comentar"}
                   className="w-full rounded-[18px] border border-white/15 bg-black/20 px-4 py-3 text-sm text-white outline-none focus:border-rojo-cereza400/70"
                   rows={3}
                   value={commentText}
@@ -402,7 +402,7 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
                 </button>
               </form>
               {!isAuthenticated && (
-                <p className="mt-3 text-xs text-white/50">Debes iniciar sesion para comentar.</p>
+                <p className="mt-3 text-xs text-white/50">Debes iniciar sesión para comentar.</p>
               )}
               {commentsError && (
                 <p className="mt-3 text-xs text-[#ffb3b3]">{commentsError}</p>
@@ -421,7 +421,7 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
                     </div>
                   ))
                 ) : (
-                  <p className="text-sm text-white/60">Aun no hay comentarios.</p>
+                  <p className="text-sm text-white/60">Aún no hay comentarios.</p>
                 )}
               </div>
               <div className="mt-6 flex items-center justify-center gap-2 text-xs text-white/50">
@@ -471,16 +471,20 @@ function formatUpdatedAt(value: string) {
   return date.toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" });
 }
 
-function formatProfileType(type?: string | null) {
-  if (!type) return null;
-  if (type === "trans") return "Perfil trans";
-  return "Perfil chicas";
+function formatProfileLabel(sex?: string | null, identity?: string | null, fallbackType?: string | null) {
+  if (sex === "female" && identity === "cis") return "Chicas";
+  if (sex === "female" && identity === "trans") return "Chicas trans";
+  if (sex === "male" && identity === "cis") return "Chicos";
+  if (sex === "male" && identity === "trans") return "Chicos trans";
+  if (fallbackType === "trans") return "Chicas trans";
+  if (fallbackType) return "Chicas";
+  return null;
 }
 
 function formatPlan(plan?: string | null) {
   if (plan === "premium") return "Plan premium";
   if (plan === "featured") return "Plan destacado";
-  return "Plan basico";
+  return "Plan básico";
 }
 
 type ContactAction = {
@@ -517,7 +521,7 @@ function buildContactActions(contacts?: ContactChannels | null): ContactAction[]
   if (contacts.phone) {
     actions.push({
       type: "phone",
-      label: "Telefono",
+      label: "Teléfono",
       display: contacts.phone,
       href: `tel:${contacts.phone.replace(/\s+/g, "")}`,
     });
@@ -559,10 +563,10 @@ function formatDay(day: string) {
   const labels: Record<string, string> = {
     monday: "Lunes",
     tuesday: "Martes",
-    wednesday: "Miercoles",
+    wednesday: "Miércoles",
     thursday: "Jueves",
     friday: "Viernes",
-    saturday: "Sabado",
+    saturday: "Sábado",
     sunday: "Domingo",
   };
   return labels[day] ?? day;
@@ -574,7 +578,7 @@ function formatAvailabilitySlot(slot: {
   to?: string;
   ranges?: Array<{ from: string; to: string }>;
 }) {
-  if (slot.status === "all_day") return "Todo el dia";
+  if (slot.status === "all_day") return "Todo el día";
   if (slot.status === "unavailable") return "No disponible";
 
   const ranges = Array.isArray(slot.ranges) ? slot.ranges : [];

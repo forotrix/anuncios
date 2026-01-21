@@ -156,7 +156,7 @@ export const PerfilEstadisticas = () => {
 
           {!isAuthenticated && (
             <p className="mt-4 rounded-lg bg-[#2d070b]/70 px-4 py-2 text-sm text-[#ffb3b3]">
-              Inicia sesion para ver tus metricas reales.
+              Inicia sesión para ver tus métricas reales.
             </p>
           )}
           {error && (

@@ -212,7 +212,6 @@ function buildQueryString(filters?: AdsQuery) {
   if (filters.text) params.set("text", filters.text);
   if (filters.city) params.set("city", filters.city);
   if (filters.plan) params.set("plan", filters.plan);
-  if (filters.profileType) params.set("profileType", filters.profileType);
   if (filters.sex) params.set("sex", filters.sex);
   if (filters.identity) params.set("identity", filters.identity);
   if (typeof filters.ageMin === "number") params.set("ageMin", String(filters.ageMin));

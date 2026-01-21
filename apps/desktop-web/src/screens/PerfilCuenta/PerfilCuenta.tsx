@@ -437,9 +437,9 @@ export const PerfilCuenta = () => {
               <div className="rounded-2xl border border-[#ff4c4c]/50 bg-black/30 p-5">
                 <div className="space-y-3">
                   <h2 className="text-lg font-semibold">Cerrar y eliminar</h2>
-                  <p className="text-sm text-white/65">Si deseas cerrar sesion o eliminar definitivamente tu cuenta.</p>
+                  <p className="text-sm text-white/65">Si deseas cerrar sesión o eliminar definitivamente tu cuenta.</p>
                   <button type="button" className={neutralButtonClass} onClick={logout}>
-                    <span>Cerrar sesion</span>
+                    <span>Cerrar sesión</span>
                     <span className="text-xl leading-none">&gt;</span>
                   </button>
                   <button type="button" className={destructiveButtonClass} onClick={handleDeleteAccount}>

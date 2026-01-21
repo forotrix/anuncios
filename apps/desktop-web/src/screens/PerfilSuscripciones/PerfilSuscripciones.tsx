@@ -57,7 +57,7 @@ export const PerfilSuscripciones = () => {
     } catch (err) {
       setActionState("error");
       setActionMessage(
-        err instanceof Error ? err.message : "No se pudo cambiar la renovaciÃ³n automÃ¡tica.",
+        err instanceof Error ? err.message : "No se pudo cambiar la renovación automática.",
       );
     }
   };

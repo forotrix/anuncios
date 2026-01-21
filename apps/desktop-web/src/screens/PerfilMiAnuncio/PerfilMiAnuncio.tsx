@@ -2,7 +2,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { MediaAsset, ProfileType } from "@anuncios/shared";
+import type { MediaAsset } from "@anuncios/shared";
+import { GenderToggleStack } from "@/components/GenderToggleStack";
 import { useAuth } from "@/hooks/useAuth";
 import { mediaService, type UploadSignaturePayload } from "@/services/media.service";
 import { profileService } from "@/services/profile.service";
@@ -414,16 +415,21 @@ export const PerfilMiAnuncio = () => {
                   placeholder="25"
                   type="number"
                 />
-                <div>
-                  <FormLabel text="Tipo de perfil" />
-                  <select
-                    value={draft.profileType}
-                    onChange={(event) => updateField("profileType", event.target.value as ProfileType)}
-                    className={INPUT_CLASS}
-                  >
-                    <option value="chicas">Chicas</option>
-                    <option value="trans">Trans</option>
-                  </select>
+                <div className="md:col-span-2">
+                  <FormLabel text="Categoria de perfil" />
+                  <div className="mt-2 flex flex-col items-start gap-3">
+                    <GenderToggleStack
+                      sex={draft.genderSex}
+                      identity={draft.genderIdentity}
+                      onSexChange={(next) => updateField("genderSex", next)}
+                      onIdentityChange={(next) => updateField("genderIdentity", next)}
+                      gapClassName="gap-3"
+                      className="items-start"
+                    />
+                    <p className="text-xs text-white/50">
+                      Define el genero y la identidad del perfil (chicas, chicos, chicas trans, chicos trans).
+                    </p>
+                  </div>
                 </div>
               </div>
             </section>
