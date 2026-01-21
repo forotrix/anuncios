@@ -131,7 +131,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
             }`}
           >
             <div ref={topSentinelRef} aria-hidden="true" />
-            <div className="mx-auto flex w-full max-w-[1280px] gap-8 px-4 pb-24 pt-8 sm:px-6 lg:px-10">
+            <div className="mx-auto flex w-full max-w-[1280px] items-start gap-8 px-4 pb-24 pt-8 sm:px-6 lg:px-10">
               <aside className="w-[219px] shrink-0 self-start">
                 <nav
                   className="flex w-full flex-col rounded-[18px] bg-[#52040a]/70 p-2 backdrop-blur-sm"

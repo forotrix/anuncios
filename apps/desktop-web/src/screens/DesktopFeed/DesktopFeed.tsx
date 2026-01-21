@@ -14,11 +14,13 @@ import { useGenderPreference } from "@/hooks/useGenderPreference";
 import type { Ad, AdsQuery, FiltersCatalog, CitySummary } from "@/lib/ads";
 import { rankAds } from "@/lib/ranking";
 import type { GenderIdentity, GenderSex } from "@anuncios/shared";
+import { SERVICE_FILTER_OPTIONS } from "@anuncios/shared";
 import { ASSETS } from "@/constants/assets";
 import { useAuth } from "@/hooks/useAuth";
 import { useAuthModal } from "@/hooks/useAuthModal";
 
 const FALLBACK_IMAGE = "https://res.cloudinary.com/dqhxthtby/image/upload/v1762882388/marina-hero.svg";
+const SERVICE_LABELS = Object.fromEntries(SERVICE_FILTER_OPTIONS.map((option) => [option.id, option.label]));
 
 type PaginationMeta = {
   page: number;
@@ -712,8 +714,12 @@ const FeedCard = ({ ad, isFavorite, onToggleFavorite }: FeedCardProps) => {
 
 function buildTagList(ad?: Ad | null) {
   if (!ad) return [];
-  if (Array.isArray(ad.tags) && ad.tags.length) return ad.tags;
-  if (Array.isArray(ad.services) && ad.services.length) return ad.services;
+  if (Array.isArray(ad.tags) && ad.tags.length) {
+    return ad.tags.map((tag) => SERVICE_LABELS[tag] ?? tag);
+  }
+  if (Array.isArray(ad.services) && ad.services.length) {
+    return ad.services.map((service) => SERVICE_LABELS[service] ?? service);
+  }
   return [];
 }
 

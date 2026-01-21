@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { ContactChannels } from "@anuncios/shared";
+import { SERVICE_FILTER_OPTIONS, type ContactChannels } from "@anuncios/shared";
 import type { Ad } from "@/lib/ads";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
@@ -107,6 +107,12 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
 
   const services = ad.services?.length ? ad.services : FALLBACK_SERVICES;
   const tags = ad.tags?.length ? ad.tags : FALLBACK_TAGS;
+  const serviceLabelMap = useMemo(
+    () => Object.fromEntries(SERVICE_FILTER_OPTIONS.map((option) => [option.id, option.label])),
+    [],
+  );
+  const serviceLabels = services.map((service) => serviceLabelMap[service] ?? service);
+  const tagLabels = tags.map((tag) => serviceLabelMap[tag] ?? tag);
   const priceRange = formatPriceRange(ad.priceFrom, ad.priceTo);
   const lastUpdate = formatUpdatedAt(ad.updatedAt);
   const profileLabel = formatProfileLabel(ad.metadata?.gender?.sex, ad.metadata?.gender?.identity, ad.profileType);
@@ -266,7 +272,7 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
                 </div>
 
                 <div className="mt-6 flex flex-wrap gap-2">
-                  {tags.map((tag) => (
+                  {tagLabels.map((tag) => (
                     <span
                       key={`${ad.id}-tag-${tag}`}
                       className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs text-white"
@@ -366,7 +372,7 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
                   <span className="text-sm text-white/60">{services.length} opciones</span>
                 </div>
                 <div className="mt-6 flex flex-wrap gap-3">
-                  {services.map((service) => (
+                  {serviceLabels.map((service) => (
                     <span
                       key={`${ad.id}-service-${service}`}
                       className="rounded-full border border-rojo-cereza400/40 bg-rojo-cereza400/10 px-4 py-1 text-sm text-white"

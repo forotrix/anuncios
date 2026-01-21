@@ -151,8 +151,8 @@ export function parseFiltersFromSearch(searchParams: Record<string, string | str
   const identity = (identityRaw === "cis" || identityRaw === "trans" ? identityRaw : undefined) as
     | GenderIdentity
     | undefined;
-  const ageMax = toNumber(searchParams.ageMax);
-  const ageMin = toNumber(searchParams.ageMin);
+  const ageMax = toNumber(searchParams.ageMax) ?? AGE_FILTER_CONFIG.defaultValue ?? AGE_FILTER_CONFIG.max;
+  const ageMin = toNumber(searchParams.ageMin) ?? AGE_FILTER_CONFIG.min;
   const featured = normalizeBoolean(searchParams.featured);
   const page = toNumber(searchParams.page) ?? 1;
   const limit = toNumber(searchParams.limit) ?? 9;

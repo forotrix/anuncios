@@ -302,9 +302,9 @@ async function generateAndInsertMockAds(count: number) {
 }
 
 async function cleanupSeedData() {
-  await Ad.deleteMany({});
-  await User.deleteMany({});
-  console.info('Wiped all ads and users (media preserved).');
+  await Ad.deleteMany({ 'metadata.seed.isMock': true });
+  await User.deleteMany({ email: { $regex: /^provider\\d+@example\\.com$/i } });
+  console.info('Wiped mock ads and provider seed users (media preserved).');
 }
 
 async function insertSampleAds() {
