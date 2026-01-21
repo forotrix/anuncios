@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { GenderIdentity, GenderSex, ProfileType } from "@anuncios/shared";
-import { ProfileTypeToggle } from "@/components/ProfileTypeToggle";
+import type { GenderIdentity, GenderSex } from "@anuncios/shared";
 import { GenderToggleStack } from "@/components/GenderToggleStack";
 import { BotonChicas } from "@/components/BotonChicas";
 import { ASSETS } from "@/constants/assets";
@@ -12,8 +11,6 @@ import { useAuthModal } from "@/hooks/useAuthModal";
 import { useEffect, useState } from "react";
 
 type Props = {
-  profileType?: ProfileType;
-  onProfileTypeChange?: (next: ProfileType) => void;
   genderSex?: GenderSex;
   genderIdentity?: GenderIdentity;
   onGenderSexChange?: (next: GenderSex) => void;
@@ -27,8 +24,6 @@ const DEFAULT_PROFILE_TOGGLE_CLASS = "absolute left-[618px] top-1/2 -translate-y
 const MENU_ID = "siteheader-mobile-menu";
 
 export const SiteHeader = ({
-  profileType,
-  onProfileTypeChange,
   genderSex,
   genderIdentity,
   onGenderSexChange,
@@ -39,7 +34,6 @@ export const SiteHeader = ({
 }: Props) => {
   const { isAuthenticated, user } = useAuth();
   const { openRegister } = useAuthModal();
-  const canToggleProfile = profileType && onProfileTypeChange;
   const canToggleGender = genderSex && genderIdentity && onGenderSexChange && onGenderIdentityChange;
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -72,23 +66,17 @@ export const SiteHeader = ({
       <header className="fixed left-0 top-0 z-[240] w-full bg-black">
         <div className="mx-auto w-full max-w-[1440px]">
           <div className="relative h-[72px] w-full md:h-[168px]">
-            {(canToggleGender || canToggleProfile) && (
+            {canToggleGender && (
               <div className={`hidden md:block ${profileToggleClassName}`}>
                 <div className="flex flex-col items-center py-2">
-                  {canToggleGender ? (
-                    <GenderToggleStack
-                      sex={genderSex}
-                      identity={genderIdentity}
-                      onSexChange={onGenderSexChange}
-                      onIdentityChange={onGenderIdentityChange}
-                      gapClassName="gap-3"
-                      className="items-center"
-                    />
-                  ) : (
-                    canToggleProfile && (
-                      <ProfileTypeToggle value={profileType} onToggle={onProfileTypeChange} className="mx-auto" />
-                    )
-                  )}
+                  <GenderToggleStack
+                    sex={genderSex}
+                    identity={genderIdentity}
+                    onSexChange={onGenderSexChange}
+                    onIdentityChange={onGenderIdentityChange}
+                    gapClassName="gap-3"
+                    className="items-center"
+                  />
                 </div>
               </div>
             )}
@@ -187,21 +175,17 @@ export const SiteHeader = ({
               </button>
             </div>
 
-            {(canToggleGender || canToggleProfile) && (
+            {canToggleGender && (
               <div className="rounded-[28px] border border-white/10 bg-[#07080c]/70 p-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.35em] text-white/50">Preferencias</p>
                 <div className="mt-4">
-                  {canToggleGender ? (
-                    <GenderToggleStack
-                      sex={genderSex}
-                      identity={genderIdentity}
-                      onSexChange={onGenderSexChange}
-                      onIdentityChange={onGenderIdentityChange}
-                      gapClassName="gap-3"
-                    />
-                  ) : (
-                    canToggleProfile && <ProfileTypeToggle value={profileType} onToggle={onProfileTypeChange} />
-                  )}
+                  <GenderToggleStack
+                    sex={genderSex}
+                    identity={genderIdentity}
+                    onSexChange={onGenderSexChange}
+                    onIdentityChange={onGenderIdentityChange}
+                    gapClassName="gap-3"
+                  />
                 </div>
               </div>
             )}

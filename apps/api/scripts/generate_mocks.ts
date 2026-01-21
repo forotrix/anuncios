@@ -6,17 +6,124 @@ import { normalizeAdTitle } from '../src/utils/normalizeTitle';
 
 const CITIES = ['Barcelona', 'Madrid', 'Valencia', 'Sevilla', 'Bilbao', 'Málaga', 'Alicante', 'Zaragoza'];
 const SERVICES = [
-  '69', 'BDSM', 'Parejas', 'Lluvia dorada', 'Sado', 'Virtual', 'Juegos de roles',
-  'Fetichismos', 'Masajes', 'Oral', 'Novia', 'Lenceria', 'Mujeres y Hombres',
-  'Atencion a solteros y solteras', 'Juguetes eroticos', 'Sugar Baby', 'Viajes',
-  'Videollamada', 'Piercings', 'Sin proteccion', 'Hoteles', 'Parking', 'Rolplay', 'Posturas'
+  '69',
+  'BDSM',
+  'Parejas',
+  'Lluvia dorada',
+  'Sado',
+  'Virtual',
+  'Juegos de roles',
+  'Fetichismos',
+  'Masajes',
+  'Oral',
+  'Novia',
+  'Lencería',
+  'Mujeres y Hombres',
+  'Atención a solteros y solteras',
+  'Juguetes eróticos',
+  'Sugar Baby',
+  'Viajes',
+  'Videollamada',
+  'Piercings',
+  'Sin protección',
+  'Hoteles',
+  'Parking',
+  'Roleplay',
+  'Posturas',
 ];
-const TAGS = ['Rubia', 'Morena', 'Pelirroja', 'Ojos Azules', 'Ojos Verdes', 'Tatuajes', 'Piercing', 'Natural', 'Operada', 'Delgada', 'Curvy', 'Alta', 'Bajita'];
-const NAMES_CHICAS = ['Marina', 'Valentina', 'Kiara', 'Sofia', 'Lucia', 'Martina', 'Julia', 'Paula', 'Daniela', 'Valeria', 'Alba', 'Emma', 'Carla', 'Sara', 'Noa', 'Claudia', 'Carmen', 'Ana', 'Elena', 'Irene', 'Adriana', 'Lola', 'Vega', 'Leyre', 'Candela', 'Aitana', 'Olivia', 'Rocio', 'Celia', 'Blanca'];
-const NAMES_TRANS = ['Carla', 'Daniela', 'Michelle', 'Stefany', 'Yasmin', 'Luna', 'Venus', 'Afrodita', 'Paris', 'Milan', 'Dakota', 'Sasha', 'Nikita', 'Ariel', 'Bambi', 'Barbie', 'Chanel', 'Diva', 'Electra', 'Fiona'];
+const TAGS = [
+  'Rubia',
+  'Morena',
+  'Pelirroja',
+  'Ojos Azules',
+  'Ojos Verdes',
+  'Tatuajes',
+  'Piercing',
+  'Natural',
+  'Operada',
+  'Delgada',
+  'Curvy',
+  'Alta',
+  'Bajita',
+];
+const NAMES_CHICAS = [
+  'Marina',
+  'Valentina',
+  'Kiara',
+  'Sofía',
+  'Lucía',
+  'Martina',
+  'Julia',
+  'Paula',
+  'Daniela',
+  'Valeria',
+  'Alba',
+  'Emma',
+  'Carla',
+  'Sara',
+  'Noa',
+  'Claudia',
+  'Carmen',
+  'Ana',
+  'Elena',
+  'Irene',
+  'Adriana',
+  'Lola',
+  'Vega',
+  'Leyre',
+  'Candela',
+  'Aitana',
+  'Olivia',
+  'Rocío',
+  'Celia',
+  'Blanca',
+];
+const NAMES_TRANS = [
+  'Carla',
+  'Daniela',
+  'Michelle',
+  'Stefany',
+  'Yasmin',
+  'Luna',
+  'Venus',
+  'Afrodita',
+  'Paris',
+  'Milan',
+  'Dakota',
+  'Sasha',
+  'Nikita',
+  'Ariel',
+  'Bambi',
+  'Barbie',
+  'Chanel',
+  'Diva',
+  'Electra',
+  'Fiona',
+];
 
-const TITLES_PREFIX = ['Increíble', 'Maravillosa', 'Espectacular', 'Dulce', 'Ardiente', 'Sensual', 'Elegante', 'Exclusiva', 'Única', 'Inolvidable'];
-const TITLES_SUFFIX = ['te espera', 'para ti', 'en tu ciudad', 'disponible', 'cerca de ti', 'recién llegada', 'solo por hoy', 'trato de novios', 'experiencia real'];
+const TITLES_PREFIX = [
+  'Increíble',
+  'Maravillosa',
+  'Espectacular',
+  'Dulce',
+  'Ardiente',
+  'Sensual',
+  'Elegante',
+  'Exclusiva',
+  'Única',
+  'Inolvidable',
+];
+const TITLES_SUFFIX = [
+  'te espera',
+  'para ti',
+  'en tu ciudad',
+  'disponible',
+  'cerca de ti',
+  'recién llegada',
+  'solo por hoy',
+  'trato de novios',
+  'experiencia real',
+];
 
 const DESCRIPTIONS = [
   'Hola amores, soy una chica dulce y cariñosa que busca pasar un buen rato contigo. Me encantan los masajes y el trato de novios. Llámame y no te arrepentirás.',
@@ -81,14 +188,14 @@ function generateMockData() {
   const entries: GeneratedEntry[] = [];
   const totalAds = 100;
   const targetChicas = Math.floor(totalAds * 0.7); // 70%
-  
+
   for (let i = 0; i < totalAds; i++) {
     const isChica = i < targetChicas;
     const profileType = isChica ? 'chicas' : 'trans';
     const namePool = isChica ? NAMES_CHICAS : NAMES_TRANS;
     const name = randomItem(namePool);
     const uniqueId = i + 1;
-    
+
     // User Data
     const user = {
       email: `provider${uniqueId}@example.com`,
@@ -106,7 +213,7 @@ function generateMockData() {
     const priceTo = priceFrom + randomInt(50, 200);
     const plan = Math.random() > 0.8 ? 'premium' : 'basic'; // 20% premium
     const highlighted = plan === 'premium' && Math.random() > 0.5;
-    
+
     // Images (using placeholders for now as we don't have 100 real images)
     // In a real scenario, we would map these to real Cloudinary IDs
     const images = [

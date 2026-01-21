@@ -291,7 +291,7 @@ const ContactsCard = ({
         {loading && <span className="text-xs text-white/60">Actualizando...</span>}
       </div>
       {total === 0 ? (
-        <p className="mt-6 text-sm text-white/60">Aun no hay contactos registrados en este periodo.</p>
+        <p className="mt-6 text-sm text-white/60">Aún no hay contactos registrados en este periodo.</p>
       ) : (
         <ul className="mt-6 space-y-3">
           {Object.entries(contactsByChannel).map(([channel, value]) => (
@@ -323,7 +323,7 @@ const TopAdsTable = ({
   if (!ads.length) {
     return (
       <p className="mt-6 text-sm text-white/60">
-        {loading ? "Cargando top de anuncios..." : "Aun no hay anuncios con actividad en este periodo."}
+        {loading ? "Cargando top de anuncios..." : "Aún no hay anuncios con actividad en este periodo."}
       </p>
     );
   }

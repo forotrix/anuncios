@@ -87,7 +87,7 @@ const defaultMessages: Record<number, string> = {
   403: "No tienes permiso para realizar esta accion",
   404: "Servicio no disponible",
   409: "El correo ya esta registrado",
-  429: "Demasiados intentos, prueba mas tarde",
+  429: "Demasiados intentos, prueba más tarde",
   500: "Error interno, vuelve a intentarlo",
 };
 

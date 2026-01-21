@@ -34,7 +34,7 @@ export const MOCK_ADS: MockBackendAd[] = [
     owner: 'provider-123',
     title: 'Masajes relajantes en Barcelona',
     description:
-      'Sesiones personalizadas de masaje relajante y descontracturante en pleno centro de Barcelona. Ambiente tranquilo, musica suave y aceites esenciales.',
+      'Sesiones personalizadas de masaje relajante y descontracturante en pleno centro de Barcelona. Ambiente tranquilo, música suave y aceites esenciales.',
     city: 'Barcelona',
     services: ['Masajes', 'Spa'],
     priceFrom: 60,
@@ -44,6 +44,9 @@ export const MOCK_ADS: MockBackendAd[] = [
     tags: ['masaje', 'spa'],
     age: 24,
     highlighted: true,
+    metadata: {
+      gender: { sex: 'female', identity: 'cis' },
+    },
     images: [
       {
         id: 'mock-1-image',
@@ -63,7 +66,7 @@ export const MOCK_ADS: MockBackendAd[] = [
     owner: 'provider-456',
     title: 'Sesiones de yoga y mindfulness',
     description:
-      'Clases particulares y en grupo de yoga restaurativo. Ideal para reducir el estres diario y mejorar la flexibilidad.',
+      'Clases particulares y en grupo de yoga restaurativo. Ideal para reducir el estrés diario y mejorar la flexibilidad.',
     city: 'Madrid',
     services: ['Yoga', 'Mindfulness'],
     priceFrom: 35,
@@ -72,6 +75,9 @@ export const MOCK_ADS: MockBackendAd[] = [
     tags: ['yoga', 'mindfulness'],
     age: 29,
     plan: 'basic',
+    metadata: {
+      gender: { sex: 'female', identity: 'cis' },
+    },
     images: [
       {
         id: 'mock-2-image',
@@ -89,11 +95,11 @@ export const MOCK_ADS: MockBackendAd[] = [
   {
     id: 'mock-3',
     owner: 'provider-789',
-    title: 'Acompanamiento premium en Valencia',
+    title: 'Acompañamiento premium en Valencia',
     description:
-      'Experiencias personalizadas y discretas en la ciudad de Valencia. Atencion exclusiva y profesionalidad garantizada.',
+      'Experiencias personalizadas y discretas en la ciudad de Valencia. Atención exclusiva y profesionalidad garantizada.',
     city: 'Valencia',
-    services: ['Acompanantes'],
+    services: ['Acompañantes'],
     priceFrom: 120,
     priceTo: 250,
     profileType: 'chicas',
@@ -101,6 +107,9 @@ export const MOCK_ADS: MockBackendAd[] = [
     age: 27,
     highlighted: true,
     plan: 'premium',
+    metadata: {
+      gender: { sex: 'female', identity: 'cis' },
+    },
     images: [
       {
         id: 'mock-3-image',
@@ -129,6 +138,9 @@ export const MOCK_ADS: MockBackendAd[] = [
     tags: ['terapias'],
     age: 26,
     plan: 'basic',
+    metadata: {
+      gender: { sex: 'female', identity: 'trans' },
+    },
     images: [
       {
         id: 'mock-4-image',
@@ -144,3 +156,4 @@ export const MOCK_ADS: MockBackendAd[] = [
     updatedAt: '2024-10-05T09:15:00.000Z',
   },
 ];
+

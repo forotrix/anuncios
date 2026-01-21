@@ -303,7 +303,7 @@ export const PerfilMiAnuncio = () => {
                     placeholder="@usuario"
                   />
                   <Field
-                    label="Telefono"
+                    label="Teléfono"
                     value={draft.contacts.phone ?? ""}
                     onChange={(value) => updateContacts("phone", value)}
                     placeholder="+34 600 000 001"
@@ -360,7 +360,7 @@ export const PerfilMiAnuncio = () => {
             </section>
 
             <section className={cardClass}>
-              <CardHeader label="Galeria" title="Imagenes del anuncio" />
+              <CardHeader label="Galería" title="Imágenes del anuncio" />
               <p className="mt-2 text-sm text-white/60">Sube fotos para destacar tu perfil en el feed.</p>
               <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {draft.images.map((image) => (
