@@ -5,7 +5,7 @@ import { env } from '../src/config/env';
 import { User } from '../src/models/User';
 import { Ad } from '../src/models/Ad';
 import { Media } from '../src/models/Media';
-import { SERVICE_FILTER_OPTIONS, type ProfileType } from '@anuncios/shared';
+import { SERVICE_FILTER_OPTIONS, type GenderIdentity, type GenderSex, type ProfileType } from '@anuncios/shared';
 import { normalizeAdTitle } from '../src/utils/normalizeTitle';
 
 // --- Constants & Configuration ---
@@ -41,6 +41,7 @@ type SeedAd = {
   priceTo: number;
   plan: 'basic' | 'premium';
   profileType?: ProfileType;
+  gender?: { sex: GenderSex; identity: GenderIdentity };
   highlighted: boolean;
   images: SeedImage[];
 };
@@ -53,13 +54,13 @@ const SAMPLE_ADS: SeedAd[] = [
     description:
       'Acompañamiento exclusivo, masajes eróticos y experiencias a medida en Barcelona. Marina cuida cada detalle para que vivas un encuentro inolvidable.',
     city: 'Barcelona',
-    services: ['erotic-massage', 'companionship', 'gfe'],
+    services: ['erotic-massage', 'companionship', 'gfe', 'body-to-body', 'shower-together'],
     tags: ['masaje', 'latina', 'premium'],
     age: 24,
     priceFrom: 120,
     priceTo: 220,
     plan: 'premium',
-    profileType: 'chicas',
+    gender: { sex: 'female', identity: 'cis' },
     highlighted: true,
     images: [{ publicId: 'marina-hero.svg', width: 900, height: 1200 }],
   },
@@ -68,30 +69,45 @@ const SAMPLE_ADS: SeedAd[] = [
     description:
       'Sesiones privadas de tantra relajante, rituales sensoriales y acompañamiento mindful en Madrid. Ideal para desconectar del ritmo urbano.',
     city: 'Madrid',
-    services: ['erotic-massage', 'videocall', 'domination'],
+    services: ['erotic-massage', 'videocall', 'domination', 'fetish-session', 'submission'],
     tags: ['tantra', 'wellness', 'mindfulness'],
     age: 29,
     priceFrom: 90,
     priceTo: 150,
     plan: 'basic',
-    profileType: 'chicas',
+    gender: { sex: 'female', identity: 'trans' },
     highlighted: false,
     images: [{ publicId: 'valentina-hero.svg', width: 1024, height: 1536 }],
   },
   {
-    title: 'Kiara',
+    title: 'Bruno',
     description:
-      'Kiara ofrece citas exclusivas, viajes y eventos corporativos con la máxima discreción y glamour. Disponible en Valencia y desplazamientos.',
+      'Bruno ofrece encuentros discretos y experiencias premium en Valencia. Disponible para viajes y eventos corporativos.',
     city: 'Valencia',
-    services: ['romantic-date', 'companionship', 'gfe'],
+    services: ['romantic-date', 'companionship', 'gfe', 'personal-training', 'active-role', 'power-exchange'],
     tags: ['viajes', 'lujo', 'discreción'],
-    age: 27,
-    priceFrom: 150,
-    priceTo: 300,
+    age: 30,
+    priceFrom: 140,
+    priceTo: 280,
     plan: 'premium',
-    profileType: 'chicas',
+    gender: { sex: 'male', identity: 'cis' },
     highlighted: true,
     images: [{ publicId: 'kiara-hero.svg', width: 900, height: 1200 }],
+  },
+  {
+    title: 'Nico',
+    description:
+      'Nico combina carisma y discreción para encuentros únicos en Barcelona. Disponible para cenas, viajes y planes especiales.',
+    city: 'Barcelona',
+    services: ['companionship', 'gfe', 'videocall', 'versatile-role', 'attends-men', 'attends-couple-mm'],
+    tags: ['discreción', 'viajes', 'premium'],
+    age: 28,
+    priceFrom: 110,
+    priceTo: 210,
+    plan: 'basic',
+    gender: { sex: 'male', identity: 'trans' },
+    highlighted: false,
+    images: [{ publicId: 'marina-hero.svg', width: 900, height: 1200 }],
   },
 ];
 
@@ -240,7 +256,7 @@ async function generateAndInsertMockAds(count: number) {
       priceFrom: randomInt(50, 150),
       priceTo: randomInt(150, 300),
       plan,
-      profileType,
+      ...(profileType ? { profileType } : {}),
       highlighted,
       status: 'published',
       images: [],
@@ -309,9 +325,12 @@ async function insertSampleAds() {
 
   for (const sample of SAMPLE_ADS) {
     const gender =
-      sample.profileType === 'chicas'
-        ? { sex: 'female' as const, identity: 'cis' as const }
-        : { sex: 'female' as const, identity: 'trans' as const };
+      sample.gender ??
+      (sample.profileType === 'trans'
+        ? { sex: 'female' as const, identity: 'trans' as const }
+        : { sex: 'female' as const, identity: 'cis' as const });
+    const legacyProfileType: ProfileType | undefined =
+      gender.sex === 'female' ? (gender.identity === 'trans' ? 'trans' : 'chicas') : undefined;
     const splitDay = sample.title === 'Marina' ? 'wednesday' : undefined;
     const ad = await Ad.create({
       owner: owner.id,
@@ -324,7 +343,7 @@ async function insertSampleAds() {
       priceFrom: sample.priceFrom,
       priceTo: sample.priceTo,
       plan: sample.plan,
-      profileType: sample.profileType,
+      ...(legacyProfileType ? { profileType: legacyProfileType } : {}),
       highlighted: sample.highlighted,
       status: 'published',
       images: [],
@@ -403,4 +422,5 @@ main().catch((err) => {
   mongoose.connection.close();
   process.exit(1);
 });
+
 

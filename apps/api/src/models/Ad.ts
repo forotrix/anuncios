@@ -11,7 +11,7 @@ export interface IAd {
   age?: number;
   priceFrom?: number;
   priceTo?: number;
-  profileType: ProfileType;
+  profileType?: ProfileType;
   highlighted: boolean;
   images: Types.ObjectId[];
   status: AdStatus;
@@ -30,7 +30,7 @@ const adSchema = new Schema<IAd>(
     age: { type: Number, min: 18, max: 99 },
     priceFrom: Number,
     priceTo: Number,
-    profileType: { type: String, enum: ['chicas', 'trans'], default: 'chicas', index: true },
+    profileType: { type: String, enum: ['chicas', 'trans'], index: true },
     highlighted: { type: Boolean, default: false, index: true },
     images: { type: [Schema.Types.ObjectId], ref: 'Media', default: [] },
     // status y plan ya estaban

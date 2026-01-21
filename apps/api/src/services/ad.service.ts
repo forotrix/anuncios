@@ -320,6 +320,64 @@ export type ListFilters = {
   excludeIds?: string[];
 };
 
+function resolveProfileType(
+  profileType: ProfileType | undefined,
+  gender: AdMetadata['gender'] | undefined | null,
+): ProfileType | undefined {
+  if (profileType) return profileType;
+  if (!gender) return undefined;
+  if (gender.sex !== 'female') return undefined;
+  return gender.identity === 'trans' ? 'trans' : 'chicas';
+}
+
+function shuffleInPlace<T>(items: T[], start = 0, end = items.length) {
+  for (let i = end - 1; i > start; i -= 1) {
+    const j = start + Math.floor(Math.random() * (i - start + 1));
+    [items[i], items[j]] = [items[j], items[i]];
+  }
+}
+
+function getPlanScore(plan?: Plan) {
+  if (plan === 'premium') return 2;
+  if (plan === 'basic') return 1;
+  return 0;
+}
+
+function getRankingScore(ad: IAd, mode: 'weekly' | 'featured' | 'default') {
+  const ranking = (ad.metadata as AdMetadata | undefined | null)?.ranking;
+  if (mode === 'weekly') {
+    return typeof ranking?.favoritesWeekly === 'number' ? ranking.favoritesWeekly : 0;
+  }
+  if (mode === 'featured') {
+    return typeof ranking?.boostFeatured === 'number' ? ranking.boostFeatured : 0;
+  }
+  return getPlanScore(ad.plan);
+}
+
+function isMockAd(ad: IAd) {
+  return (ad.metadata as AdMetadata | undefined | null)?.seed?.isMock === true;
+}
+
+function shuffleTies(items: IAd[], mode: 'weekly' | 'featured' | 'default') {
+  let start = 0;
+  while (start < items.length) {
+    const current = items[start];
+    const currentKey = `${isMockAd(current) ? '1' : '0'}:${getRankingScore(current, mode)}`;
+    let end = start + 1;
+    while (end < items.length) {
+      const next = items[end];
+      const nextKey = `${isMockAd(next) ? '1' : '0'}:${getRankingScore(next, mode)}`;
+      if (nextKey !== currentKey) break;
+      end += 1;
+    }
+    if (end - start > 1) {
+      shuffleInPlace(items, start, end);
+    }
+    start = end;
+  }
+  return items;
+}
+
 function clampPagination(page = 1, limit = 20) {
   const safePage = Number.isFinite(page) && page > 0 ? Math.floor(page) : 1;
   const safeLimit = Number.isFinite(limit) && limit > 0 ? Math.min(Math.floor(limit), MAX_LIMIT) : 20;
@@ -332,22 +390,24 @@ export async function createAd(ownerId: string, data: CreateAdInput) {
     imageIds = [],
     services = [],
     tags = [],
-    profileType = 'chicas',
+    profileType,
     highlighted = false,
     metadata,
     ...fields
   } = data;
+  const sanitizedMetadata = sanitizeMetadata(metadata);
+  const legacyProfileType = resolveProfileType(profileType, sanitizedMetadata?.gender);
   const ad = await Ad.create({
     ...fields,
     title: normalizeAdTitle(title),
     services,
     tags,
-    profileType,
+    ...(legacyProfileType ? { profileType: legacyProfileType } : {}),
     highlighted,
     owner: ownerId,
     status: 'draft',
     images: [],
-    metadata: sanitizeMetadata(metadata),
+    metadata: sanitizedMetadata,
   });
 
   let result;
@@ -427,8 +487,17 @@ export async function listAds(filters: ListFilters, page = 1, limit = 20) {
   const cityCountersQuery: FilterQuery<IAd> = { ...query };
   delete cityCountersQuery.city;
 
-  const weeklySort: Record<string, 1 | -1> = { 'metadata.ranking.favoritesWeekly': -1, createdAt: -1 };
-  const defaultSort: Record<string, 1 | -1> = { plan: -1, createdAt: -1 };
+  const weeklySort: Record<string, 1 | -1> = {
+    'metadata.seed.isMock': 1,
+    'metadata.ranking.favoritesWeekly': -1,
+    createdAt: -1,
+  };
+  const featuredSort: Record<string, 1 | -1> = {
+    'metadata.seed.isMock': 1,
+    'metadata.ranking.boostFeatured': -1,
+    createdAt: -1,
+  };
+  const defaultSort: Record<string, 1 | -1> = { 'metadata.seed.isMock': 1, plan: -1, createdAt: -1 };
 
   const runQuery = (sort: Record<string, 1 | -1>) =>
     Promise.all([
@@ -462,14 +531,19 @@ export async function listAds(filters: ListFilters, page = 1, limit = 20) {
   let total: number;
   let citySummary: Array<{ city: string; count: number }>;
 
+  const sortMode: 'weekly' | 'featured' | 'default' = weekly ? 'weekly' : featured ? 'featured' : 'default';
+  const primarySort = weekly ? weeklySort : featured ? featuredSort : defaultSort;
+
   try {
-    [items, total, citySummary] = await runQuery(weekly ? weeklySort : defaultSort);
+    [items, total, citySummary] = await runQuery(primarySort);
   } catch (error) {
     if (!weekly) {
       throw error;
     }
     [items, total, citySummary] = await runQuery(defaultSort);
   }
+
+  shuffleTies(items, sortMode);
 
   return {
     items: items.map(serializeAd),
@@ -520,7 +594,7 @@ export async function updateAd(ownerId: string, id: string, data: UpdateAdInput)
   if (!ad) throw createError(404, 'Not found');
   if (ad.status === 'blocked') throw createError(403, 'Ad blocked by admin');
 
-  const { imageIds, services, tags, metadata, ...fields } = data;
+  const { imageIds, services, tags, metadata, profileType, ...fields } = data;
 
   Object.assign(ad, fields);
   if (typeof fields.title === 'string') {
@@ -533,7 +607,14 @@ export async function updateAd(ownerId: string, id: string, data: UpdateAdInput)
     ad.tags = tags;
   }
   if (metadata !== undefined) {
-    ad.metadata = sanitizeMetadata(metadata);
+    const sanitized = sanitizeMetadata(metadata);
+    ad.metadata = sanitized;
+    if (profileType === undefined && sanitized?.gender) {
+      ad.profileType = resolveProfileType(undefined, sanitized.gender);
+    }
+  }
+  if (profileType !== undefined) {
+    ad.profileType = profileType;
   }
 
   let response;
