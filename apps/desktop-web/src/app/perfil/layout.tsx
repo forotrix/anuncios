@@ -125,90 +125,92 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
             Volver
           </Link>
 
-          <nav
-            className="absolute top-[300px] z-10 flex w-[219px] flex-col rounded-[18px] bg-[#52040a]/70 p-2 backdrop-blur-sm"
-            style={{ left: "calc(50% - 600px)" }}
-            aria-label="Navegacion de perfil"
-          >
-            {NAV_LINKS.map((link, index) => {
-              const active = isActive(link.href);
-              const roundedClass =
-                index === 0
-                  ? "rounded-t-[18px]"
-                  : index === NAV_LINKS.length - 1
-                    ? "rounded-b-[18px]"
-                    : "rounded-[14px]";
-              if (link.requiresProvider && !isProviderRole) {
-                return (
-                  <button
-                    key={link.href}
-                    type="button"
-                    className={`${NAV_LINK_BASE_CLASS} ${roundedClass} cursor-not-allowed bg-[#1a0a0b] text-white/50`}
-                    onClick={handleProviderRequired}
-                  >
-                    {link.label}
-                  </button>
-                );
-              }
-
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`${NAV_LINK_BASE_CLASS} ${roundedClass} ${
-                    active
-                      ? "bg-[#870005] text-white shadow-[0_0_10px_rgba(135,0,5,0.45)]"
-                      : "text-gris-claro hover:text-white"
-                  }`}
-                  aria-current={active ? "page" : undefined}
-                >
-                  {link.label}
-                </Link>
-              );
-            })}
-            {isProviderRole ? (
-              <Link
-                href={
-                  ownAdId
-                    ? `/anuncio/${ownAdId}`
-                    : ownAdPreviewId
-                      ? `/anuncio/preview/${ownAdPreviewId}`
-                      : "/perfil/mi-anuncio"
-                }
-                className={`${NAV_LINK_BASE_CLASS} rounded-[14px] ${
-                  pathname.startsWith("/anuncio")
-                    ? "bg-[#870005] text-white shadow-[0_0_10px_rgba(135,0,5,0.45)]"
-                    : "text-gris-claro hover:text-white"
-                }`}
-              >
-                Ver anuncio
-              </Link>
-            ) : (
-              <button
-                type="button"
-                className={`${NAV_LINK_BASE_CLASS} rounded-[14px] cursor-not-allowed bg-[#1a0a0b] text-white/50`}
-                onClick={handleProviderRequired}
-              >
-                Ver anuncio
-              </button>
-            )}
-            {roleNotice && <p className="px-3 pt-2 text-[11px] text-white/60">{roleNotice}</p>}
-            <button
-              type="button"
-              onClick={logout}
-              className={`${NAV_LINK_BASE_CLASS} rounded-[14px] text-gris-claro hover:text-white`}
-            >
-              Salir
-            </button>
-          </nav>
-
           <main
             className={`transition-[padding-top] duration-200 ease-out ${
               isAtTop ? "pt-[72px] md:pt-[168px]" : ""
             }`}
           >
             <div ref={topSentinelRef} aria-hidden="true" />
-            {children}
+            <div className="mx-auto flex w-full max-w-[1280px] gap-8 px-4 pb-24 pt-8 sm:px-6 lg:px-10">
+              <aside className="w-[219px] shrink-0 self-start">
+                <nav
+                  className="flex w-full flex-col rounded-[18px] bg-[#52040a]/70 p-2 backdrop-blur-sm"
+                  aria-label="Navegacion de perfil"
+                >
+                  {NAV_LINKS.map((link, index) => {
+                    const active = isActive(link.href);
+                    const roundedClass =
+                      index === 0
+                        ? "rounded-t-[18px]"
+                        : index === NAV_LINKS.length - 1
+                          ? "rounded-b-[18px]"
+                          : "rounded-[14px]";
+                    if (link.requiresProvider && !isProviderRole) {
+                      return (
+                        <button
+                          key={link.href}
+                          type="button"
+                          className={`${NAV_LINK_BASE_CLASS} ${roundedClass} cursor-not-allowed bg-[#1a0a0b] text-white/50`}
+                          onClick={handleProviderRequired}
+                        >
+                          {link.label}
+                        </button>
+                      );
+                    }
+
+                    return (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        className={`${NAV_LINK_BASE_CLASS} ${roundedClass} ${
+                          active
+                            ? "bg-[#870005] text-white shadow-[0_0_10px_rgba(135,0,5,0.45)]"
+                            : "text-gris-claro hover:text-white"
+                        }`}
+                        aria-current={active ? "page" : undefined}
+                      >
+                        {link.label}
+                      </Link>
+                    );
+                  })}
+                  {isProviderRole ? (
+                    <Link
+                      href={
+                        ownAdId
+                          ? `/anuncio/${ownAdId}`
+                          : ownAdPreviewId
+                            ? `/anuncio/preview/${ownAdPreviewId}`
+                            : "/perfil/mi-anuncio"
+                      }
+                      className={`${NAV_LINK_BASE_CLASS} rounded-[14px] ${
+                        pathname.startsWith("/anuncio")
+                          ? "bg-[#870005] text-white shadow-[0_0_10px_rgba(135,0,5,0.45)]"
+                          : "text-gris-claro hover:text-white"
+                      }`}
+                    >
+                      Ver anuncio
+                    </Link>
+                  ) : (
+                    <button
+                      type="button"
+                      className={`${NAV_LINK_BASE_CLASS} rounded-[14px] cursor-not-allowed bg-[#1a0a0b] text-white/50`}
+                      onClick={handleProviderRequired}
+                    >
+                      Ver anuncio
+                    </button>
+                  )}
+                  {roleNotice && <p className="px-3 pt-2 text-[11px] text-white/60">{roleNotice}</p>}
+                  <button
+                    type="button"
+                    onClick={logout}
+                    className={`${NAV_LINK_BASE_CLASS} rounded-[14px] text-gris-claro hover:text-white`}
+                  >
+                    Salir
+                  </button>
+                </nav>
+              </aside>
+              <div className="min-w-0 flex-1">{children}</div>
+            </div>
           </main>
         </div>
 

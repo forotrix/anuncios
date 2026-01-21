@@ -321,7 +321,7 @@ export const PerfilMiAnuncio = () => {
                     placeholder="Barcelona"
                   />
                   <div>
-                    <FormLabel text="Región" />
+                  <FormLabel text="Categoría de perfil" />
                     <select
                       value={draft.region}
                       onChange={(event) => updateField("region", event.target.value)}
@@ -653,7 +653,7 @@ const Field = ({
   type?: string;
 }) => (
   <div>
-    <FormLabel text={label} />
+                  <FormLabel text="Categoría de perfil" />
     <input
       type={type}
       value={value}
@@ -712,7 +712,7 @@ const TagBoard = ({
   onToggle: (id: string) => void;
 }) => (
   <div>
-    <FormLabel text={title} />
+                  <FormLabel text="Categoría de perfil" />
     <div className="mt-3 flex flex-wrap gap-2">
       {tags.map((tag) => (
         <button
