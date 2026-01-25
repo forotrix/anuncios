@@ -1,4 +1,7 @@
+ "use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ASSETS } from "@/constants/assets";
 
 type Props = {
@@ -6,11 +9,21 @@ type Props = {
 };
 
 export const SiteFooter = ({ className = "" }: Props) => {
+  const pathname = usePathname();
+  const handleLogoClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    if (pathname === "/feed") {
+      event.preventDefault();
+      window.scrollTo({ top: 0 });
+    }
+  };
+
   return (
     <footer className={`w-full bg-black px-6 py-10 text-white md:px-16 ${className}`}>
       <div className="mx-auto flex w-full max-w-[1440px] flex-wrap items-start justify-between gap-8">
         <div className="flex flex-col items-start gap-3">
-          <img className="h-[66px] w-[273px]" alt="ForoTrix" src={ASSETS.logoPrimary} />
+          <Link href="/feed" onClick={handleLogoClick} aria-label="Volver al inicio">
+            <img className="h-[66px] w-[273px]" alt="ForoTrix" src={ASSETS.logoPrimary} />
+          </Link>
           <p className="text-sm text-white/80">La plataforma de encuentros y fantasías donde el deseo cobra vida</p>
         </div>
 

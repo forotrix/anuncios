@@ -39,6 +39,12 @@ export const SiteHeader = ({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const handleRegisterClick = onRegisterClick ?? openRegister;
   const isProviderRole = user?.role === "provider" || user?.role === "agency";
+  const handleLogoClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    if (pathname === "/feed") {
+      event.preventDefault();
+      window.scrollTo({ top: 0 });
+    }
+  };
   const handleProviderRequired = () => {
     window.alert("Solo disponible para anunciantes (provider/agency).");
   };
@@ -83,6 +89,7 @@ export const SiteHeader = ({
 
             <Link
               href={logoHref}
+              onClick={handleLogoClick}
               className="absolute left-4 top-1/2 block h-[40px] w-[170px] -translate-y-1/2 md:left-[72px] md:h-[66px] md:w-[273px]"
               aria-label="Volver al inicio"
             >
