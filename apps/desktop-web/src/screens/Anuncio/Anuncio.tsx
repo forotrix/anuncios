@@ -192,7 +192,13 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
             <section className="grid gap-8 lg:grid-cols-[360px,1fr]">
               <div className="rounded-[32px] border border-white/10 bg-[#040507] p-4 shadow-[0_30px_80px_rgba(0,0,0,0.5)]">
                 <div className="overflow-hidden rounded-[24px]" style={{ aspectRatio: "3 / 4" }}>
-                  <img src={activeImage.url} alt={ad.title} className="h-full w-full object-cover" />
+                  <img
+                    src={activeImage.url}
+                    alt={ad.title}
+                    className="h-full w-full object-cover"
+                    loading="eager"
+                    decoding="async"
+                  />
                 </div>
                 {hasMultipleImages && (
                   <div className="mt-3 flex items-center justify-between text-sm text-white/70">
@@ -328,7 +334,13 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
                       index === activeImageIndex ? "border-rojo-cereza400" : "border-white/10"
                     }`}
                   >
-                    <img src={image.url} alt={`${ad.title} ${index + 1}`} className="h-full w-full object-cover" />
+                    <img
+                      src={image.url}
+                      alt={`${ad.title} ${index + 1}`}
+                      className="h-full w-full object-cover"
+                      loading="lazy"
+                      decoding="async"
+                    />
                   </button>
                 ))}
               </div>

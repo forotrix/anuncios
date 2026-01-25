@@ -272,7 +272,13 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
                   />
                 </div>
                 <div className="inline-flex h-[42px] items-center gap-2 self-end rounded-full border border-white/50 bg-transparent px-4 text-white shadow-[0_6px_20px_rgba(0,0,0,0.45)] sm:self-auto">
-                  <img src={ASSETS.flagEs} alt="España" className="h-6 w-8 rounded-sm object-cover" />
+                  <img
+                    src={ASSETS.flagEs}
+                    alt="España"
+                    className="h-6 w-8 rounded-sm object-cover"
+                    loading="lazy"
+                    decoding="async"
+                  />
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 20 20"
@@ -337,6 +343,8 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
                           src={heroImage}
                           alt={heroAd.title}
                           className="h-[260px] w-full rounded-[40px] object-cover object-top shadow-[0_30px_80px_rgba(0,0,0,0.6)] sm:h-[360px] lg:h-[460px]"
+                          loading="eager"
+                          decoding="async"
                         />
                       </div>
                     </div>
@@ -627,7 +635,13 @@ const FavoriteCard = ({ ad, isFavorite, onToggleFavorite }: FavoriteCardProps) =
   return (
     <article className="relative overflow-hidden rounded-[20px] border border-[#d52b33]/60 bg-[linear-gradient(135deg,#3a0d15_0%,#200608_70%,#140405_100%)] p-2.5 shadow-[0_22px_50px_rgba(213,43,51,0.2)] sm:p-3">
       <div className="overflow-hidden rounded-[16px]">
-        <img src={image} alt={ad.title ?? "Anuncio destacado"} className="h-48 w-full rounded-[16px] object-cover object-[50%_20%] sm:h-56" />
+        <img
+          src={image}
+          alt={ad.title ?? "Anuncio destacado"}
+          className="h-48 w-full rounded-[16px] object-cover object-[50%_20%] sm:h-56"
+          loading="lazy"
+          decoding="async"
+        />
       </div>
       <div className="mt-3 space-y-1">
         <h3 className="text-base font-semibold">{ad.title ?? "Anuncio destacado"}</h3>
@@ -676,6 +690,8 @@ const FeedCard = ({ ad, isFavorite, onToggleFavorite }: FeedCardProps) => {
           src={image}
           alt={ad.title ?? "Anuncio"}
           className="h-full w-full object-cover object-top transition duration-500 group-hover:scale-105"
+          loading="lazy"
+          decoding="async"
         />
         <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
         {isMock && (

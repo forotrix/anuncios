@@ -368,7 +368,13 @@ export const PerfilMiAnuncio = () => {
                     key={image.id}
                     className="group relative overflow-hidden rounded-[18px] border border-white/10 bg-black/40"
                   >
-                    <img src={image.url} alt="Imagen del anuncio" className="h-44 w-full object-cover" />
+                    <img
+                      src={image.url}
+                      alt="Imagen del anuncio"
+                      className="h-44 w-full object-cover"
+                      loading="lazy"
+                      decoding="async"
+                    />
                     <button
                       type="button"
                       onClick={() => handleRemoveImage(image.id)}
@@ -596,7 +602,13 @@ const AvatarSection = ({
   <div className="flex flex-col items-center gap-3 text-center">
     <div className="relative h-40 w-40 overflow-hidden rounded-full border-4 border-[#8e1522] bg-black/30">
       {avatar?.url ? (
-        <img src={avatar.url} alt="Avatar" className="h-full w-full object-cover" />
+        <img
+          src={avatar.url}
+          alt="Avatar"
+          className="h-full w-full object-cover"
+          loading="eager"
+          decoding="async"
+        />
       ) : (
         <div className="flex h-full w-full items-center justify-center text-white/60">Sin avatar</div>
       )}
