@@ -74,6 +74,17 @@ const isBrowser = () => typeof window !== "undefined";
 const cloudinaryInstance = () =>
   (typeof window === "undefined" ? undefined : (window as CloudinaryGlobal).cloudinary);
 
+const buildCloudinaryUrl = (url: string, width: number) => {
+  if (!url.includes("/image/upload/")) return url;
+  return url.replace("/image/upload/", `/image/upload/w_${width},c_fill,q_auto,f_auto/`);
+};
+
+const buildCloudinarySrcSet = (url?: string | null, widths: number[] = [320, 480, 640]) => {
+  if (!url) return undefined;
+  if (!url.includes("/image/upload/")) return undefined;
+  return widths.map((width) => `${buildCloudinaryUrl(url, width)} ${width}w`).join(", ");
+};
+
 export const PerfilMiAnuncio = () => {
   const { user, accessToken, logout, updateUser } = useAuth();
   const form = useMiAnuncioForm(accessToken, { onAuthExpired: logout });
@@ -370,6 +381,8 @@ export const PerfilMiAnuncio = () => {
                   >
                     <img
                       src={image.url}
+                      srcSet={buildCloudinarySrcSet(image.url, [320, 480, 640])}
+                      sizes="(max-width: 768px) 100vw, 280px"
                       alt="Imagen del anuncio"
                       className="h-44 w-full object-cover"
                       loading="lazy"
@@ -604,6 +617,8 @@ const AvatarSection = ({
       {avatar?.url ? (
         <img
           src={avatar.url}
+          srcSet={buildCloudinarySrcSet(avatar.url, [160, 240, 320])}
+          sizes="160px"
           alt="Avatar"
           className="h-full w-full object-cover"
           loading="eager"

@@ -54,6 +54,17 @@ const CLOUDINARY_MAX_FILE_SIZE =
 
 const isBrowser = () => typeof window !== "undefined";
 
+const buildCloudinaryUrl = (url: string, width: number) => {
+  if (!url.includes("/image/upload/")) return url;
+  return url.replace("/image/upload/", `/image/upload/w_${width},c_fill,q_auto,f_auto/`);
+};
+
+const buildCloudinarySrcSet = (url?: string | null, widths: number[] = [160, 240, 320]) => {
+  if (!url) return undefined;
+  if (!url.includes("/image/upload/")) return undefined;
+  return widths.map((width) => `${buildCloudinaryUrl(url, width)} ${width}w`).join(", ");
+};
+
 export const PerfilCuenta = () => {
   const { user, accessToken, updateUser, logout } = useAuth();
   const [profile, setProfile] = useState<AccountProfile | null>(null);
@@ -276,7 +287,15 @@ export const PerfilCuenta = () => {
             <div className="rounded-2xl border border-white/10 bg-black/30 p-5 text-center">
               <div className="mx-auto flex h-40 w-40 items-center justify-center overflow-hidden rounded-full border border-white/15 bg-[#52040a]/60">
                 {profile?.avatarUrl ? (
-                  <img src={profile.avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
+                  <img
+                    src={profile.avatarUrl}
+                    srcSet={buildCloudinarySrcSet(profile.avatarUrl)}
+                    sizes="160px"
+                    alt="Avatar"
+                    className="h-full w-full object-cover"
+                    loading="eager"
+                    decoding="async"
+                  />
                 ) : (
                   <span className="text-sm text-white/60">Sin avatar</span>
                 )}

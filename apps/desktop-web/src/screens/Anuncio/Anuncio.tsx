@@ -41,6 +41,17 @@ const SAMPLE_COMMENTS: CommentItem[] = [
   },
 ];
 
+function buildCloudinaryUrl(url: string, width: number) {
+  if (!url.includes("/image/upload/")) return url;
+  return url.replace("/image/upload/", `/image/upload/w_${width},c_fill,q_auto,f_auto/`);
+}
+
+function buildCloudinarySrcSet(url?: string | null, widths: number[] = [520, 720, 960, 1200]) {
+  if (!url) return undefined;
+  if (!url.includes("/image/upload/")) return undefined;
+  return widths.map((width) => `${buildCloudinaryUrl(url, width)} ${width}w`).join(", ");
+}
+
 export const Anuncio = ({ ad, isMock = false }: Props) => {
   const { isAuthenticated, accessToken } = useAuth();
   const gallery = useMemo(() => buildGallery(ad), [ad]);
@@ -118,6 +129,7 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
   const profileLabel = formatProfileLabel(ad.metadata?.gender?.sex, ad.metadata?.gender?.identity, ad.profileType);
   const planLabel = formatPlan(ad.plan);
   const activeImage = gallery[activeImageIndex];
+  const activeSrcSet = buildCloudinarySrcSet(activeImage?.url, [520, 720, 960, 1200]);
   const metadata = ad.metadata ?? null;
   const contactActions = useMemo(() => buildContactActions(metadata?.contacts), [metadata?.contacts]);
   const availability = metadata?.availability ?? [];
@@ -194,6 +206,8 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
                 <div className="overflow-hidden rounded-[24px]" style={{ aspectRatio: "3 / 4" }}>
                   <img
                     src={activeImage.url}
+                    srcSet={activeSrcSet}
+                    sizes="(max-width: 1024px) 100vw, 420px"
                     alt={ad.title}
                     className="h-full w-full object-cover"
                     loading="eager"
@@ -336,6 +350,8 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
                   >
                     <img
                       src={image.url}
+                      srcSet={buildCloudinarySrcSet(image.url, [240, 360, 520])}
+                      sizes="(max-width: 1024px) 160px, 192px"
                       alt={`${ad.title} ${index + 1}`}
                       className="h-full w-full object-cover"
                       loading="lazy"

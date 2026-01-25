@@ -104,6 +104,7 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
     : "";
   const heroTags = buildTagList(heroAd).slice(0, 4);
   const heroImage = heroAd ? getAdImage(heroAd) : FALLBACK_IMAGE;
+  const heroSrcSet = buildCloudinarySrcSet(heroImage, [520, 720, 960, 1200]);
   const heroGenderLabel = formatGenderLabel(sex, identity);
 
   const favoritesStart = heroAds.length ? 0 : heroTotal;
@@ -341,6 +342,8 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
                       <div className="order-1 relative lg:order-2">
                         <img
                           src={heroImage}
+                          srcSet={heroSrcSet}
+                          sizes="(max-width: 1024px) 100vw, 600px"
                           alt={heroAd.title}
                           className="h-[260px] w-full rounded-[40px] object-cover object-top shadow-[0_30px_80px_rgba(0,0,0,0.6)] sm:h-[360px] lg:h-[460px]"
                           loading="eager"
@@ -628,6 +631,7 @@ type FavoriteCardProps = {
 
 const FavoriteCard = ({ ad, isFavorite, onToggleFavorite }: FavoriteCardProps) => {
   const image = getAdImage(ad);
+  const srcSet = buildCloudinarySrcSet(image, [360, 520, 720]);
   const subtitle = [ad.city ?? "Sin ciudad", ad.age ? `${ad.age} años` : null].filter(Boolean).join(" / ");
   const tags = buildTagList(ad).slice(0, 2);
   const isMock = Boolean(ad.metadata?.seed?.isMock);
@@ -637,6 +641,8 @@ const FavoriteCard = ({ ad, isFavorite, onToggleFavorite }: FavoriteCardProps) =
       <div className="overflow-hidden rounded-[16px]">
         <img
           src={image}
+          srcSet={srcSet}
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 360px"
           alt={ad.title ?? "Anuncio destacado"}
           className="h-48 w-full rounded-[16px] object-cover object-[50%_20%] sm:h-56"
           loading="lazy"
@@ -679,6 +685,7 @@ type FeedCardProps = {
 
 const FeedCard = ({ ad, isFavorite, onToggleFavorite }: FeedCardProps) => {
   const image = getAdImage(ad);
+  const srcSet = buildCloudinarySrcSet(image, [360, 520, 720]);
   const subtitle = ad.city ?? "Sin ciudad";
   const titleLine = `${ad.title ?? "Anuncio"}${ad.age ? `, ${ad.age} años` : ""}`;
   const isMock = Boolean(ad.metadata?.seed?.isMock);
@@ -688,6 +695,8 @@ const FeedCard = ({ ad, isFavorite, onToggleFavorite }: FeedCardProps) => {
       <div className="relative h-60 w-full overflow-hidden sm:h-72">
         <img
           src={image}
+          srcSet={srcSet}
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 360px"
           alt={ad.title ?? "Anuncio"}
           className="h-full w-full object-cover object-top transition duration-500 group-hover:scale-105"
           loading="lazy"
@@ -742,6 +751,17 @@ function buildTagList(ad?: Ad | null) {
 function getAdImage(ad?: Ad | null) {
   if (!ad) return FALLBACK_IMAGE;
   return ad.images?.[0]?.url ?? FALLBACK_IMAGE;
+}
+
+function buildCloudinaryUrl(url: string, width: number) {
+  if (!url.includes("/image/upload/")) return url;
+  return url.replace("/image/upload/", `/image/upload/w_${width},c_fill,q_auto,f_auto/`);
+}
+
+function buildCloudinarySrcSet(url?: string | null, widths: number[] = [360, 520, 720]) {
+  if (!url) return undefined;
+  if (!url.includes("/image/upload/")) return undefined;
+  return widths.map((width) => `${buildCloudinaryUrl(url, width)} ${width}w`).join(", ");
 }
 
 function formatPlanLabel(plan?: string | null) {
