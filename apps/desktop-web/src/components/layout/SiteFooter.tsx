@@ -27,25 +27,25 @@ export const SiteFooter = ({ className = "" }: Props) => {
           <p className="text-sm text-white/80">La plataforma de encuentros y fantasías donde el deseo cobra vida</p>
         </div>
 
-        <nav className="grid grid-cols-2 gap-x-12 gap-y-2 text-sm" aria-label="Legal">
-          <Link href="/legal/aviso-legal" className="col-start-1 row-start-1 text-left text-white/80 hover:text-white">
+        <nav className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2 sm:gap-x-6 sm:gap-y-2" aria-label="Legal">
+          <Link href="/legal/aviso-legal" className="text-left text-white/80 hover:text-white">
             Aviso legal
           </Link>
-          <Link href="/legal/privacidad" className="col-start-1 row-start-2 text-left text-white/80 hover:text-white">
+          <Link href="/legal/privacidad" className="text-left text-white/80 hover:text-white">
             Política de privacidad
           </Link>
-          <Link href="/legal/cookies" className="col-start-1 row-start-3 text-left text-white/80 hover:text-white">
+          <Link href="/legal/cookies" className="text-left text-white/80 hover:text-white">
             Política de cookies
           </Link>
-          <Link href="/legal/terminos" className="col-start-1 row-start-4 text-left text-white/80 hover:text-white">
+          <Link href="/legal/terminos" className="text-left text-white/80 hover:text-white">
             Términos y condiciones
           </Link>
-          <Link href="/ayuda" className="col-start-2 row-start-1 text-left text-white/80 hover:text-white">
+          <Link href="/ayuda" className="text-left text-white/80 hover:text-white">
             Ayuda / Contacto
           </Link>
         </nav>
 
-        <p className="w-[320px] text-sm text-white/80">
+        <p className="text-sm text-white/80 sm:max-w-[320px]">
           ForoTrix actúa como intermediario técnico y no participa en los servicios ofrecidos por los anunciantes.
         </p>
       </div>

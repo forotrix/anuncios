@@ -119,98 +119,100 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
 
           <main
             className={`transition-[padding-top] duration-200 ease-out ${
-              isAtTop ? "pt-[72px] md:pt-[168px]" : ""
+              isAtTop ? "pt-[88px] md:pt-[196px]" : ""
             }`}
           >
             <div ref={topSentinelRef} aria-hidden="true" />
-                        <div className="mb-6 flex items-center gap-4">
-              <Link
-                href="/feed"
-                className="inline-flex items-center gap-3 rounded-[14px] px-2 py-2 font-h3-subdivisiones font-[number:var(--h3-subdivisiones-font-weight)] text-gris-claro text-[length:var(--h3-subdivisiones-font-size)] tracking-[var(--h3-subdivisiones-letter-spacing)] leading-[var(--h3-subdivisiones-line-height)] [font-style:var(--h3-subdivisiones-font-style)] transition hover:text-white"
-              >
-                <img className="h-[45px] w-[58px]" alt="Volver" src={ASSETS.profileHeroTop} />
-                Volver
-              </Link>
-            </div>
-<div className="mx-auto flex w-full max-w-[1360px] items-start gap-12 px-4 pb-24 pt-8 sm:px-6 lg:px-10">
-              <aside className="w-[178px] shrink-0 self-start">
-                <nav
-                  className="flex w-full flex-col rounded-[18px] bg-[#52040a]/70 p-2 backdrop-blur-sm"
-                  aria-label="Navegacion de perfil"
+            <div className="mx-auto w-full max-w-[1360px] px-4 pb-24 pt-6 sm:px-6 lg:px-10">
+              <div className="mb-6 flex items-center gap-4">
+                <Link
+                  href="/feed"
+                  className="inline-flex items-center gap-3 rounded-[14px] px-2 py-2 font-h3-subdivisiones font-[number:var(--h3-subdivisiones-font-weight)] text-gris-claro text-[length:var(--h3-subdivisiones-font-size)] tracking-[var(--h3-subdivisiones-letter-spacing)] leading-[var(--h3-subdivisiones-line-height)] [font-style:var(--h3-subdivisiones-font-style)] transition hover:text-white"
                 >
-                  {NAV_LINKS.map((link, index) => {
-                    const active = isActive(link.href);
-                    const roundedClass =
-                      index === 0
-                        ? "rounded-t-[18px]"
-                        : index === NAV_LINKS.length - 1
-                          ? "rounded-b-[18px]"
-                          : "rounded-[14px]";
-                    if (link.requiresProvider && !isProviderRole) {
+                  <img className="h-[45px] w-[58px]" alt="Volver" src={ASSETS.profileHeroTop} />
+                  Volver
+                </Link>
+              </div>
+              <div className="flex items-start gap-12">
+                <aside className="w-[178px] shrink-0 self-start">
+                  <nav
+                    className="flex w-full flex-col rounded-[18px] bg-[#52040a]/70 p-2 backdrop-blur-sm"
+                    aria-label="Navegacion de perfil"
+                  >
+                    {NAV_LINKS.map((link, index) => {
+                      const active = isActive(link.href);
+                      const roundedClass =
+                        index === 0
+                          ? "rounded-t-[18px]"
+                          : index === NAV_LINKS.length - 1
+                            ? "rounded-b-[18px]"
+                            : "rounded-[14px]";
+                      if (link.requiresProvider && !isProviderRole) {
+                        return (
+                          <button
+                            key={link.href}
+                            type="button"
+                            className={`${NAV_LINK_BASE_CLASS} ${roundedClass} cursor-not-allowed bg-[#1a0a0b] text-white/50`}
+                            onClick={handleProviderRequired}
+                          >
+                            {link.label}
+                          </button>
+                        );
+                      }
+
                       return (
-                        <button
+                        <Link
                           key={link.href}
-                          type="button"
-                          className={`${NAV_LINK_BASE_CLASS} ${roundedClass} cursor-not-allowed bg-[#1a0a0b] text-white/50`}
-                          onClick={handleProviderRequired}
+                          href={link.href}
+                          className={`${NAV_LINK_BASE_CLASS} ${roundedClass} ${
+                            active
+                              ? "bg-[#870005] text-white shadow-[0_0_10px_rgba(135,0,5,0.45)]"
+                              : "text-gris-claro hover:text-white"
+                          }`}
+                          aria-current={active ? "page" : undefined}
                         >
                           {link.label}
-                        </button>
+                        </Link>
                       );
-                    }
-
-                    return (
+                    })}
+                    {isProviderRole ? (
                       <Link
-                        key={link.href}
-                        href={link.href}
-                        className={`${NAV_LINK_BASE_CLASS} ${roundedClass} ${
-                          active
+                        href={
+                          ownAdId
+                            ? `/anuncio/${ownAdId}`
+                            : ownAdPreviewId
+                              ? `/anuncio/preview/${ownAdPreviewId}`
+                              : "/perfil/mi-anuncio"
+                        }
+                        className={`${NAV_LINK_BASE_CLASS} rounded-[14px] ${
+                          pathname.startsWith("/anuncio")
                             ? "bg-[#870005] text-white shadow-[0_0_10px_rgba(135,0,5,0.45)]"
                             : "text-gris-claro hover:text-white"
                         }`}
-                        aria-current={active ? "page" : undefined}
                       >
-                        {link.label}
+                        Ver anuncio
                       </Link>
-                    );
-                  })}
-                  {isProviderRole ? (
-                    <Link
-                      href={
-                        ownAdId
-                          ? `/anuncio/${ownAdId}`
-                          : ownAdPreviewId
-                            ? `/anuncio/preview/${ownAdPreviewId}`
-                            : "/perfil/mi-anuncio"
-                      }
-                      className={`${NAV_LINK_BASE_CLASS} rounded-[14px] ${
-                        pathname.startsWith("/anuncio")
-                          ? "bg-[#870005] text-white shadow-[0_0_10px_rgba(135,0,5,0.45)]"
-                          : "text-gris-claro hover:text-white"
-                      }`}
-                    >
-                      Ver anuncio
-                    </Link>
-                  ) : (
+                    ) : (
+                      <button
+                        type="button"
+                        className={`${NAV_LINK_BASE_CLASS} rounded-[14px] cursor-not-allowed bg-[#1a0a0b] text-white/50`}
+                        onClick={handleProviderRequired}
+                      >
+                        Ver anuncio
+                      </button>
+                    )}
+                    {roleNotice && <p className="px-3 pt-2 text-[11px] text-white/60">{roleNotice}</p>}
                     <button
                       type="button"
-                      className={`${NAV_LINK_BASE_CLASS} rounded-[14px] cursor-not-allowed bg-[#1a0a0b] text-white/50`}
-                      onClick={handleProviderRequired}
+                      onClick={logout}
+                      className={`${NAV_LINK_BASE_CLASS} rounded-[14px] text-gris-claro hover:text-white`}
                     >
-                      Ver anuncio
+                      Salir
                     </button>
-                  )}
-                  {roleNotice && <p className="px-3 pt-2 text-[11px] text-white/60">{roleNotice}</p>}
-                  <button
-                    type="button"
-                    onClick={logout}
-                    className={`${NAV_LINK_BASE_CLASS} rounded-[14px] text-gris-claro hover:text-white`}
-                  >
-                    Salir
-                  </button>
-                </nav>
-              </aside>
-              <div className="min-w-0 flex-1">{children}</div>
+                  </nav>
+                </aside>
+                <div className="min-w-0 flex-1">{children}</div>
+              </div>
             </div>
           </main>
         </div>

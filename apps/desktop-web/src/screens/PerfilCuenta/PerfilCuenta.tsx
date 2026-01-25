@@ -375,7 +375,7 @@ export const PerfilCuenta = () => {
                     void handlePasswordSubmit();
                   }}
                 >
-                  <div className="grid gap-4 md:grid-cols-3">
+                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     <label className="flex flex-col gap-2 text-sm text-white/70">
                       Actual
                       <input

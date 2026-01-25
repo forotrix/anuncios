@@ -299,7 +299,7 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
                     <div className="mt-6 grid items-stretch gap-6 lg:grid-cols-[0.9fr,1.1fr]">
                       <div className="order-2 flex min-h-[0] flex-col justify-between lg:order-1 lg:min-h-[460px]">
                         <div className="space-y-3 text-center lg:text-left">
-                          <h1 className="text-2xl font-semibold leading-tight sm:text-3xl lg:text-4xl">
+                          <h1 className="text-xl font-semibold leading-tight sm:text-2xl lg:text-4xl">
                             {heroAd.title}
                           </h1>
                           <div className="text-sm text-white/70">
@@ -386,7 +386,7 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
             <section className="space-y-4">
               <h2 className="text-[19px] font-semibold tracking-[0.01em] text-white">Perfiles de la semana</h2>
               <div className="rounded-[28px] border border-[#7a0f11]/60 bg-[#090204] p-4 shadow-[0_25px_60px_rgba(0,0,0,0.5)] sm:p-6">
-                <div className="grid gap-4 md:grid-cols-3">
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {displayedFavoriteAds.map((ad) => (
                     <FavoriteCard
                       key={ad.id}

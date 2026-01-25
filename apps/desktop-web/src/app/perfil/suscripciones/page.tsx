@@ -4,7 +4,7 @@ import { PerfilSuscripciones } from "@/screens/PerfilSuscripciones/PerfilSuscrip
 export default function PerfilSuscripcionesPage() {
   return (
     <>
-      <ScreenShell>
+      <ScreenShell disableMinWidth disableOverflow>
         <PerfilSuscripciones />
       </ScreenShell>
     </>

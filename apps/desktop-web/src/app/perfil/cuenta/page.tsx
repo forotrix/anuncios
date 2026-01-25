@@ -4,7 +4,7 @@ import { PerfilCuenta } from "@/screens/PerfilCuenta";
 export default function PerfilCuentaPage() {
   return (
     <>
-      <ScreenShell>
+      <ScreenShell disableMinWidth disableOverflow>
         <PerfilCuenta />
       </ScreenShell>
     </>

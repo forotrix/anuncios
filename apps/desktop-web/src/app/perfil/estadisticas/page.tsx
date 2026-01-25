@@ -4,7 +4,7 @@ import { PerfilEstadisticas } from "@/screens/PerfilEstadisticas/PerfilEstadisti
 export default function PerfilEstadisticasPage() {
   return (
     <>
-      <ScreenShell>
+      <ScreenShell disableMinWidth disableOverflow>
         <PerfilEstadisticas />
       </ScreenShell>
     </>

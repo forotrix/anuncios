@@ -4,7 +4,7 @@ import { PerfilMiAnuncio } from "@/screens/PerfilMiAnuncio";
 export default function PerfilMiAnuncioPage() {
   return (
     <>
-      <ScreenShell>
+      <ScreenShell disableMinWidth disableOverflow>
         <PerfilMiAnuncio />
       </ScreenShell>
     </>
