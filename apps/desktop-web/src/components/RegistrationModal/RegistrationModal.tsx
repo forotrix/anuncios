@@ -67,7 +67,7 @@ export const RegistrationModal = ({ onClose, variant = "default" }: Props) => {
     }
 
     if (!formData.password.trim()) {
-      return "La contrasena es obligatoria";
+      return "La contraseña es obligatoria";
     }
 
     if (isRegisterView) {
@@ -76,11 +76,11 @@ export const RegistrationModal = ({ onClose, variant = "default" }: Props) => {
       }
 
       if (formData.password.length < MIN_PASSWORD_LENGTH) {
-        return `La contrasena debe tener al menos ${MIN_PASSWORD_LENGTH} caracteres`;
+        return `La contraseña debe tener al menos ${MIN_PASSWORD_LENGTH} caracteres`;
       }
 
       if (formData.confirmPassword !== formData.password) {
-        return "Las contrasenas no coinciden";
+        return "Las contraseñas no coinciden";
       }
     }
 
@@ -200,7 +200,7 @@ export const RegistrationModal = ({ onClose, variant = "default" }: Props) => {
           value={formData[field]}
           onChange={handleChange}
           className={styles.input}
-          placeholder={field === "confirmPassword" ? "Confirma tu contrasena" : "Ingresa tu contrasena"}
+          placeholder={field === "confirmPassword" ? "Confirma tu contraseña" : "Ingresa tu contraseña"}
           autoComplete={field === "confirmPassword" ? "new-password" : view === "login" ? "current-password" : "new-password"}
         />
         <button type="button" className={styles.inputActionButton} onClick={onToggle}>
@@ -257,8 +257,8 @@ export const RegistrationModal = ({ onClose, variant = "default" }: Props) => {
         </div>
       </div>
 
-      {renderPasswordField("Crea tu contrasena", "password", isPasswordVisible, () => setIsPasswordVisible((prev) => !prev), `Minimo ${MIN_PASSWORD_LENGTH} caracteres, combina letras y numeros`)}
-      {renderPasswordField("Confirma tu contrasena", "confirmPassword", isConfirmVisible, () => setIsConfirmVisible((prev) => !prev))}
+      {renderPasswordField("Crea tu contraseña", "password", isPasswordVisible, () => setIsPasswordVisible((prev) => !prev), `Mínimo ${MIN_PASSWORD_LENGTH} caracteres, combina letras y números`)}
+      {renderPasswordField("Confirma tu contraseña", "confirmPassword", isConfirmVisible, () => setIsConfirmVisible((prev) => !prev))}
 
       <div className={styles.formGroup}>
         <label className={styles.label}>Ubicación</label>
@@ -294,8 +294,8 @@ export const RegistrationModal = ({ onClose, variant = "default" }: Props) => {
 
       {renderEmailField()}
       {renderNameField()}
-      {renderPasswordField("Crea tu contrasena", "password", isPasswordVisible, () => setIsPasswordVisible((prev) => !prev), `Minimo ${MIN_PASSWORD_LENGTH} caracteres, combina letras y numeros`)}
-      {renderPasswordField("Confirma tu contrasena", "confirmPassword", isConfirmVisible, () => setIsConfirmVisible((prev) => !prev))}
+      {renderPasswordField("Crea tu contraseña", "password", isPasswordVisible, () => setIsPasswordVisible((prev) => !prev), `Mínimo ${MIN_PASSWORD_LENGTH} caracteres, combina letras y números`)}
+      {renderPasswordField("Confirma tu contraseña", "confirmPassword", isConfirmVisible, () => setIsConfirmVisible((prev) => !prev))}
 
       <div className={styles.submitButtonContainer}>
         {error && <div className={styles.error}>{error}</div>}
@@ -324,8 +324,8 @@ export const RegistrationModal = ({ onClose, variant = "default" }: Props) => {
           />
           <label htmlFor="remember">Recordarme</label>
         </div>
-        <button type="button" className={styles.linkButton} onClick={() => setError("Recuperar contrasena estara disponible pronto") }>
-          Olvidaste tu contrasena?
+        <button type="button" className={styles.linkButton} onClick={() => setError("Recuperar contraseña estará disponible pronto") }>
+          ¿Olvidaste tu contraseña?
         </button>
       </div>
 

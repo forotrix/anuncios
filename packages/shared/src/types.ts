@@ -6,7 +6,7 @@ export type UserRole = 'admin' | 'agency' | 'provider' | 'customer';
 // Estado de un anuncio
 export type AdStatus = 'draft' | 'published' | 'blocked';
 
-// Plan de suscripcion asociado a un anuncio
+// Plan de suscripción asociado a un anuncio
 export type Plan = 'basic' | 'premium';
 
 // Tipos de perfil mostrados en el marketplace

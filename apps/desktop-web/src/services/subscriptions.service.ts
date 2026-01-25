@@ -5,7 +5,7 @@ import { authorizedJsonRequest, authorizedRequest, ensureAccessToken } from "./a
 const MOCK_PLANS: SubscriptionPlanDefinition[] = [
   {
     id: "basic",
-    name: "Basico",
+    name: "Básico",
     description: "Presencia esencial dentro del marketplace.",
     price: 29,
     currency: "EUR",
@@ -16,13 +16,13 @@ const MOCK_PLANS: SubscriptionPlanDefinition[] = [
   {
     id: "premium",
     name: "Premium",
-    description: "Mayor exposicion y herramientas adicionales.",
+    description: "Mayor exposición y herramientas adicionales.",
     price: 59,
     currency: "EUR",
     period: "monthly",
     features: [
       "Hasta 3 anuncios publicados",
-      "Acceso a estadisticas",
+      "Acceso a estadísticas",
       "Prioridad en listados",
       "Soporte prioritario",
     ],
@@ -32,7 +32,7 @@ const MOCK_PLANS: SubscriptionPlanDefinition[] = [
   {
     id: "vip",
     name: "VIP",
-    description: "Maxima visibilidad y soporte dedicado.",
+    description: "Máxima visibilidad y soporte dedicado.",
     price: 99,
     currency: "EUR",
     period: "monthly",

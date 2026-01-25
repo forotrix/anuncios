@@ -116,13 +116,6 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
 
           <SiteHeader logoHref="/feed" />
 
-          <Link
-            href="/feed"
-            className="absolute left-[65px] top-[190px] flex items-center gap-4 rounded-[14px] px-2 py-2 font-h3-subdivisiones font-[number:var(--h3-subdivisiones-font-weight)] text-gris-claro text-[length:var(--h3-subdivisiones-font-size)] tracking-[var(--h3-subdivisiones-letter-spacing)] leading-[var(--h3-subdivisiones-line-height)] [font-style:var(--h3-subdivisiones-font-style)] transition hover:text-white"
-          >
-            <img className="h-[45px] w-[58px]" alt="Volver" src={ASSETS.profileHeroTop} />
-            Volver
-          </Link>
 
           <main
             className={`transition-[padding-top] duration-200 ease-out ${
@@ -130,8 +123,17 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
             }`}
           >
             <div ref={topSentinelRef} aria-hidden="true" />
-            <div className="mx-auto flex w-full max-w-[1360px] items-start gap-10 px-4 pb-24 pt-8 sm:px-6 lg:px-10">
-              <aside className="w-[190px] shrink-0 self-start">
+                        <div className="mb-6 flex items-center gap-4">
+              <Link
+                href="/feed"
+                className="inline-flex items-center gap-3 rounded-[14px] px-2 py-2 font-h3-subdivisiones font-[number:var(--h3-subdivisiones-font-weight)] text-gris-claro text-[length:var(--h3-subdivisiones-font-size)] tracking-[var(--h3-subdivisiones-letter-spacing)] leading-[var(--h3-subdivisiones-line-height)] [font-style:var(--h3-subdivisiones-font-style)] transition hover:text-white"
+              >
+                <img className="h-[45px] w-[58px]" alt="Volver" src={ASSETS.profileHeroTop} />
+                Volver
+              </Link>
+            </div>
+<div className="mx-auto flex w-full max-w-[1360px] items-start gap-12 px-4 pb-24 pt-8 sm:px-6 lg:px-10">
+              <aside className="w-[178px] shrink-0 self-start">
                 <nav
                   className="flex w-full flex-col rounded-[18px] bg-[#52040a]/70 p-2 backdrop-blur-sm"
                   aria-label="Navegacion de perfil"
