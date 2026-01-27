@@ -195,7 +195,7 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
           }`}
         >
           <div ref={topSentinelRef} aria-hidden="true" />
-          <div className="mx-auto w-full max-w-[1180px] px-4 pb-16 pt-10 sm:px-6 lg:px-8">
+          <div className="mx-auto w-full max-w-[1180px] px-4 pb-32 pt-10 sm:px-6 lg:px-8 lg:pb-16">
             <div className="mb-8 flex flex-wrap items-center gap-3 text-sm text-white/70">
               <Link href="/feed" className="inline-flex items-center rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em]">
                 Inicio
@@ -236,7 +236,7 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
                 )}
 
                 {contactActions.length > 0 && (
-                  <div className="mt-4 flex flex-wrap gap-3">
+                  <div className="mt-4 hidden flex-wrap gap-3 lg:flex">
                     {contactActions.map((action) => (
                       <a
                         key={`hero-contact-${action.type}`}
@@ -244,9 +244,10 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={() => logEvent("ad:contact", { adId: ad.id, channel: action.type })}
-                        className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-white/5 text-xs font-semibold uppercase tracking-[0.3em] text-white/80 transition hover:border-white/50"
+                        className="flex h-10 items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 text-xs font-semibold uppercase tracking-wider text-white transition hover:border-white/50 hover:bg-white/10"
                       >
-                        {renderContactIcon(action.type)}
+                        <span className="opacity-70">{renderContactIcon(action.type)}</span>
+                        <span>{action.display || action.label}</span>
                       </a>
                     ))}
                   </div>
@@ -484,6 +485,37 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
         <SiteFooter className="mt-10" />
       </div>
 
+      {contactActions.length > 0 && (
+        <div className="fixed bottom-0 left-0 right-0 z-[60] border-t border-white/10 bg-[#090a0f]/95 px-4 pb-[calc(12px+env(safe-area-inset-bottom,0px))] pt-3 backdrop-blur-md lg:hidden">
+          <div className="flex flex-wrap gap-3">
+            {contactActions.map((action) => {
+              const isPrimary = action.type === "whatsapp" || action.type === "phone";
+              const bgClass = isPrimary
+                ? "bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] text-white shadow-[0_10px_20px_rgba(172,7,13,0.4)]"
+                : "bg-white text-black shadow-lg";
+
+              return (
+                <a
+                  key={`sticky-contact-${action.type}`}
+                  href={action.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => logEvent("ad:contact", { adId: ad.id, channel: action.type })}
+                  className={`flex h-12 flex-1 min-w-[120px] items-center justify-center gap-2 rounded-full text-xs font-bold uppercase tracking-widest ${bgClass}`}
+                >
+                  {action.type === "whatsapp" && (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                      <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
+                    </svg>
+                  )}
+                  <span>{action.label}</span>
+                </a>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       <ImageLightbox
         isOpen={Boolean(lightboxImage)}
         imageUrl={lightboxImage}
@@ -560,6 +592,15 @@ function buildContactActions(contacts?: ContactChannels | null): ContactAction[]
     });
   }
 
+  if (contacts.phone) {
+    actions.push({
+      type: "phone",
+      label: "Teléfono",
+      display: contacts.phone,
+      href: `tel:${contacts.phone.replace(/\s+/g, "")}`,
+    });
+  }
+
   if (contacts.telegram) {
     const handle = contacts.telegram.startsWith("@") ? contacts.telegram.slice(1) : contacts.telegram;
     actions.push({
@@ -567,15 +608,6 @@ function buildContactActions(contacts?: ContactChannels | null): ContactAction[]
       label: "Telegram",
       display: contacts.telegram,
       href: `https://t.me/${handle}`,
-    });
-  }
-
-  if (contacts.phone) {
-    actions.push({
-      type: "phone",
-      label: "Teléfono",
-      display: contacts.phone,
-      href: `tel:${contacts.phone.replace(/\s+/g, "")}`,
     });
   }
 
