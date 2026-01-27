@@ -538,7 +538,7 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
               </div>
 
               {displayedGridAds.length ? (
-                <div className="mt-8 grid gap-3 grid-cols-2 lg:grid-cols-3 sm:gap-6">
+                <div className="mt-8 grid gap-3 grid-cols-2 lg:grid-cols-3 sm:gap-6 [&>*:last-child:nth-child(odd)]:col-span-2 [&>*:last-child:nth-child(odd)]:justify-self-center [&>*:last-child:nth-child(odd)]:w-[calc(50%-0.375rem)] sm:[&>*:last-child:nth-child(odd)]:w-[calc(50%-0.75rem)] lg:[&>*:last-child:nth-child(odd)]:col-span-auto lg:[&>*:last-child:nth-child(odd)]:justify-self-auto lg:[&>*:last-child:nth-child(odd)]:w-full">
                   {displayedGridAds.map((ad) => (
                     <FeedCard
                       key={ad.id}
@@ -721,13 +721,13 @@ const FavoriteCard = ({ ad, isFavorite, onToggleFavorite, onImageClick }: Favori
 
   return (
     <article className="relative overflow-hidden rounded-[20px] border border-[#d52b33]/60 bg-[linear-gradient(135deg,#3a0d15_0%,#200608_70%,#140405_100%)] p-2.5 shadow-[0_22px_50px_rgba(213,43,51,0.2)] sm:p-3 w-full">
-      <div className="overflow-hidden rounded-[16px] aspect-video sm:aspect-auto">
+      <div className="overflow-hidden rounded-[16px] aspect-[3/4] sm:aspect-[3/4] w-full">
         <img
           src={image}
           srcSet={srcSet}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 360px"
           alt={ad.title ?? "Anuncio destacado"}
-          className="h-full w-full cursor-zoom-in rounded-[16px] object-cover object-[50%_20%] sm:h-56"
+          className="h-full w-full cursor-zoom-in rounded-[16px] object-cover object-[50%_20%]"
           loading="lazy"
           decoding="async"
           onClick={() => onImageClick?.(image, ad.title ?? "Anuncio destacado")}
@@ -789,7 +789,7 @@ const FeedCard = ({ ad, isFavorite, onToggleFavorite, onImageClick }: FeedCardPr
           srcSet={srcSet}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 360px"
           alt={ad.title ?? "Anuncio"}
-          className="absolute inset-0 h-full w-full cursor-zoom-in object-cover object-center transition duration-500 group-hover:scale-105"
+          className="absolute inset-0 h-full w-full cursor-zoom-in object-cover object-[50%_20%] transition duration-500 group-hover:scale-105"
           loading="lazy"
           decoding="async"
           onClick={() => onImageClick?.(image, ad.title ?? "Anuncio")}

@@ -172,11 +172,22 @@ export const PerfilEstadisticas = () => {
               title="Visualizaciones"
               value={effectiveSummary.totalViews}
               subtitle={`Últimos ${range.days} días`}
+              icon={
+                <svg className="h-5 w-5 text-[#ff9aa2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+              }
             />
             <MetricCard
               title="Contactos"
               value={effectiveSummary.totalContacts}
               subtitle="Clicks a canales"
+              icon={
+                <svg className="h-5 w-5 text-[#ff9aa2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+              }
             />
             <MetricCard
               title="Contactos/100 visitas"
@@ -186,11 +197,21 @@ export const PerfilEstadisticas = () => {
                   : "0.0"
               }
               subtitle="Tasa de conversión"
+              icon={
+                <svg className="h-5 w-5 text-[#ff9aa2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+              }
             />
             <MetricCard
               title="Anuncios destacados"
               value={effectiveSummary.topAds.length}
               subtitle="Con mejor rendimiento"
+              icon={
+                <svg className="h-5 w-5 text-[#ff9aa2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                </svg>
+              }
             />
           </div>
 
@@ -225,15 +246,22 @@ const MetricCard = ({
   title,
   value,
   subtitle,
+  icon,
 }: {
   title: string;
   value: string | number;
   subtitle?: string;
+  icon?: React.ReactNode;
 }) => (
-  <div className="rounded-[24px] border border-[#4a0c14] bg-[#1a0507] px-5 py-4 shadow-[0_20px_40px_rgba(0,0,0,0.4)] transition hover:border-[#8e1522]/60">
-    <p className="text-xs uppercase tracking-[0.3em] text-[#ff9aa2]">{title}</p>
-    <p className="mt-2 text-3xl font-semibold text-white">{value}</p>
-    {subtitle && <p className="text-xs text-white/50">{subtitle}</p>}
+  <div className="group relative overflow-hidden rounded-[24px] border border-[#4a0c14] bg-[#1a0507] px-5 py-4 shadow-[0_20px_40px_rgba(0,0,0,0.4)] transition hover:border-[#8e1522]/60 hover:shadow-[0_20px_50px_rgba(142,21,34,0.15)]">
+    <div className="relative z-10">
+      <div className="flex items-center gap-2">
+        {icon && <div className="rounded-full bg-[#3a0505] p-1.5">{icon}</div>}
+        <p className="text-xs uppercase tracking-[0.3em] text-[#ff9aa2]">{title}</p>
+      </div>
+      <p className="mt-3 text-3xl font-bold text-white">{value}</p>
+      {subtitle && <p className="mt-1 text-xs text-white/50">{subtitle}</p>}
+    </div>
   </div>
 );
 
@@ -287,13 +315,13 @@ const ChartCard = ({
               const contactHeight = contact ? (contact.value / maxValue) * 100 : 0;
               return (
                 <div key={point.date} className="flex flex-1 flex-col items-center gap-2">
-                  <div className="flex h-40 w-full items-end gap-1">
+                  <div className="flex h-40 w-full items-end gap-1.5 px-1">
                     <div
-                      className="w-2 rounded-full bg-brand-gradient"
+                      className="w-full rounded-t-lg bg-brand-gradient opacity-90 transition-all hover:opacity-100"
                       style={{ height: `${viewHeight}%` }}
                     />
                     <div
-                      className="w-2 rounded-full bg-white/50"
+                      className="w-full rounded-t-lg bg-white/30 transition-all hover:bg-white/50"
                       style={{ height: `${contactHeight}%` }}
                     />
                   </div>

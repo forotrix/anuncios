@@ -123,7 +123,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
             }`}
           >
             <div ref={topSentinelRef} aria-hidden="true" />
-            <div className="mx-auto w-full max-w-[1360px] px-4 pb-24 pt-6 sm:px-6 lg:px-10">
+            <div className="mx-auto w-full max-w-[1360px] px-4 pb-10 pt-6 sm:px-6 lg:px-10">
               <div className="mb-4 flex items-center gap-4 lg:mb-6">
                 <Link
                   href="/feed"
