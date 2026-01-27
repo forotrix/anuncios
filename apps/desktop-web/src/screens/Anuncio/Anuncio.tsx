@@ -205,7 +205,7 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
             </div>
 
             <section className="grid gap-8 lg:grid-cols-[360px,1fr]">
-              <div className="rounded-[32px] border border-white/10 bg-[#040507] p-4 shadow-[0_30px_80px_rgba(0,0,0,0.5)]">
+              <div className="rounded-[32px] border border-[#8e1522]/30 bg-[#050102] p-4 shadow-[0_30px_80px_rgba(0,0,0,0.6)]">
                 <div className="overflow-hidden rounded-[24px]" style={{ aspectRatio: "3 / 4" }}>
                   <img
                     src={activeImage.url}
@@ -268,10 +268,10 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
                 )}
               </div>
 
-              <div className="rounded-[32px] border border-white/10 bg-[#08090d]/95 p-6 shadow-[0_40px_90px_rgba(0,0,0,0.55)]">
+              <div className="rounded-[32px] border border-[#8e1522]/20 bg-[#050102]/95 p-6 shadow-[0_40px_90px_rgba(0,0,0,0.6)]">
                 <div className="flex flex-col gap-4 border-b border-white/10 pb-5 lg:flex-row lg:items-start lg:justify-between">
                   <div className="space-y-2">
-                    <p className="text-xs font-semibold uppercase tracking-[0.35em] text-white/60">Anfitriona</p>
+                    <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#ff9aa2]">Anfitriona</p>
                     <div className="flex flex-wrap items-center gap-3">
                       <h1 className="text-3xl font-semibold text-white">{ad.title}</h1>
                       {showMockBadge && (
@@ -297,8 +297,8 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
 
                 <div className="mt-5 grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
                   {infoItems.map((item) => (
-                    <div key={item.label} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-                      <p className="text-xs uppercase tracking-[0.3em] text-white/50">{item.label}</p>
+                    <div key={item.label} className="rounded-2xl border border-white/10 bg-[#1a0507] px-4 py-3 transition hover:border-[#8e1522]/50 hover:bg-[#2a060a]">
+                      <p className="text-xs uppercase tracking-[0.3em] text-[#ff9aa2]/80">{item.label}</p>
                       <p className="text-base text-white">{item.value}</p>
                     </div>
                   ))}
@@ -329,7 +329,7 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
             <section className="mt-12 space-y-5">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.35em] text-white/60">Galería</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#ff9aa2]">Galería</p>
                   <h2 className="text-2xl font-semibold">Momentos destacados</h2>
                 </div>
                 {hasMultipleImages && (
@@ -389,10 +389,10 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
             </section>
 
             <section className="mt-12 grid gap-6 grid-cols-[repeat(auto-fit,minmax(300px,1fr))]">
-              <article className="rounded-[32px] border border-white/10 bg-[#08090d]/80 p-6 shadow-[0_25px_60px_rgba(0,0,0,0.45)]">
+              <article className="rounded-[32px] border border-[#8e1522]/20 bg-[#050102]/80 p-6 shadow-[0_25px_60px_rgba(0,0,0,0.45)]">
                 <div className="flex items-center justify-between">
                   <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.35em] text-white/60">Disponibilidad
+                  <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#ff9aa2]">Disponibilidad
                   </p>
                     <h2 className="text-xl font-semibold">Agenda semanal</h2>
                   </div>
@@ -416,10 +416,10 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
                 )}
               </article>
 
-              <article className="rounded-[32px] border border-white/10 bg-[#08090d]/80 p-6 shadow-[0_25px_60px_rgba(0,0,0,0.45)]">
+              <article className="rounded-[32px] border border-[#8e1522]/20 bg-[#050102]/80 p-6 shadow-[0_25px_60px_rgba(0,0,0,0.45)]">
                 <div className="flex items-center justify-between">
                   <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.35em] text-white/60">Servicios
+                  <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#ff9aa2]">Servicios
                   </p>
                     <h2 className="text-xl font-semibold">Experiencias</h2>
                   </div>
@@ -438,9 +438,9 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
               </article>
             </section>
 
-            <section className="mt-12 rounded-[32px] border border-white/10 bg-[#08090d]/80 p-6 shadow-[0_25px_60px_rgba(0,0,0,0.45)]">
+            <section className="mt-12 rounded-[32px] border border-[#8e1522]/20 bg-[#050102]/80 p-6 shadow-[0_25px_60px_rgba(0,0,0,0.45)]">
               <div className="space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.35em] text-white/60">Comentarios
+                <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#ff9aa2]">Comentarios
                 </p>
                 <h2 className="text-xl font-semibold">{commentCount} Comentarios</h2>
               </div>

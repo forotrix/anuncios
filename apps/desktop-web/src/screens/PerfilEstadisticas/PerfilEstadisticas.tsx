@@ -120,6 +120,128 @@ export const PerfilEstadisticas = () => {
   const isAuthenticated = Boolean(accessToken);
 
   const handleRangeChange = (option: (typeof RANGE_OPTIONS)[number]) => {
+"use client";
+
+import { useMemo, useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { useStatsSummary } from "@/hooks/useStatsSummary";
+import type { AnalyticsSummary } from "@anuncios/shared";
+import { logEvent } from "@/services/eventLogger";
+
+const RANGE_OPTIONS = [
+  { id: "7", label: "7 días", days: 7 },
+  { id: "30", label: "30 días", days: 30 },
+];
+
+const EMPTY_SUMMARY: AnalyticsSummary = {
+  totalViews: 0,
+  totalContacts: 0,
+  viewSeries: [],
+  contactSeries: [],
+  contactsByChannel: {},
+  topAds: [],
+};
+
+const buildMockSummary = (daysCount: number): AnalyticsSummary => {
+  const today = new Date();
+  const days = Array.from({ length: daysCount }).map((_, index) => {
+    const date = new Date(today);
+    date.setDate(today.getDate() - ((daysCount - 1) - index));
+    return date;
+  });
+
+  const pseudoRandom = (seed: number) => {
+    const value = Math.sin(seed) * 10000;
+    return value - Math.floor(value);
+  };
+
+  const viewSeries = days.map((date, index) => {
+    const base = 120 + index * 12;
+    const jitter = pseudoRandom((index + 1) * 37.7 + daysCount * 11.3);
+    const factor = 0.9 + jitter * 0.2;
+    return {
+      date: date.toISOString().slice(0, 10),
+      value: Math.max(20, Math.round(base * factor)),
+    };
+  });
+
+  const contactSeries = days.map((date, index) => {
+    const base = 10 + index * 2;
+    const jitter = pseudoRandom((index + 1) * 19.1 + daysCount * 7.4);
+    const factor = 0.9 + jitter * 0.2;
+    return {
+      date: date.toISOString().slice(0, 10),
+      value: Math.max(2, Math.round(base * factor)),
+    };
+  });
+
+  const totalViews = viewSeries.reduce((acc, point) => acc + point.value, 0);
+  const totalContacts = contactSeries.reduce((acc, point) => acc + point.value, 0);
+  const scale = Math.max(1, daysCount / 7);
+  const channelJitter = (seed: number) => 0.9 + pseudoRandom(seed) * 0.2;
+
+  return {
+    totalViews,
+    totalContacts,
+    viewSeries,
+    contactSeries,
+    contactsByChannel: {
+      whatsapp: Math.max(5, Math.round(54 * scale * channelJitter(daysCount * 2.3))),
+      telegram: Math.max(3, Math.round(23 * scale * channelJitter(daysCount * 3.1))),
+      phone: Math.max(2, Math.round(17 * scale * channelJitter(daysCount * 4.2))),
+    },
+    topAds: [
+      {
+        adId: "mock-1",
+        title: "Masajes relajantes en Barcelona",
+        views: Math.round(450 * scale * channelJitter(daysCount * 1.2)),
+        contacts: Math.round(38 * scale * channelJitter(daysCount * 1.8)),
+      },
+      {
+        adId: "mock-2",
+        title: "Experiencias premium en Madrid",
+        views: Math.round(380 * scale * channelJitter(daysCount * 2.6)),
+        contacts: Math.round(31 * scale * channelJitter(daysCount * 2.9)),
+      },
+      {
+        adId: "mock-3",
+        title: "Spa y bienestar Valencia",
+        views: Math.round(220 * scale * channelJitter(daysCount * 3.3)),
+        contacts: Math.round(18 * scale * channelJitter(daysCount * 3.7)),
+      },
+    ],
+  };
+};
+
+export const PerfilEstadisticas = () => {
+  const { accessToken } = useAuth();
+  const [range, setRange] = useState(RANGE_OPTIONS[0]);
+  const filters = useMemo(() => {
+    const to = new Date();
+    const from = new Date();
+    from.setDate(to.getDate() - range.days);
+    return {
+      from: from.toISOString().slice(0, 10),
+      to: to.toISOString().slice(0, 10),
+    };
+  }, [range]);
+
+  const { data, loading, error, refresh } = useStatsSummary({
+    accessToken,
+    filters,
+    enabled: Boolean(accessToken),
+  });
+
+  const summary = data ?? EMPTY_SUMMARY;
+  const isSummaryEmpty =
+    summary.viewSeries.length === 0 &&
+    summary.contactSeries.length === 0 &&
+    Object.keys(summary.contactsByChannel).length === 0 &&
+    summary.topAds.length === 0;
+  const effectiveSummary = isSummaryEmpty ? buildMockSummary(range.days) : summary;
+  const isAuthenticated = Boolean(accessToken);
+
+  const handleRangeChange = (option: (typeof RANGE_OPTIONS)[number]) => {
     setRange(option);
     logEvent("analytics:change-range", { days: option.days });
   };
@@ -127,7 +249,7 @@ export const PerfilEstadisticas = () => {
   return (
     <div className="bg-black text-white">
       <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-10 px-4 pb-24 sm:px-6 lg:px-10">
-        <section className="rounded-[32px] border border-[#ec4c51] bg-[#0b0d10]/80 px-6 py-6 shadow-[0_25px_60px_rgba(0,0,0,0.35)]">
+        <section className="rounded-[32px] border border-[#8e1522] bg-[#050102] px-6 py-6 shadow-[0_25px_60px_rgba(0,0,0,0.45)]">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex flex-wrap items-center gap-3">
               {RANGE_OPTIONS.map((option) => (
@@ -136,7 +258,9 @@ export const PerfilEstadisticas = () => {
                   type="button"
                   onClick={() => handleRangeChange(option)}
                   className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] transition ${
-                    option.id === range.id ? "border-rojo-pasion400 text-white" : "border-white/20 text-white/70"
+                    option.id === range.id
+                      ? "border-[#ff4d5d] bg-[#a30009] text-white shadow-[0_0_15px_rgba(255,77,93,0.4)]"
+                      : "border-white/10 bg-black/40 text-white/60 hover:border-white/30 hover:text-white"
                   }`}
                 >
                   {option.label}
@@ -146,7 +270,7 @@ export const PerfilEstadisticas = () => {
                 type="button"
                 disabled={!isAuthenticated || loading}
                 onClick={() => refresh()}
-                className="rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/70 transition hover:text-white disabled:opacity-50"
+                className="rounded-full border border-white/10 bg-black/40 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/70 transition hover:border-white/30 hover:text-white disabled:opacity-50"
               >
                 Actualizar
               </button>
@@ -166,60 +290,6 @@ export const PerfilEstadisticas = () => {
           )}
 
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <MetricCard title="Visualizaciones" value={effectiveSummary.totalViews} subtitle={`Últimos ${range.days} días`} />
-            <MetricCard title="Contactos" value={effectiveSummary.totalContacts} subtitle="Clicks a canales" />
-            <MetricCard
-              title="Contactos/100 visitas"
-              value={effectiveSummary.totalViews ? ((effectiveSummary.totalContacts / effectiveSummary.totalViews) * 100).toFixed(1) : "0.0"}
-              subtitle="Tasa de conversión"
-            />
-            <MetricCard title="Anuncios destacados" value={effectiveSummary.topAds.length} subtitle="Con mejor rendimiento" />
-          </div>
-
-          <div className="mt-8 grid gap-6 lg:grid-cols-[2fr,1fr]">
-            <ChartCard
-              title="Tendencia de visualizaciones"
-              runs={effectiveSummary.viewSeries}
-              contacts={effectiveSummary.contactSeries}
-              loading={loading}
-            />
-            <ContactsCard contactsByChannel={effectiveSummary.contactsByChannel} loading={loading} />
-          </div>
-
-          <div className="mt-8">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-lg font-semibold">Top anuncios</h2>
-                <p className="text-sm text-white/60">Ordenados por contactos generados en el periodo seleccionado.</p>
-              </div>
-            </div>
-            <TopAdsTable ads={effectiveSummary.topAds} loading={loading} />
-          </div>
-        </section>
-      </div>
-    </div>
-  );
-};
-
-const MetricCard = ({
-  title,
-  value,
-  subtitle,
-}: {
-  title: string;
-  value: string | number;
-  subtitle?: string;
-}) => (
-  <div className="rounded-[24px] border border-[#2b0b12]/50 bg-[#0e1014]/80 px-5 py-4 shadow-[0_20px_50px_rgba(0,0,0,0.35)]">
-    <p className="text-xs uppercase tracking-[0.3em] text-white/60">{title}</p>
-    <p className="mt-2 text-3xl font-semibold text-white">{value}</p>
-    {subtitle && <p className="text-xs text-white/60">{subtitle}</p>}
-  </div>
-);
-
-const ChartCard = ({
-  title,
-  runs,
   contacts,
   loading,
 }: {
@@ -251,7 +321,7 @@ const ChartCard = ({
   }, [displaySeries]);
 
   return (
-    <div className="rounded-[24px] border border-[#2b0b12]/50 bg-[#0e1014]/80 px-6 py-6 shadow-[0_20px_50px_rgba(0,0,0,0.35)]">
+    <div className="rounded-[24px] border border-[#4a0c14] bg-[#140306] px-6 py-6 shadow-[0_20px_50px_rgba(0,0,0,0.35)]">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">{title}</h2>
         {loading && <span className="text-xs text-white/60">Actualizando...</span>}
@@ -302,7 +372,7 @@ const ContactsCard = ({
   const total = Object.values(contactsByChannel).reduce((acc, value) => acc + value, 0);
 
   return (
-    <div className="rounded-[24px] border border-[#2b0b12]/50 bg-[#0e1014]/80 px-6 py-6 shadow-[0_20px_50px_rgba(0,0,0,0.35)]">
+    <div className="rounded-[24px] border border-[#4a0c14] bg-[#140306] px-6 py-6 shadow-[0_20px_50px_rgba(0,0,0,0.35)]">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">Canales de contacto</h2>
         {loading && <span className="text-xs text-white/60">Actualizando...</span>}

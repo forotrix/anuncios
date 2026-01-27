@@ -131,7 +131,9 @@ export const PerfilCuenta = () => {
   }, []);
 
   const canUploadAvatar = Boolean(accessToken && CLOUDINARY_CLOUD_NAME && CLOUDINARY_API_KEY && isWidgetReady);
-  const shellClass = "rounded-[30px] border border-[#ec4c51] bg-[#07080c]/80 p-6 shadow-[0_18px_60px_rgba(0,0,0,0.45)]";
+  const shellClass = "rounded-[30px] border border-[#8e1522] bg-[#050102] p-6 shadow-[0_25px_80px_rgba(0,0,0,0.45)]";
+  const INPUT_CLASS = "rounded-[14px] border border-[#a01722] bg-[#2a060a] px-4 py-2.5 text-sm text-white placeholder:text-white/40 outline-none focus:border-[#ff4d5d] disabled:opacity-50";
+  const LABEL_CLASS = "flex flex-col gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-[#ff9aa2]";
   const neutralButtonClass =
     "flex w-full items-center justify-between rounded-full border border-white/25 bg-[#2a2c33] px-6 py-3 text-sm font-semibold text-white/85 transition hover:text-white";
   const compactButtonClass =
@@ -287,8 +289,8 @@ export const PerfilCuenta = () => {
       <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-10 px-4 pb-24 sm:px-6 lg:px-10">
         <section className={shellClass}>
           <div className="space-y-6">
-            <div className="rounded-2xl border border-white/10 bg-black/30 p-5 text-center">
-              <div className="mx-auto flex h-40 w-40 items-center justify-center overflow-hidden rounded-full border border-white/15 bg-[#52040a]/60">
+            <div className="rounded-[22px] border border-[#4a0c14] bg-[#140306] p-5 text-center">
+              <div className="mx-auto flex h-40 w-40 items-center justify-center overflow-hidden rounded-full border-4 border-[#8e1522] bg-black/30">
                 {profile?.avatarUrl ? (
                   <img
                     src={profile.avatarUrl}
@@ -318,7 +320,7 @@ export const PerfilCuenta = () => {
               </button>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-black/30 p-5">
+            <div className="rounded-[22px] border border-[#4a0c14] bg-[#140306] p-5">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <h2 className="text-lg font-semibold">Cuenta</h2>
@@ -339,23 +341,23 @@ export const PerfilCuenta = () => {
                   void handleProfileSubmit();
                 }}
               >
-                <label className="flex flex-col gap-2 text-sm text-white/70">
+                <label className={LABEL_CLASS}>
                   Email
                   <input
                     type="email"
                     value={profileForm.email}
                     onChange={(event) => setProfileForm((prev) => ({ ...prev, email: event.target.value }))}
-                    className="rounded-2xl border border-white/20 bg-[#111219]/80 px-4 py-3 text-white outline-none focus:border-rojo-cereza400/60 disabled:opacity-50"
+                    className={INPUT_CLASS}
                     disabled={!accessToken || loading}
                   />
                 </label>
-                <label className="flex flex-col gap-2 text-sm text-white/70">
+                <label className={LABEL_CLASS}>
                   Nombre de usuario
                   <input
                     type="text"
                     value={profileForm.name}
                     onChange={(event) => setProfileForm((prev) => ({ ...prev, name: event.target.value }))}
-                    className="rounded-2xl border border-white/20 bg-[#111219]/80 px-4 py-3 text-white outline-none focus:border-rojo-cereza400/60 disabled:opacity-50"
+                    className={INPUT_CLASS}
                     disabled={!accessToken || loading}
                   />
                 </label>
@@ -363,7 +365,7 @@ export const PerfilCuenta = () => {
                   <button
                     type="submit"
                     disabled={!accessToken || profileStatus === "saving" || loading}
-                    className="rounded-full bg-brand-gradient px-6 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-white shadow-shadow-g disabled:opacity-50"
+                    className="rounded-full bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] px-6 py-2.5 text-xs font-semibold uppercase tracking-[0.3em] text-white shadow-shadow-g disabled:opacity-50"
                   >
                     {profileStatus === "saving" ? "Guardando..." : "Guardar cambios"}
                   </button>
@@ -402,33 +404,33 @@ export const PerfilCuenta = () => {
                   }}
                 >
                   <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    <label className="flex flex-col gap-2 text-sm text-white/70">
+                    <label className={LABEL_CLASS}>
                       Actual
                       <input
                         type="password"
                         value={passwordForm.current}
                         onChange={(event) => setPasswordForm((prev) => ({ ...prev, current: event.target.value }))}
-                        className="rounded-2xl border border-white/20 bg-[#111219]/80 px-4 py-3 text-white outline-none focus:border-rojo-cereza400/60"
+                        className={INPUT_CLASS}
                         disabled={!accessToken}
                       />
                     </label>
-                    <label className="flex flex-col gap-2 text-sm text-white/70">
+                    <label className={LABEL_CLASS}>
                       Nueva
                       <input
                         type="password"
                         value={passwordForm.next}
                         onChange={(event) => setPasswordForm((prev) => ({ ...prev, next: event.target.value }))}
-                        className="rounded-2xl border border-white/20 bg-[#111219]/80 px-4 py-3 text-white outline-none focus:border-rojo-cereza400/60"
+                        className={INPUT_CLASS}
                         disabled={!accessToken}
                       />
                     </label>
-                    <label className="flex flex-col gap-2 text-sm text-white/70">
+                    <label className={LABEL_CLASS}>
                       Confirmar
                       <input
                         type="password"
                         value={passwordForm.confirm}
                         onChange={(event) => setPasswordForm((prev) => ({ ...prev, confirm: event.target.value }))}
-                        className="rounded-2xl border border-white/20 bg-[#111219]/80 px-4 py-3 text-white outline-none focus:border-rojo-cereza400/60"
+                        className={INPUT_CLASS}
                         disabled={!accessToken}
                       />
                     </label>
