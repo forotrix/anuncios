@@ -1,97 +1,75 @@
-# Informe de Análisis de Mejores Prácticas y Calidad de Código
+# Informe Estratégico Fullstack: Calidad, Arquitectura y Escalabilidad
 
-Este informe analiza el estado actual del repositorio `apps/desktop-web`, enfocándose en la mantenibilidad, legibilidad y "humanidad" del código, identificando patrones típicos de generación automática o deuda técnica y proponiendo soluciones pragmáticas.
+Este documento analiza el estado del repositorio completo (Frontend `desktop-web` + Backend `api` + Librería `shared`), proporcionando una hoja de ruta para alinear la arquitectura técnica con las necesidades de negocio.
 
-## Resumen Ejecutivo
+## 1. Visión Arquitectónica Global
 
-El código es **funcional y robusto** en su lógica de negocio (especialmente en servicios como `httpClient`), pero presenta inconsistencias arquitectónicas y de estilo visual en la capa de UI. El principal indicador de "código no humano/artificial" es la falta de abstracción en componentes visuales y el uso excesivo de valores literales (hardcoded) para estilos, lo que sugiere una implementación rápida enfocada en cumplir el diseño pixel-perfect sobre la mantenibilidad a largo plazo.
+El proyecto sigue una estructura de **Monorepo** (pnpm workspaces) correcta, con una clara separación entre Cliente, Servidor y Código Compartido.
 
-## 1. Arquitectura de Componentes (`src/components`)
-
-### Diagnóstico
-La estructura actual de `src/components` es plana y caótica, mezclando componentes atómicos, íconos, modales y lógica de negocio.
-- **Ruido visual:** Carpetas como `Barcelona`, `Redes`, `Star` parecen ser íconos exportados individualmente como componentes.
-- **Nombres inconsistentes:** Mezcla de idiomas y granularidad (`BotonChicas` vs `SearchInput`).
-- **Recursividad:** Existencia de `src/components/components`, lo cual es confuso.
-
-### Recomendación ("Humanizar el código")
-Un equipo humano suele organizar los componentes por **semántica** o **ámbito**, no solo por orden alfabético.
-
-**Propuesta de reestructuración:**
-```text
-src/components/
-├── ui/                 # Componentes base, genéricos y sin lógica de negocio (Input, Button, Card)
-├── icons/              # Iconos SVG (Barcelona, Star, Redes) -> idealmente un solo componente <Icon name="..." />
-├── forms/              # Componentes de formulario complejos (AgeFilter, SearchInput)
-├── layout/             # Estructura (Header, Footer, ProfileLayout)
-├── shared/             # Componentes de dominio reutilizables (FeedCard, PlanCard)
-└── features/           # Componentes específicos de una funcionalidad (si no caben en screens)
-```
-*Acción sugerida:* Mover `Barcelona`, `Star`, `Redes` a `src/components/icons`. Renombrar `BotonChicas` a algo más genérico o semántico como `CategorySelector`.
-
-## 2. Abstracción y Responsabilidad Única (`src/screens`)
-
-### Diagnóstico
-Archivos como `DesktopFeed.tsx` (~900 líneas) contienen definiciones de componentes locales (`FeedCard`, `FavoriteCard`, `PaginationControls`) al final del archivo.
-- **Code Smell:** Esto es típico de un desarrollo "scripted" o de un prototipado rápido donde se evita crear nuevos archivos.
-- **Problema:** Dificulta la reutilización. Si quieres usar la `FeedCard` en la pantalla de "Anuncio Detalle" (para mostrar "Similares"), tendrás que duplicar código.
-
-### Recomendación
-Extraer componentes definidos localmente a sus propios archivos.
-*Acción sugerida:* Mover `FeedCard`, `FavoriteCard` a `src/components/shared/cards/`.
-
-## 3. Estilos y Tailwind CSS
-
-### Diagnóstico
-El código hace un uso extensivo de **valores arbitrarios** (arbitrary values) de Tailwind.
-- Ejemplo: `bg-[linear-gradient(135deg,#3a0d15_0%,#200608_70%,#140405_100%)]` o `border-[#8e1522]`.
-- **"Efecto Robot":** Un humano rara vez escribe `#8e1522` veinte veces. Define una variable `border-brand-primary` una vez y la usa. El uso repetido de hexs específicos denota falta de sistema de diseño configurado.
-
-### Recomendación
-Consolidar el **Design System** en `tailwind.config.js`.
-Hemos empezado a hacerlo con la paleta `premium`, pero se debe extender a:
-- **Sombras:** `shadow-card-hover` en lugar de `shadow-[0_20px_50px_rgba(...)]`.
-- **Gradientes:** `bg-gradient-hero` en lugar del string lineal completo.
-
-Esto hace que el código (JSX) sea mucho más limpio y legible:
-`className="bg-card-dark border-brand-red shadow-premium"` vs `className="bg-[#1a0507] border-[#8e1522] shadow-[...]"`
-
-## 4. Convenciones de Naming (Naming Conventions)
-
-### Diagnóstico
-Se detecta inconsistencia en el idioma:
-- Español: `BotonElegirChicas`, `PerfilCuenta`, `Anuncio`.
-- Inglés: `DesktopFeed`, `SearchInput`, `ImageLightbox`.
-
-### Recomendación
-Estandarizar al **Inglés** para código (componentes, funciones, variables) es la práctica estándar de la industria, incluso en equipos hispanohablantes, para mantener consistencia con las librerías (React, Next.js).
-- `PerfilCuenta.tsx` -> `AccountProfile.tsx`
-- `Anuncio.tsx` -> `AdDetail.tsx` (o `AdScreen.tsx`)
-
-## 5. Limpieza de Imports (Barrel Files)
-
-### Diagnóstico
-Los imports en los archivos son largos y a veces desordenados.
-```tsx
-import { CitySelector } from "@/components/CitySelector";
-import { SearchInput } from "@/components/SearchInput";
-// ... 10 líneas más ...
-```
-
-### Recomendación
-Implementar archivos `index.ts` (Barrel files) en carpetas clave (`components/ui`, `hooks`, `services`) para permitir imports en una línea:
-```tsx
-import { CitySelector, SearchInput, AgeRangeFilter } from "@/components";
-```
-Esto reduce el ruido visual al principio de los archivos.
+| Componente | Estado Actual | Tecnologías Clave | Estado de Salud |
+| :--- | :--- | :--- | :--- |
+| **Backend** (`apps/api`) | Sólido, type-safe | Node.js, Express, Zod, Mongoose | 🟢 Bueno |
+| **Frontend** (`apps/desktop-web`) | Funcional, pero con deuda visual/semántica | Next.js, Tailwind, React | 🟡 Mejorable |
+| **Shared** (`packages/shared`) | Bien definido, pero sub-utilizado | TypeScript Types, Constantes | 🟠 Sub-utilizado |
 
 ---
 
-## Conclusión
+## 2. Análisis del Backend (`apps/api`)
 
-El código tiene una base sólida y funciona correctamente. La "humanización" pasa por:
-1.  **Refactorizar** (extraer componentes grandes de screens).
-2.  **Sistematizar** (Tailwind config para evitar valores raw).
-3.  **Organizar** (Estructura de carpetas semántica).
+El backend muestra un nivel de madurez superior al frontend en términos de consistencia.
+- **✅ Puntos Fuertes:** Uso intensivo de **Zod** para validación de entrada (Runtime safety), tipado estricto en controladores, y uso de middlewares de seguridad (`security.ts`, auth).
+- **⚠️ Puntos de Mejora (Fat Routes):** El archivo `ad.routes.ts` contiene demasiada lógica de implementación (ej. reglas complejas de solapamiento de horarios en Zod `superRefine`).
+    *   *Acción:* Extraer la lógica de validación de negocio a `services/ad.validator.ts` o al modelo. Las rutas solo deben orquestar HTTP.
 
-Estos cambios no afectan la funcionalidad visible para el usuario, pero reducen drásticamente la deuda técnica y facilitan el trabajo en equipo.
+## 3. Análisis del Frontend (`apps/desktop-web`)
+
+El frontend requiere una transición de "Prototipo Rápido" a "Producto Sostenible".
+
+### A. Arquitectura (Feature-Based)
+Actualmente, la lógica está dispersa. Recomendamos agrupar por **Dominio** en lugar de por **Tipo Técnico**.
+- **Propuesta:** Migrar a `src/features/{featureName}`.
+    *   `src/features/feed/` (Feed, Filtros, Hooks de búsqueda)
+    *   `src/features/auth/` (Login, Registro, Recuperación)
+    *   `src/features/profile/` (Gestión de cuenta)
+- **Ventaja:** Cuando una feature crece, no contaminas el resto de la app.
+
+### B. Consumo de API & Tipado ("The Disconnect")
+Existe una desconexión entre `shared` y el `frontend`.
+- **Problema:** En `src/lib/ads.ts` se están **re-definiendo** manualmente interfaces (`Ad`, `MediaAsset`) que ya existen en `packages/shared` (`AdRecord`, `MediaAsset`).
+- **Riesgo:** Si el Backend añade un campo a `AdRecord`, el Frontend no se entera (y TypeScript no se queja) hasta que falla en runtime porque el mapeo manual (`mapBackendAd`) está desactualizado.
+- **Acción Crítica:** **Eliminar `src/lib/ads.ts`** (o reducirlo al mínimo) e importar directamente los tipos de `@anuncios/shared`.
+
+### C. Estrategia "Responsive-First"
+- Renombrar `DesktopFeed.tsx` a `Feed.tsx`. Eliminar la distinción nominal desktop/mobile. El código debe ser una única fuente de verdad adaptable vía CSS.
+
+### D. Sistema de Diseño (Tailwind)
+- Continuar la sustitución de "Magic Values" (`#8e1522`) por Tokens Semánticos (`border-brand-primary`) definidos en `tailwind.config.ts`. Esto permite cambiar el tema de la app (ej. "Modo San Valentín") tocando un solo archivo.
+
+---
+
+## 4. Oportunidad de Oro: "Shared Validations"
+
+Actualmente, `apps/api` tiene esquemas de Zod muy potentes (`createAdSchema`) que validan e-mails, longitudes y formatos. El frontend **no los usa**.
+- **Consecuencia:** El frontend probablemente re-implementa validaciones peores manualmente, o espera al error del servidor.
+- **Estrategia Fullstack:**
+    1.  Mover los Schemas de Zod (`ad.routes.ts` -> lines 16-200) a `packages/shared/src/schemas.ts`.
+    2.  Backend importa y usa en rutas.
+    3.  Frontend importa y usa en formularios (`react-hook-form` + `zodResolver`).
+- **Resultado:** Validación Isomórfica. Misma regla en cliente (inmediata) y servidor (segura). Cero duplicidad.
+
+---
+
+## 5. Plan de Acción Recomendado
+
+### Fase 1: Higiene & Seguridad (Low Hanging Fruit)
+1.  [Front] Renombrar `DesktopFeed.tsx` -> `Feed.tsx`.
+2.  [Shared] Exportar esquemas Zod desde `shared`.
+3.  [Front] Refactorizar estilos de `Feed` usando Tokens (`tailwind.config`).
+
+### Fase 2: Consolidación (Medium Term)
+4.  [Front] Eliminar tipos duplicados en `lib/ads.ts` y usar `shared`.
+5.  [Back] Limpiar `ad.routes.ts` extrayendo lógica de validación a servicios.
+
+### Fase 3: Reestructuración (Long Term)
+6.  [Front] Implementar estructura de carpetas `src/features/`.
+7.  [Front] Reorganizar `src/components/` en `ui`, `layout` e `icons`.
