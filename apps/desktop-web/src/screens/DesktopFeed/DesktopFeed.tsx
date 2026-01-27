@@ -462,8 +462,8 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
 
             <section className="space-y-4">
               <h2 className="text-base font-semibold tracking-[0.01em] text-white sm:text-[19px]">Perfiles de la semana</h2>
-              <div className="rounded-[28px] border border-[#7a0f11]/60 bg-[#090204] p-4 shadow-[0_25px_60px_rgba(0,0,0,0.5)] sm:p-6">
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="rounded-[28px] border border-[#7a0f11]/60 bg-[#090204] p-3 shadow-[0_25px_60px_rgba(0,0,0,0.5)] sm:p-6">
+                <div className="grid gap-3 grid-cols-2 lg:grid-cols-3">
                   {displayedFavoriteAds.map((ad) => (
                     <FavoriteCard
                       key={ad.id}
@@ -478,6 +478,8 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
                   ))}
                 </div>
               </div>
+
+
             </section>
 
             <section className="space-y-6 pt-2">
@@ -536,7 +538,7 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
               </div>
 
               {displayedGridAds.length ? (
-                <div className="mt-8 grid gap-6 grid-cols-1 min-[600px]:grid-cols-2 lg:grid-cols-3">
+                <div className="mt-8 grid gap-3 grid-cols-2 lg:grid-cols-3 sm:gap-6">
                   {displayedGridAds.map((ad) => (
                     <FeedCard
                       key={ad.id}
@@ -718,14 +720,14 @@ const FavoriteCard = ({ ad, isFavorite, onToggleFavorite, onImageClick }: Favori
   const isMock = Boolean(ad.metadata?.seed?.isMock);
 
   return (
-    <article className="relative overflow-hidden rounded-[20px] border border-[#d52b33]/60 bg-[linear-gradient(135deg,#3a0d15_0%,#200608_70%,#140405_100%)] p-2.5 shadow-[0_22px_50px_rgba(213,43,51,0.2)] sm:p-3">
-      <div className="overflow-hidden rounded-[16px]">
+    <article className="relative overflow-hidden rounded-[20px] border border-[#d52b33]/60 bg-[linear-gradient(135deg,#3a0d15_0%,#200608_70%,#140405_100%)] p-2.5 shadow-[0_22px_50px_rgba(213,43,51,0.2)] sm:p-3 w-full">
+      <div className="overflow-hidden rounded-[16px] aspect-video sm:aspect-auto">
         <img
           src={image}
           srcSet={srcSet}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 360px"
           alt={ad.title ?? "Anuncio destacado"}
-          className="h-48 w-full cursor-zoom-in rounded-[16px] object-cover object-[50%_20%] sm:h-56"
+          className="h-full w-full cursor-zoom-in rounded-[16px] object-cover object-[50%_20%] sm:h-56"
           loading="lazy"
           decoding="async"
           onClick={() => onImageClick?.(image, ad.title ?? "Anuncio destacado")}
@@ -774,19 +776,19 @@ const FeedCard = ({ ad, isFavorite, onToggleFavorite, onImageClick }: FeedCardPr
   const isMock = Boolean(ad.metadata?.seed?.isMock);
 
   return (
-    <article className="group relative overflow-hidden rounded-[28px] border border-[#7a0f11]/60 bg-[#090204] shadow-[0_20px_50px_rgba(0,0,0,0.5)] ring-1 ring-[#7a0f11]/25">
-      <div className="relative h-60 w-full overflow-hidden sm:h-72">
+    <article className="group relative overflow-hidden rounded-[20px] sm:rounded-[28px] border border-[#7a0f11]/60 bg-[#090204] shadow-[0_20px_50px_rgba(0,0,0,0.5)] ring-1 ring-[#7a0f11]/25 w-full">
+      <div className="relative w-full aspect-[3/4] sm:aspect-[3/4] md:h-72 md:aspect-auto overflow-hidden">
         <img
           src={image}
           srcSet={srcSet}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 360px"
           alt={ad.title ?? "Anuncio"}
-          className="h-full w-full cursor-zoom-in object-cover object-top transition duration-500 group-hover:scale-105"
+          className="absolute inset-0 h-full w-full cursor-zoom-in object-cover object-center transition duration-500 group-hover:scale-105"
           loading="lazy"
           decoding="async"
           onClick={() => onImageClick?.(image, ad.title ?? "Anuncio")}
         />
-        <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black via-black/60 to-transparent" />
         {isMock && (
           <span className="absolute left-3 top-3 rounded-full bg-black/60 px-3 py-1 text-[10px] uppercase tracking-[0.3em] text-white">
             Perfil de prueba
