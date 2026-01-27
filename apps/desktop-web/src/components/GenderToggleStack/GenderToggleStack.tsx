@@ -11,7 +11,7 @@ type Props = {
   className?: string;
   gapClassName?: string;
   orientation?: "column" | "row";
-  size?: "default" | "compact";
+  size?: "default" | "compact" | "small";
 };
 
 export const GenderToggleStack = ({
@@ -61,7 +61,7 @@ function BinaryToggle<T extends string>({
   right: ToggleOption<T>;
   onChange?: (next: T) => void;
   ariaLabelPrefix: string;
-  size?: "default" | "compact";
+  size?: "default" | "compact" | "small";
 }) {
   const isLeft = value === left.value;
   const next = isLeft ? right : left;
@@ -74,6 +74,15 @@ function BinaryToggle<T extends string>({
           knobRight: "calc(100% - 50px)",
           text: "text-[12px] tracking-[0.22em] leading-[1.2]",
           innerPadding: "px-[20px]",
+        }
+      : size === "small"
+      ? {
+          wrapper: "h-[40px] w-[140px]",
+          knob: "h-[32px] w-[32px] rounded-full",
+          knobLeft: "4px",
+          knobRight: "calc(100% - 36px)",
+          text: "text-[10px] font-bold tracking-widest uppercase",
+          innerPadding: "px-3",
         }
       : {
           wrapper: "h-[70px] w-[230px]",

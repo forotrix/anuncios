@@ -115,6 +115,7 @@ export const PerfilMiAnuncio = () => {
     unpublishAd,
   } = form;
   const [newService, setNewService] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [galleryError, setGalleryError] = useState<string | null>(null);
   const [avatarError, setAvatarError] = useState<string | null>(null);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
@@ -236,7 +237,7 @@ export const PerfilMiAnuncio = () => {
 
   return (
     <div className="bg-black text-white">
-      <div className="mx-auto w-full max-w-[1200px] px-4 pb-20 lg:px-8">
+      <div className="mx-auto w-full max-w-[1200px] px-4 pb-32 lg:px-8 lg:pb-20">
         <div className="flex flex-col gap-6">
           <div className="flex-1 space-y-6">
             <section className="flex flex-col items-center gap-4 text-center">
@@ -265,7 +266,7 @@ export const PerfilMiAnuncio = () => {
                 <p className="text-xs text-white/60">Servicios activos: {meta.activeServices}</p>
               </div>
               <p className="text-sm text-white/60">{statusMessage}</p>
-              <div className="flex flex-wrap items-center justify-center gap-3">
+              <div className="hidden flex-wrap items-center justify-center gap-3 lg:flex">
                 <button
                   type="button"
                   onClick={handleSave}
@@ -409,9 +410,32 @@ export const PerfilMiAnuncio = () => {
                   </div>
                 ))}
                 {!draft.images.length && (
-                  <div className="flex min-h-[140px] items-center justify-center rounded-[18px] border border-white/10 bg-black/20 text-sm text-white/50">
-                    Sin imágenes cargadas.
-                  </div>
+                  <button
+                    type="button"
+                    onClick={galleryUploader.open}
+                    disabled={!galleryUploader.isReady || galleryUploader.isUploading}
+                    className="flex min-h-[140px] w-full flex-col items-center justify-center gap-3 rounded-[18px] border-2 border-dashed border-white/20 bg-white/5 transition hover:bg-white/10 disabled:opacity-50"
+                  >
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="h-5 w-5 text-white/70"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M12 4.5v15m7.5-7.5h-15"
+                        />
+                      </svg>
+                    </div>
+                    <span className="text-xs font-semibold uppercase tracking-widest text-white/60">
+                      Subir fotos
+                    </span>
+                  </button>
                 )}
               </div>
               <div className="mt-4 flex flex-wrap items-center gap-3">
@@ -455,6 +479,7 @@ export const PerfilMiAnuncio = () => {
                       onIdentityChange={(next) => updateField("genderIdentity", next)}
                       gapClassName="gap-3"
                       className="items-start"
+                      size="small"
                     />
                     <p className="text-xs text-white/50">
                       Define el género y la identidad del perfil (chicas, chicos, chicas trans, chicos trans).
@@ -469,10 +494,18 @@ export const PerfilMiAnuncio = () => {
               <div className="mt-4 space-y-4">
                 <input
                   aria-label="Buscar servicio"
-                  placeholder="Buscar"
+                  placeholder="Buscar servicio..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                   className="h-9 w-full rounded-full border border-white/20 bg-white/10 px-4 text-xs text-white/80 outline-none focus:border-rojo-cereza400/70 sm:w-[200px]"
                 />
-                <ServiceChips services={draft.services} onToggle={toggleService} onRemove={removeService} />
+                <ServiceChips
+                  services={draft.services.filter((s) =>
+                    s.label.toLowerCase().includes(searchTerm.toLowerCase()),
+                  )}
+                  onToggle={toggleService}
+                  onRemove={removeService}
+                />
                 <div className="flex flex-col gap-3 md:flex-row">
                   <input
                     value={newService}
@@ -591,7 +624,7 @@ export const PerfilMiAnuncio = () => {
               </div>
             </section>
 
-            <div className="flex justify-end">
+            <div className="hidden justify-end lg:flex">
               <button
                 type="button"
                 onClick={handleSave}
@@ -611,6 +644,38 @@ export const PerfilMiAnuncio = () => {
         alt={lightboxAlt}
         onClose={() => setLightboxImage(null)}
       />
+
+      <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 bg-[#050102]/95 px-4 pb-[calc(12px+env(safe-area-inset-bottom,0px))] pt-3 backdrop-blur-md lg:hidden">
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={saving || loading}
+            className="flex-1 rounded-full bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] py-3 text-xs font-semibold uppercase tracking-widest text-white shadow-lg disabled:opacity-60"
+          >
+            {saving ? "Guardando..." : "Guardar"}
+          </button>
+          {draft.status === "published" ? (
+            <button
+              type="button"
+              onClick={handleUnpublish}
+              disabled={!canPublish || publishState !== "idle"}
+              className="flex-1 rounded-full border border-white/30 bg-black/40 py-3 text-xs font-semibold uppercase tracking-widest text-white/80 transition hover:text-white disabled:opacity-50"
+            >
+              Borrar
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={handlePublish}
+              disabled={!canPublish || publishState !== "idle"}
+              className="flex-1 rounded-full border border-white/30 bg-black/40 py-3 text-xs font-semibold uppercase tracking-widest text-white/80 transition hover:text-white disabled:opacity-50"
+            >
+              Publicar
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

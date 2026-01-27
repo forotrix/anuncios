@@ -222,15 +222,29 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
                   />
                 </div>
                 {hasMultipleImages && (
-                  <div className="mt-3 flex items-center justify-between text-sm text-white/70">
-                    <button type="button" onClick={showPreviousImage} className="rounded-full border border-white/20 px-3 py-1">
-                      Anterior
+                  <div className="mt-3 flex items-center justify-between px-2">
+                    <button
+                      type="button"
+                      onClick={showPreviousImage}
+                      className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white transition hover:bg-white/10"
+                      aria-label="Anterior"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                      </svg>
                     </button>
-                    <p>
+                    <p className="text-xs font-medium tracking-widest text-white/50">
                       {activeImageIndex + 1} / {gallery.length}
                     </p>
-                    <button type="button" onClick={showNextImage} className="rounded-full border border-white/20 px-3 py-1">
-                      Siguiente
+                    <button
+                      type="button"
+                      onClick={showNextImage}
+                      className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white transition hover:bg-white/10"
+                      aria-label="Siguiente"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                      </svg>
                     </button>
                   </div>
                 )}
@@ -281,7 +295,7 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
                   )}
                 </div>
 
-                <div className="mt-5 grid gap-4 md:grid-cols-2">
+                <div className="mt-5 grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
                   {infoItems.map((item) => (
                     <div key={item.label} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
                       <p className="text-xs uppercase tracking-[0.3em] text-white/50">{item.label}</p>
@@ -374,7 +388,7 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
               </div>
             </section>
 
-            <section className="mt-12 grid gap-6 lg:grid-cols-2">
+            <section className="mt-12 grid gap-6 grid-cols-[repeat(auto-fit,minmax(300px,1fr))]">
               <article className="rounded-[32px] border border-white/10 bg-[#08090d]/80 p-6 shadow-[0_25px_60px_rgba(0,0,0,0.45)]">
                 <div className="flex items-center justify-between">
                   <div>

@@ -124,35 +124,30 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
           >
             <div ref={topSentinelRef} aria-hidden="true" />
             <div className="mx-auto w-full max-w-[1360px] px-4 pb-24 pt-6 sm:px-6 lg:px-10">
-              <div className="mb-6 flex items-center gap-4">
+              <div className="mb-4 flex items-center gap-4 lg:mb-6">
                 <Link
                   href="/feed"
                   className="inline-flex items-center gap-3 rounded-[14px] px-2 py-2 font-h3-subdivisiones font-[number:var(--h3-subdivisiones-font-weight)] text-gris-claro text-[length:var(--h3-subdivisiones-font-size)] tracking-[var(--h3-subdivisiones-letter-spacing)] leading-[var(--h3-subdivisiones-line-height)] [font-style:var(--h3-subdivisiones-font-style)] transition hover:text-white"
                 >
-                  <img className="h-[45px] w-[58px]" alt="Volver" src={ASSETS.profileHeroTop} />
+                  <img className="h-[32px] w-[40px] lg:h-[45px] lg:w-[58px]" alt="Volver" src={ASSETS.profileHeroTop} />
                   Volver
                 </Link>
               </div>
-              <div className="flex items-start gap-12">
-                <aside className="w-[178px] shrink-0 self-start">
+              <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-12">
+                <aside className="w-full shrink-0 lg:w-[178px] lg:self-start">
                   <nav
-                    className="flex w-full flex-col rounded-[18px] bg-[#52040a]/70 p-2 backdrop-blur-sm"
+                    className="no-scrollbar flex w-full items-center gap-2 overflow-x-auto rounded-[18px] bg-[#52040a]/70 p-2 backdrop-blur-sm lg:flex-col lg:items-stretch"
                     aria-label="Navegacion de perfil"
                   >
                     {NAV_LINKS.map((link, index) => {
                       const active = isActive(link.href);
-                      const roundedClass =
-                        index === 0
-                          ? "rounded-t-[18px]"
-                          : index === NAV_LINKS.length - 1
-                            ? "rounded-b-[18px]"
-                            : "rounded-[14px]";
+                      const roundedClass = "rounded-[14px]";
                       if (link.requiresProvider && !isProviderRole) {
                         return (
                           <button
                             key={link.href}
                             type="button"
-                            className={`${NAV_LINK_BASE_CLASS} ${roundedClass} cursor-not-allowed bg-[#1a0a0b] text-white/50`}
+                            className={`${NAV_LINK_BASE_CLASS} ${roundedClass} whitespace-nowrap cursor-not-allowed bg-[#1a0a0b] text-white/50 shrink-0`}
                             onClick={handleProviderRequired}
                           >
                             {link.label}
@@ -164,7 +159,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
                         <Link
                           key={link.href}
                           href={link.href}
-                          className={`${NAV_LINK_BASE_CLASS} ${roundedClass} ${
+                          className={`${NAV_LINK_BASE_CLASS} ${roundedClass} whitespace-nowrap shrink-0 ${
                             active
                               ? "bg-[#870005] text-white shadow-[0_0_10px_rgba(135,0,5,0.45)]"
                               : "text-gris-claro hover:text-white"
@@ -184,7 +179,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
                               ? `/anuncio/preview/${ownAdPreviewId}`
                               : "/perfil/mi-anuncio"
                         }
-                        className={`${NAV_LINK_BASE_CLASS} rounded-[14px] ${
+                        className={`${NAV_LINK_BASE_CLASS} rounded-[14px] whitespace-nowrap shrink-0 ${
                           pathname.startsWith("/anuncio")
                             ? "bg-[#870005] text-white shadow-[0_0_10px_rgba(135,0,5,0.45)]"
                             : "text-gris-claro hover:text-white"
@@ -195,17 +190,17 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
                     ) : (
                       <button
                         type="button"
-                        className={`${NAV_LINK_BASE_CLASS} rounded-[14px] cursor-not-allowed bg-[#1a0a0b] text-white/50`}
+                        className={`${NAV_LINK_BASE_CLASS} rounded-[14px] whitespace-nowrap shrink-0 cursor-not-allowed bg-[#1a0a0b] text-white/50`}
                         onClick={handleProviderRequired}
                       >
                         Ver anuncio
                       </button>
                     )}
-                    {roleNotice && <p className="px-3 pt-2 text-[11px] text-white/60">{roleNotice}</p>}
+                    {roleNotice && <p className="whitespace-nowrap px-3 pt-2 text-[11px] text-white/60 lg:whitespace-normal">{roleNotice}</p>}
                     <button
                       type="button"
                       onClick={logout}
-                      className={`${NAV_LINK_BASE_CLASS} rounded-[14px] text-gris-claro hover:text-white`}
+                      className={`${NAV_LINK_BASE_CLASS} rounded-[14px] whitespace-nowrap shrink-0 text-gris-claro hover:text-white`}
                     >
                       Salir
                     </button>
