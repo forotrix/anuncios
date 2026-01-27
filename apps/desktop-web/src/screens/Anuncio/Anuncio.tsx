@@ -11,6 +11,7 @@ import { logEvent } from "@/services/eventLogger";
 import { useAuth } from "@/hooks/useAuth";
 import { commentService, type CommentItem } from "@/services/comment.service";
 import { isApiConfigured } from "@/services/httpClient";
+import { ImageLightbox } from "@/components/ImageLightbox";
 
 type Props = {
   ad: Ad;
@@ -64,6 +65,8 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAtTop, setIsAtTop] = useState(true);
   const topSentinelRef = useRef<HTMLDivElement>(null);
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+  const [lightboxAlt, setLightboxAlt] = useState<string>("");
 
   useEffect(() => {
     setActiveImageIndex(0);
@@ -209,9 +212,13 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
                     srcSet={activeSrcSet}
                     sizes="(max-width: 1024px) 100vw, 420px"
                     alt={ad.title}
-                    className="h-full w-full object-cover"
+                    className="h-full w-full cursor-zoom-in object-cover"
                     loading="eager"
                     decoding="async"
+                    onClick={() => {
+                      setLightboxImage(activeImage.url);
+                      setLightboxAlt(ad.title);
+                    }}
                   />
                 </div>
                 {hasMultipleImages && (
@@ -353,9 +360,13 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
                       srcSet={buildCloudinarySrcSet(image.url, [240, 360, 520])}
                       sizes="(max-width: 1024px) 160px, 192px"
                       alt={`${ad.title} ${index + 1}`}
-                      className="h-full w-full object-cover"
+                      className="h-full w-full cursor-zoom-in object-cover"
                       loading="lazy"
                       decoding="async"
+                      onClick={() => {
+                        setLightboxImage(image.url);
+                        setLightboxAlt(`${ad.title} ${index + 1}`);
+                      }}
                     />
                   </button>
                 ))}
@@ -472,6 +483,13 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
 
         <SiteFooter className="mt-10" />
       </div>
+
+      <ImageLightbox
+        isOpen={Boolean(lightboxImage)}
+        imageUrl={lightboxImage}
+        alt={lightboxAlt}
+        onClose={() => setLightboxImage(null)}
+      />
     </div>
   );
 };

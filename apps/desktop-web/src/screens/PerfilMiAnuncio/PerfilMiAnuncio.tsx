@@ -4,6 +4,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { MediaAsset } from "@anuncios/shared";
 import { GenderToggleStack } from "@/components/GenderToggleStack";
+import { ImageLightbox } from "@/components/ImageLightbox";
 import { useAuth } from "@/hooks/useAuth";
 import { mediaService, type UploadSignaturePayload } from "@/services/media.service";
 import { profileService } from "@/services/profile.service";
@@ -116,6 +117,8 @@ export const PerfilMiAnuncio = () => {
   const [newService, setNewService] = useState("");
   const [galleryError, setGalleryError] = useState<string | null>(null);
   const [avatarError, setAvatarError] = useState<string | null>(null);
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+  const [lightboxAlt, setLightboxAlt] = useState<string>("");
   const avatarUploader = useAvatarWidget({
     accessToken,
     userId: user?.id,
@@ -254,6 +257,10 @@ export const PerfilMiAnuncio = () => {
                     setAvatar(null);
                     void syncAvatarToProfile(null);
                   }}
+                  onImageClick={(imageUrl, alt) => {
+                    setLightboxImage(imageUrl);
+                    setLightboxAlt(alt);
+                  }}
                 />
                 <p className="text-xs text-white/60">Servicios activos: {meta.activeServices}</p>
               </div>
@@ -384,9 +391,13 @@ export const PerfilMiAnuncio = () => {
                       srcSet={buildCloudinarySrcSet(image.url, [320, 480, 640])}
                       sizes="(max-width: 768px) 100vw, 280px"
                       alt="Imagen del anuncio"
-                      className="h-44 w-full object-cover"
+                      className="h-44 w-full cursor-zoom-in object-cover"
                       loading="lazy"
                       decoding="async"
+                      onClick={() => {
+                        setLightboxImage(image.url);
+                        setLightboxAlt("Imagen del anuncio");
+                      }}
                     />
                     <button
                       type="button"
@@ -593,6 +604,13 @@ export const PerfilMiAnuncio = () => {
           </div>
         </div>
       </div>
+
+      <ImageLightbox
+        isOpen={Boolean(lightboxImage)}
+        imageUrl={lightboxImage}
+        alt={lightboxAlt}
+        onClose={() => setLightboxImage(null)}
+      />
     </div>
   );
 };
@@ -604,6 +622,7 @@ const AvatarSection = ({
   isReady,
   isUploading,
   error,
+  onImageClick,
 }: {
   avatar: AvatarMedia | null;
   onOpen: () => void;
@@ -611,6 +630,7 @@ const AvatarSection = ({
   isReady: boolean;
   isUploading: boolean;
   error: string | null;
+  onImageClick?: (imageUrl: string, alt: string) => void;
 }) => (
   <div className="flex flex-col items-center gap-3 text-center">
     <div className="relative h-40 w-40 overflow-hidden rounded-full border-4 border-[#8e1522] bg-black/30">
@@ -620,9 +640,10 @@ const AvatarSection = ({
           srcSet={buildCloudinarySrcSet(avatar.url, [160, 240, 320])}
           sizes="160px"
           alt="Avatar"
-          className="h-full w-full object-cover"
+          className="h-full w-full cursor-zoom-in object-cover"
           loading="eager"
           decoding="async"
+          onClick={() => onImageClick?.(avatar.url, "Avatar")}
         />
       ) : (
         <div className="flex h-full w-full items-center justify-center text-white/60">Sin avatar</div>

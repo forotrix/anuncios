@@ -11,6 +11,7 @@ import { ServiceFilterDropdown } from "@/components/ServiceFilterDropdown";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { useGenderPreference } from "@/hooks/useGenderPreference";
+import { ImageLightbox } from "@/components/ImageLightbox";
 import type { Ad, AdsQuery, FiltersCatalog, CitySummary } from "@/lib/ads";
 import { rankAds } from "@/lib/ranking";
 import type { GenderIdentity, GenderSex } from "@anuncios/shared";
@@ -66,6 +67,8 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
   const [heroIndex, setHeroIndex] = useState(0);
   const [isAtTop, setIsAtTop] = useState(true);
   const topSentinelRef = useRef<HTMLDivElement>(null);
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+  const [lightboxAlt, setLightboxAlt] = useState<string>("");
 
   useEffect(() => {
     setSex(initialFilters.sex ?? sexPreference ?? "female");
@@ -339,17 +342,21 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
                         </div>
                       </div>
 
-                      <div className="order-1 relative lg:order-2">
-                        <img
-                          src={heroImage}
-                          srcSet={heroSrcSet}
-                          sizes="(max-width: 1024px) 100vw, 600px"
-                          alt={heroAd.title}
-                          className="h-[260px] w-full rounded-[40px] object-cover object-top shadow-[0_30px_80px_rgba(0,0,0,0.6)] sm:h-[360px] lg:h-[460px]"
-                          loading="eager"
-                          decoding="async"
-                        />
-                      </div>
+                    <div className="order-1 relative lg:order-2">
+                      <img
+                        src={heroImage}
+                        srcSet={heroSrcSet}
+                        sizes="(max-width: 1024px) 100vw, 600px"
+                        alt={heroAd.title}
+                        className="h-[260px] w-full cursor-zoom-in rounded-[40px] object-cover object-top shadow-[0_30px_80px_rgba(0,0,0,0.6)] sm:h-[360px] lg:h-[460px]"
+                        loading="eager"
+                        decoding="async"
+                        onClick={() => {
+                          setLightboxImage(heroImage);
+                          setLightboxAlt(heroAd.title);
+                        }}
+                      />
+                    </div>
                     </div>
                   </>
                 ) : (
@@ -404,6 +411,10 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
                       ad={ad}
                       isFavorite={favoriteIds.includes(ad.id)}
                       onToggleFavorite={() => toggleFavorite(ad.id)}
+                      onImageClick={(imageUrl, alt) => {
+                        setLightboxImage(imageUrl);
+                        setLightboxAlt(alt);
+                      }}
                     />
                   ))}
                 </div>
@@ -473,6 +484,10 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
                       ad={ad}
                       isFavorite={favoriteIds.includes(ad.id)}
                       onToggleFavorite={() => toggleFavorite(ad.id)}
+                      onImageClick={(imageUrl, alt) => {
+                        setLightboxImage(imageUrl);
+                        setLightboxAlt(alt);
+                      }}
                     />
                   ))}
                 </div>
@@ -493,6 +508,12 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
         <SiteFooter />
       </div>
 
+      <ImageLightbox
+        isOpen={Boolean(lightboxImage)}
+        imageUrl={lightboxImage}
+        alt={lightboxAlt}
+        onClose={() => setLightboxImage(null)}
+      />
     </div>
   );
 };
@@ -627,9 +648,10 @@ type FavoriteCardProps = {
   ad: Ad;
   isFavorite: boolean;
   onToggleFavorite: () => void;
+  onImageClick?: (imageUrl: string, alt: string) => void;
 };
 
-const FavoriteCard = ({ ad, isFavorite, onToggleFavorite }: FavoriteCardProps) => {
+const FavoriteCard = ({ ad, isFavorite, onToggleFavorite, onImageClick }: FavoriteCardProps) => {
   const image = getAdImage(ad);
   const srcSet = buildCloudinarySrcSet(image, [360, 520, 720]);
   const subtitle = [ad.city ?? "Sin ciudad", ad.age ? `${ad.age} años` : null].filter(Boolean).join(" / ");
@@ -644,9 +666,10 @@ const FavoriteCard = ({ ad, isFavorite, onToggleFavorite }: FavoriteCardProps) =
           srcSet={srcSet}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 360px"
           alt={ad.title ?? "Anuncio destacado"}
-          className="h-48 w-full rounded-[16px] object-cover object-[50%_20%] sm:h-56"
+          className="h-48 w-full cursor-zoom-in rounded-[16px] object-cover object-[50%_20%] sm:h-56"
           loading="lazy"
           decoding="async"
+          onClick={() => onImageClick?.(image, ad.title ?? "Anuncio destacado")}
         />
       </div>
       <div className="mt-3 space-y-1">
@@ -681,9 +704,10 @@ type FeedCardProps = {
   ad: Ad;
   isFavorite: boolean;
   onToggleFavorite: () => void;
+  onImageClick?: (imageUrl: string, alt: string) => void;
 };
 
-const FeedCard = ({ ad, isFavorite, onToggleFavorite }: FeedCardProps) => {
+const FeedCard = ({ ad, isFavorite, onToggleFavorite, onImageClick }: FeedCardProps) => {
   const image = getAdImage(ad);
   const srcSet = buildCloudinarySrcSet(image, [360, 520, 720]);
   const subtitle = ad.city ?? "Sin ciudad";
@@ -698,9 +722,10 @@ const FeedCard = ({ ad, isFavorite, onToggleFavorite }: FeedCardProps) => {
           srcSet={srcSet}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 360px"
           alt={ad.title ?? "Anuncio"}
-          className="h-full w-full object-cover object-top transition duration-500 group-hover:scale-105"
+          className="h-full w-full cursor-zoom-in object-cover object-top transition duration-500 group-hover:scale-105"
           loading="lazy"
           decoding="async"
+          onClick={() => onImageClick?.(image, ad.title ?? "Anuncio")}
         />
         <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
         {isMock && (

@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { logEvent } from "@/services/eventLogger";
 import { mediaService, type UploadSignaturePayload } from "@/services/media.service";
 import { profileService, type AccountProfile } from "@/services/profile.service";
+import { ImageLightbox } from "@/components/ImageLightbox";
 
 type AvatarMedia = {
   url: string;
@@ -77,6 +78,8 @@ export const PerfilCuenta = () => {
   const [activeSection, setActiveSection] = useState<"security" | "account" | "avatar" | "danger" | null>(null);
   const [isWidgetReady, setIsWidgetReady] = useState(false);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+  const [lightboxAlt, setLightboxAlt] = useState<string>("");
   const widgetRef = useRef<CloudinaryUploadWidget | null>(null);
 
   useEffect(() => {
@@ -292,9 +295,13 @@ export const PerfilCuenta = () => {
                     srcSet={buildCloudinarySrcSet(profile.avatarUrl)}
                     sizes="160px"
                     alt="Avatar"
-                    className="h-full w-full object-cover"
+                    className="h-full w-full cursor-zoom-in object-cover"
                     loading="eager"
                     decoding="async"
+                    onClick={() => {
+                      setLightboxImage(profile.avatarUrl ?? null);
+                      setLightboxAlt("Avatar");
+                    }}
                   />
                 ) : (
                   <span className="text-sm text-white/60">Sin avatar</span>
@@ -483,6 +490,13 @@ export const PerfilCuenta = () => {
           </div>
         </section>
       </div>
+
+      <ImageLightbox
+        isOpen={Boolean(lightboxImage)}
+        imageUrl={lightboxImage}
+        alt={lightboxAlt}
+        onClose={() => setLightboxImage(null)}
+      />
     </div>
   );
 };
