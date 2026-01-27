@@ -799,7 +799,6 @@ const useAvatarWidget = ({
 
   const open = async () => {
     if (!accessToken || !CLOUDINARY_CLOUD_NAME || !CLOUDINARY_API_KEY) {
-                  {galleryUploader.isUploading ? "Subiendo..." : "Subir imágenes"}
       return;
     }
     const cloud = cloudinaryInstance();
@@ -902,7 +901,6 @@ const useGalleryWidget = ({
 
   const open = async () => {
     if (!accessToken || !CLOUDINARY_CLOUD_NAME || !CLOUDINARY_API_KEY) {
-                  {galleryUploader.isUploading ? "Subiendo..." : "Subir imágenes"}
       return;
     }
     const cloud = cloudinaryInstance();
