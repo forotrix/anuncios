@@ -120,128 +120,6 @@ export const PerfilEstadisticas = () => {
   const isAuthenticated = Boolean(accessToken);
 
   const handleRangeChange = (option: (typeof RANGE_OPTIONS)[number]) => {
-"use client";
-
-import { useMemo, useState } from "react";
-import { useAuth } from "@/hooks/useAuth";
-import { useStatsSummary } from "@/hooks/useStatsSummary";
-import type { AnalyticsSummary } from "@anuncios/shared";
-import { logEvent } from "@/services/eventLogger";
-
-const RANGE_OPTIONS = [
-  { id: "7", label: "7 días", days: 7 },
-  { id: "30", label: "30 días", days: 30 },
-];
-
-const EMPTY_SUMMARY: AnalyticsSummary = {
-  totalViews: 0,
-  totalContacts: 0,
-  viewSeries: [],
-  contactSeries: [],
-  contactsByChannel: {},
-  topAds: [],
-};
-
-const buildMockSummary = (daysCount: number): AnalyticsSummary => {
-  const today = new Date();
-  const days = Array.from({ length: daysCount }).map((_, index) => {
-    const date = new Date(today);
-    date.setDate(today.getDate() - ((daysCount - 1) - index));
-    return date;
-  });
-
-  const pseudoRandom = (seed: number) => {
-    const value = Math.sin(seed) * 10000;
-    return value - Math.floor(value);
-  };
-
-  const viewSeries = days.map((date, index) => {
-    const base = 120 + index * 12;
-    const jitter = pseudoRandom((index + 1) * 37.7 + daysCount * 11.3);
-    const factor = 0.9 + jitter * 0.2;
-    return {
-      date: date.toISOString().slice(0, 10),
-      value: Math.max(20, Math.round(base * factor)),
-    };
-  });
-
-  const contactSeries = days.map((date, index) => {
-    const base = 10 + index * 2;
-    const jitter = pseudoRandom((index + 1) * 19.1 + daysCount * 7.4);
-    const factor = 0.9 + jitter * 0.2;
-    return {
-      date: date.toISOString().slice(0, 10),
-      value: Math.max(2, Math.round(base * factor)),
-    };
-  });
-
-  const totalViews = viewSeries.reduce((acc, point) => acc + point.value, 0);
-  const totalContacts = contactSeries.reduce((acc, point) => acc + point.value, 0);
-  const scale = Math.max(1, daysCount / 7);
-  const channelJitter = (seed: number) => 0.9 + pseudoRandom(seed) * 0.2;
-
-  return {
-    totalViews,
-    totalContacts,
-    viewSeries,
-    contactSeries,
-    contactsByChannel: {
-      whatsapp: Math.max(5, Math.round(54 * scale * channelJitter(daysCount * 2.3))),
-      telegram: Math.max(3, Math.round(23 * scale * channelJitter(daysCount * 3.1))),
-      phone: Math.max(2, Math.round(17 * scale * channelJitter(daysCount * 4.2))),
-    },
-    topAds: [
-      {
-        adId: "mock-1",
-        title: "Masajes relajantes en Barcelona",
-        views: Math.round(450 * scale * channelJitter(daysCount * 1.2)),
-        contacts: Math.round(38 * scale * channelJitter(daysCount * 1.8)),
-      },
-      {
-        adId: "mock-2",
-        title: "Experiencias premium en Madrid",
-        views: Math.round(380 * scale * channelJitter(daysCount * 2.6)),
-        contacts: Math.round(31 * scale * channelJitter(daysCount * 2.9)),
-      },
-      {
-        adId: "mock-3",
-        title: "Spa y bienestar Valencia",
-        views: Math.round(220 * scale * channelJitter(daysCount * 3.3)),
-        contacts: Math.round(18 * scale * channelJitter(daysCount * 3.7)),
-      },
-    ],
-  };
-};
-
-export const PerfilEstadisticas = () => {
-  const { accessToken } = useAuth();
-  const [range, setRange] = useState(RANGE_OPTIONS[0]);
-  const filters = useMemo(() => {
-    const to = new Date();
-    const from = new Date();
-    from.setDate(to.getDate() - range.days);
-    return {
-      from: from.toISOString().slice(0, 10),
-      to: to.toISOString().slice(0, 10),
-    };
-  }, [range]);
-
-  const { data, loading, error, refresh } = useStatsSummary({
-    accessToken,
-    filters,
-    enabled: Boolean(accessToken),
-  });
-
-  const summary = data ?? EMPTY_SUMMARY;
-  const isSummaryEmpty =
-    summary.viewSeries.length === 0 &&
-    summary.contactSeries.length === 0 &&
-    Object.keys(summary.contactsByChannel).length === 0 &&
-    summary.topAds.length === 0;
-  const effectiveSummary = isSummaryEmpty ? buildMockSummary(range.days) : summary;
-  const isAuthenticated = Boolean(accessToken);
-
-  const handleRangeChange = (option: (typeof RANGE_OPTIONS)[number]) => {
     setRange(option);
     logEvent("analytics:change-range", { days: option.days });
   };
@@ -290,6 +168,78 @@ export const PerfilEstadisticas = () => {
           )}
 
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <MetricCard
+              title="Visualizaciones"
+              value={effectiveSummary.totalViews}
+              subtitle={`Últimos ${range.days} días`}
+            />
+            <MetricCard
+              title="Contactos"
+              value={effectiveSummary.totalContacts}
+              subtitle="Clicks a canales"
+            />
+            <MetricCard
+              title="Contactos/100 visitas"
+              value={
+                effectiveSummary.totalViews
+                  ? ((effectiveSummary.totalContacts / effectiveSummary.totalViews) * 100).toFixed(1)
+                  : "0.0"
+              }
+              subtitle="Tasa de conversión"
+            />
+            <MetricCard
+              title="Anuncios destacados"
+              value={effectiveSummary.topAds.length}
+              subtitle="Con mejor rendimiento"
+            />
+          </div>
+
+          <div className="mt-8 grid gap-6 lg:grid-cols-[2fr,1fr]">
+            <ChartCard
+              title="Tendencia de visualizaciones"
+              runs={effectiveSummary.viewSeries}
+              contacts={effectiveSummary.contactSeries}
+              loading={loading}
+            />
+            <ContactsCard contactsByChannel={effectiveSummary.contactsByChannel} loading={loading} />
+          </div>
+
+          <div className="mt-8">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-semibold">Top anuncios</h2>
+                <p className="text-sm text-white/60">
+                  Ordenados por contactos generados en el periodo seleccionado.
+                </p>
+              </div>
+            </div>
+            <TopAdsTable ads={effectiveSummary.topAds} loading={loading} />
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+};
+
+const MetricCard = ({
+  title,
+  value,
+  subtitle,
+}: {
+  title: string;
+  value: string | number;
+  subtitle?: string;
+}) => (
+  <div className="rounded-[24px] border border-[#4a0c14] bg-[#1a0507] px-5 py-4 shadow-[0_20px_40px_rgba(0,0,0,0.4)] transition hover:border-[#8e1522]/60">
+    <p className="text-xs uppercase tracking-[0.3em] text-[#ff9aa2]">{title}</p>
+    <p className="mt-2 text-3xl font-semibold text-white">{value}</p>
+    {subtitle && <p className="text-xs text-white/50">{subtitle}</p>}
+  </div>
+);
+
+const ChartCard = ({
+  title,
+  runs,
   contacts,
   loading,
 }: {
@@ -338,8 +288,14 @@ export const PerfilEstadisticas = () => {
               return (
                 <div key={point.date} className="flex flex-1 flex-col items-center gap-2">
                   <div className="flex h-40 w-full items-end gap-1">
-                    <div className="w-2 rounded-full bg-brand-gradient" style={{ height: `${viewHeight}%` }} />
-                    <div className="w-2 rounded-full bg-white/50" style={{ height: `${contactHeight}%` }} />
+                    <div
+                      className="w-2 rounded-full bg-brand-gradient"
+                      style={{ height: `${viewHeight}%` }}
+                    />
+                    <div
+                      className="w-2 rounded-full bg-white/50"
+                      style={{ height: `${contactHeight}%` }}
+                    />
                   </div>
                   <p className="text-xs text-white/50">{formatDateLabel(point.date)}</p>
                 </div>
@@ -400,17 +356,13 @@ const ContactsCard = ({
   );
 };
 
-const TopAdsTable = ({
-  ads,
-  loading,
-}: {
-  ads: AnalyticsSummary["topAds"];
-  loading: boolean;
-}) => {
+const TopAdsTable = ({ ads, loading }: { ads: AnalyticsSummary["topAds"]; loading: boolean }) => {
   if (!ads.length) {
     return (
       <p className="mt-6 text-sm text-white/60">
-        {loading ? "Cargando top de anuncios..." : "Aún no hay anuncios con actividad en este periodo."}
+        {loading
+          ? "Cargando top de anuncios..."
+          : "Aún no hay anuncios con actividad en este periodo."}
       </p>
     );
   }
@@ -418,23 +370,23 @@ const TopAdsTable = ({
   return (
     <div className="mt-6 overflow-x-auto">
       <table className="w-full table-auto text-left text-sm text-white">
-        <thead className="text-white/60">
+        <thead className="text-[#ff9aa2]">
           <tr>
-            <th className="px-3 py-2 font-semibold">Título</th>
-            <th className="px-3 py-2 font-semibold">Visualizaciones</th>
-            <th className="px-3 py-2 font-semibold">Contactos</th>
-            <th className="px-3 py-2 font-semibold">Conversión</th>
+            <th className="px-3 py-2 font-semibold uppercase tracking-widest text-xs">Título</th>
+            <th className="px-3 py-2 font-semibold uppercase tracking-widest text-xs">Vistas</th>
+            <th className="px-3 py-2 font-semibold uppercase tracking-widest text-xs">Contactos</th>
+            <th className="px-3 py-2 font-semibold uppercase tracking-widest text-xs">Conv.</th>
           </tr>
         </thead>
         <tbody>
           {ads.map((ad) => {
             const conversion = ad.views ? ((ad.contacts / ad.views) * 100).toFixed(1) : "0.0";
             return (
-              <tr key={ad.adId} className="border-t border-white/10">
-                <td className="px-3 py-3 text-white">{ad.title}</td>
-                <td className="px-3 py-3 text-white/80">{ad.views}</td>
-                <td className="px-3 py-3 text-white/80">{ad.contacts}</td>
-                <td className="px-3 py-3 text-white/80">{conversion}%</td>
+              <tr key={ad.adId} className="border-t border-[#8e1522]/20 transition hover:bg-[#2a060a]">
+                <td className="px-3 py-3 text-white font-medium">{ad.title}</td>
+                <td className="px-3 py-3 text-white/70">{ad.views}</td>
+                <td className="px-3 py-3 text-white/70">{ad.contacts}</td>
+                <td className="px-3 py-3 text-white/70">{conversion}%</td>
               </tr>
             );
           })}
@@ -448,5 +400,3 @@ function formatDateLabel(isoDate: string) {
   const [year, month, day] = isoDate.split("-");
   return `${day}/${month}`;
 }
-
-
