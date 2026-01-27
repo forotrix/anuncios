@@ -301,65 +301,122 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
                 {heroAd ? (
                   <>
                     <div className="flex flex-col gap-2 lg:flex-row lg:items-end lg:justify-between">
-                      <div className="space-y-3">
+                      <div className="mb-2 space-y-3">
                         <p className="text-base font-semibold tracking-[0.01em] text-white sm:text-[19px]">
                           Perfiles destacados
                         </p>
                       </div>
                     </div>
 
-                    <div className="mt-6 grid items-stretch gap-6 md:gap-10 md:grid-cols-[1fr,0.9fr] lg:grid-cols-[0.9fr,1.1fr]">
-                      <div className="order-2 flex min-h-[0] flex-col justify-between md:order-1 lg:min-h-[460px]">
-                        <div className="space-y-3 text-center md:text-left">
-                          <h1 className="text-lg font-semibold leading-tight sm:text-2xl lg:text-4xl">
+                  {/* HERO SECTION - Responsive Redesign */}
+                  {/* MOBILE & TABLET VARIANT (< lg) - Imagen de fondo con texto superpuesto */}
+                  <div className="relative w-full overflow-hidden rounded-[24px] shadow-[0_20px_60px_rgba(0,0,0,0.5)] lg:hidden">
+                    <div className="h-[560px] sm:h-[400px] w-full relative">
+                      <img
+                        src={heroImage}
+                        srcSet={heroSrcSet}
+                        sizes="100vw"
+                        alt={heroAd.title}
+                        className="absolute inset-0 h-full w-full object-cover"
+                        loading="eager"
+                        decoding="async"
+                        onClick={() => {
+                          setLightboxImage(heroImage);
+                          setLightboxAlt(heroAd.title);
+                        }}
+                      />
+                      {/* Gradient Overlay para legibilidad del texto */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+                      
+                      {/* Contenido sobre la imagen */}
+                      <div className="absolute inset-x-0 bottom-0 p-6 flex flex-col items-center text-center sm:items-start sm:text-left">
+                        <div className="mb-2 space-y-1">
+                          <h1 className="text-3xl font-bold text-white shadow-black drop-shadow-md sm:text-4xl">
                             {heroAd.title}
                           </h1>
-                          <div className="text-xs text-white/70 sm:text-sm">
-                            <p>{heroAd.age ? `${heroAd.age} años` : "Sin edad"}</p>
-                            <p>{heroAd.city ?? "Sin ciudad"}</p>
-                          </div>
-                          <p className="text-xs text-white/70 sm:text-sm sm:max-w-[420px] mx-auto md:mx-0">
-                            {heroAd.description?.trim().length ? heroAd.description :
-                              "Monitorea anfitrionas con fotos verificadas y agendas activas para vivir experiencias premium."}
+                          <p className="text-sm font-medium text-white/90 sm:text-base">
+                            {heroMeta || "Sin detalles"}
                           </p>
-                          <div className="flex flex-wrap justify-center gap-2 text-[11px] text-white/70 sm:text-xs md:justify-start">
-                            {heroTags.length ? (
-                              heroTags.map((tag) => (
-                                <span key={`${heroAd.id}-${tag}`} className="tracking-[0.02em]">
-                                  {tag.startsWith("#") ? tag : `#${tag}`}
-                                </span>
-                              ))
-                            ) : (
-                              <span className="text-white/50">Sin etiquetas disponibles.</span>
-                            )}
-                          </div>
                         </div>
-                        <div className="flex justify-center md:justify-start">
-                          <Link
-                            href={heroAd.id ? `/anuncio/${heroAd.id}` : "/anuncio"}
-                            className="rounded-full bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] px-6 py-2.5 text-sm font-semibold text-white shadow-shadow-g"
-                          >
-                            Ver perfil
-                          </Link>
-                        </div>
-                      </div>
+                        
+                        <p className="mb-4 line-clamp-3 max-w-[500px] text-sm text-white/80 sm:text-base">
+                          {heroAd.description?.trim().length
+                            ? heroAd.description
+                            : "Monitorea anfitrionas con fotos verificadas y agendas activas para vivir experiencias premium."}
+                        </p>
 
-                      <div className="order-1 relative md:order-2">
-                        <img
-                          src={heroImage}
-                          srcSet={heroSrcSet}
-                          sizes="(max-width: 1024px) 100vw, 600px"
-                          alt={heroAd.title}
-                          className="h-[200px] w-full cursor-zoom-in rounded-[24px] object-cover object-top shadow-[0_30px_80px_rgba(0,0,0,0.6)] sm:h-[320px] sm:rounded-[32px] md:h-[300px] lg:h-[460px] lg:rounded-[40px]"
-                          loading="eager"
-                          decoding="async"
-                          onClick={() => {
-                            setLightboxImage(heroImage);
-                            setLightboxAlt(heroAd.title);
-                          }}
-                        />
+                        <div className="mb-5 flex flex-wrap justify-center gap-2 sm:justify-start">
+                          {heroTags.length ? (
+                            heroTags.map((tag) => (
+                              <span key={`${heroAd.id}-${tag}`} className="rounded-full bg-black/40 px-2 py-0.5 text-[11px] backdrop-blur-sm text-white/90 border border-white/10">
+                                {tag.startsWith("#") ? tag : `#${tag}`}
+                              </span>
+                            ))
+                          ) : null}
+                        </div>
+
+                        <Link
+                          href={heroAd.id ? `/anuncio/${heroAd.id}` : "/anuncio"}
+                          className="w-full sm:w-auto rounded-full bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] px-8 py-3 text-sm font-bold text-white shadow-[0_10px_30px_rgba(220,38,38,0.4)] transition-transform active:scale-95"
+                        >
+                          Ver perfil
+                        </Link>
                       </div>
                     </div>
+                  </div>
+
+                  {/* DESKTOP VARIANT (>= lg) - Diseño original a 2 columnas */}
+                  <div className="hidden lg:grid items-stretch gap-10 lg:grid-cols-[0.9fr,1.1fr]">
+                    <div className="order-1 flex min-h-[460px] flex-col justify-between">
+                      <div className="space-y-3 text-left">
+                        <h1 className="text-4xl font-semibold leading-tight">
+                          {heroAd.title}
+                        </h1>
+                        <div className="text-sm text-white/70">
+                          <p>{heroMeta || "Sin detalles"}</p>
+                        </div>
+                        <p className="text-sm text-white/70 max-w-[420px]">
+                          {heroAd.description?.trim().length ? heroAd.description :
+                            "Monitorea anfitrionas con fotos verificadas y agendas activas para vivir experiencias premium."}
+                        </p>
+                        <div className="flex flex-wrap gap-2 text-xs justify-start">
+                          {heroTags.length ? (
+                            heroTags.map((tag) => (
+                              <span key={`${heroAd.id}-${tag}`} className="tracking-[0.02em]">
+                                {tag.startsWith("#") ? tag : `#${tag}`}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="text-white/50">Sin etiquetas disponibles.</span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex justify-start">
+                        <Link
+                          href={heroAd.id ? `/anuncio/${heroAd.id}` : "/anuncio"}
+                          className="rounded-full bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] px-6 py-2.5 text-sm font-semibold text-white shadow-shadow-g"
+                        >
+                          Ver perfil
+                        </Link>
+                      </div>
+                    </div>
+
+                    <div className="order-2 relative">
+                      <img
+                        src={heroImage}
+                        srcSet={heroSrcSet}
+                        sizes="600px"
+                        alt={heroAd.title}
+                        className="h-[460px] w-full cursor-zoom-in rounded-[40px] object-cover object-top shadow-[0_30px_80px_rgba(0,0,0,0.6)]"
+                        loading="eager"
+                        decoding="async"
+                        onClick={() => {
+                          setLightboxImage(heroImage);
+                          setLightboxAlt(heroAd.title);
+                        }}
+                      />
+                    </div>
+                  </div>
                   </>
                 ) : (
                   <p className="text-sm text-white/60">No hay anuncios destacados disponibles por ahora.</p>
@@ -479,7 +536,7 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
               </div>
 
               {displayedGridAds.length ? (
-                <div className="mt-8 grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                <div className="mt-8 grid gap-6 grid-cols-1 min-[600px]:grid-cols-2 lg:grid-cols-3">
                   {displayedGridAds.map((ad) => (
                     <FeedCard
                       key={ad.id}
