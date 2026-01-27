@@ -39,6 +39,18 @@ module.exports = {
         steel: "#7f7f7f",
         mist: "#d9d9d9",
         "deep-forest": "#070e0f",
+        premium: {
+          900: "#050102", // Main bg
+          800: "#140306", // Darker card
+          700: "#1a0507", // Card bg
+          600: "#2a060a", // Input/Hover bg
+          500: "#4a0c14", // Muted border
+          400: "#8e1522", // Primary border
+          300: "#a30009", // Button bg
+          200: "#d52b33", // Bright red
+          100: "#ff4d5d", // Accent/Focus
+          50: "#ff9aa2",  // Text pink
+        },
       },
       fontFamily: {
         "caption-heavy": "var(--caption-heavy-font-family)",

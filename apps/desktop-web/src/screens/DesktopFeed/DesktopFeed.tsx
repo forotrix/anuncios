@@ -720,7 +720,7 @@ const FavoriteCard = ({ ad, isFavorite, onToggleFavorite, onImageClick }: Favori
   const isMock = Boolean(ad.metadata?.seed?.isMock);
 
   return (
-    <article className="relative overflow-hidden rounded-[20px] border border-[#d52b33]/60 bg-[linear-gradient(135deg,#3a0d15_0%,#200608_70%,#140405_100%)] p-2.5 shadow-[0_22px_50px_rgba(213,43,51,0.2)] sm:p-3 w-full">
+    <article className="relative overflow-hidden rounded-[20px] border border-premium-200/60 bg-[linear-gradient(135deg,#3a0d15_0%,#200608_70%,#140405_100%)] p-2.5 shadow-[0_22px_50px_rgba(213,43,51,0.2)] sm:p-3 w-full">
       <div className="overflow-hidden rounded-[16px] aspect-[3/4] sm:aspect-[3/4] w-full">
         <img
           src={image}
@@ -755,7 +755,7 @@ const FavoriteCard = ({ ad, isFavorite, onToggleFavorite, onImageClick }: Favori
           onClick={onToggleFavorite}
           className={`flex h-9 w-9 items-center justify-center rounded-full border transition ${
             isFavorite
-              ? "border-[#ec4c51] bg-[#ec4c51]/20 text-white"
+              ? "border-premium-200 bg-premium-200/20 text-white"
               : "border-white/30 bg-black/30 text-white"
           }`}
           aria-label={isFavorite ? "Quitar de favoritos" : "Agregar a favoritos"}
@@ -782,7 +782,7 @@ const FeedCard = ({ ad, isFavorite, onToggleFavorite, onImageClick }: FeedCardPr
   const isMock = Boolean(ad.metadata?.seed?.isMock);
 
   return (
-    <article className="group relative overflow-hidden rounded-[20px] sm:rounded-[28px] border border-[#7a0f11]/60 bg-[#090204] shadow-[0_20px_50px_rgba(0,0,0,0.5)] ring-1 ring-[#7a0f11]/25 w-full">
+    <article className="group relative overflow-hidden rounded-[20px] sm:rounded-[28px] border border-premium-400/60 bg-premium-900 shadow-[0_20px_50px_rgba(0,0,0,0.5)] ring-1 ring-premium-400/25 w-full">
       <div className="relative w-full aspect-[3/4] sm:aspect-[3/4] md:h-72 md:aspect-auto overflow-hidden">
         <img
           src={image}
@@ -805,7 +805,7 @@ const FeedCard = ({ ad, isFavorite, onToggleFavorite, onImageClick }: FeedCardPr
           onClick={onToggleFavorite}
           className={`absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full border transition ${
             isFavorite
-              ? "border-[#ec4c51] bg-[#ec4c51]/20 text-white"
+              ? "border-premium-200 bg-premium-200/20 text-white"
               : "border-white/30 bg-black/30 text-white hover:border-white/60"
           }`}
           aria-label={isFavorite ? "Quitar de favoritos" : "Agregar a favoritos"}
