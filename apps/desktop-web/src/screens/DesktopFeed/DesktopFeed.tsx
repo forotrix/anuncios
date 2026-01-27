@@ -737,17 +737,23 @@ const FavoriteCard = ({ ad, isFavorite, onToggleFavorite, onImageClick }: Favori
         <h3 className="text-base font-semibold">{ad.title ?? "Anuncio destacado"}</h3>
         <p className="text-xs text-white/70">{subtitle}</p>
       </div>
-      <div className="mt-3 flex items-center justify-between">
+      <div className="mt-3 flex items-center justify-between gap-3">
         <Link
           href={`/anuncio/${ad.id}`}
-          className="rounded-full bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] px-4 py-2 text-[13px] font-semibold text-white"
+          className="group/btn inline-flex h-9 items-center justify-center rounded-full bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] px-0 w-9 sm:w-auto sm:px-4 text-[13px] font-semibold text-white hover:text-white"
+          aria-label="Ver perfil"
         >
-          Ver perfil
+          <span className="sm:hidden">
+             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
+              </svg>
+          </span>
+          <span className="hidden sm:inline">Ver perfil</span>
         </Link>
         <button
           type="button"
           onClick={onToggleFavorite}
-          className={`flex h-8 w-8 items-center justify-center rounded-full border transition ${
+          className={`flex h-9 w-9 items-center justify-center rounded-full border transition ${
             isFavorite
               ? "border-[#ec4c51] bg-[#ec4c51]/20 text-white"
               : "border-white/30 bg-black/30 text-white"
@@ -790,14 +796,14 @@ const FeedCard = ({ ad, isFavorite, onToggleFavorite, onImageClick }: FeedCardPr
         />
         <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black via-black/60 to-transparent" />
         {isMock && (
-          <span className="absolute left-3 top-3 rounded-full bg-black/60 px-3 py-1 text-[10px] uppercase tracking-[0.3em] text-white">
-            Perfil de prueba
+          <span className="absolute left-2 top-2 rounded-full bg-black/60 px-2 py-0.5 text-[9px] uppercase tracking-wider text-white">
+            Prueba
           </span>
         )}
         <button
           type="button"
           onClick={onToggleFavorite}
-          className={`absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full border transition ${
+          className={`absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full border transition ${
             isFavorite
               ? "border-[#ec4c51] bg-[#ec4c51]/20 text-white"
               : "border-white/30 bg-black/30 text-white hover:border-white/60"
@@ -806,16 +812,22 @@ const FeedCard = ({ ad, isFavorite, onToggleFavorite, onImageClick }: FeedCardPr
         >
           <img src={isFavorite ? "/img/star-1-1.svg" : "/img/star-1-27.svg"} alt="" className="h-4 w-4" />
         </button>
-        <div className="absolute bottom-3 left-4 right-4 flex items-end justify-between gap-3">
-          <div>
-            <h3 className="text-sm font-semibold text-white">{titleLine}</h3>
-            <p className="text-xs text-white/70">{subtitle}</p>
+        <div className="absolute bottom-2 left-3 right-3 flex items-end justify-between gap-2">
+          <div className="flex-1 min-w-0">
+            <h3 className="text-sm font-semibold text-white truncate">{titleLine}</h3>
+            <p className="text-xs text-white/70 truncate">{subtitle}</p>
           </div>
           <Link
             href={`/anuncio/${ad.id}`}
-            className="inline-flex items-center justify-center rounded-full bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] px-3 py-1 text-[11px] font-semibold text-white shadow-shadow-g"
+            className="group/btn inline-flex h-8 items-center justify-center rounded-full bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] px-0 w-8 sm:w-auto sm:px-3 text-[11px] font-semibold text-white shadow-shadow-g"
+            aria-label="Ver perfil"
           >
-            Ver perfil
+            <span className="sm:hidden">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
+              </svg>
+            </span>
+            <span className="hidden sm:inline">Ver perfil</span>
           </Link>
         </div>
       </div>

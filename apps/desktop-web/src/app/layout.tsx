@@ -78,8 +78,8 @@ export default function RootLayout({
       >
         <AuthProvider>
           <AuthModalProvider>
-            <main className="min-h-screen bg-black overflow-x-auto">
-              <div className="mx-auto flex min-w-[1440px] max-w-[1600px] flex-col pb-16">
+            <main className="min-h-screen bg-black overflow-x-hidden">
+              <div className="mx-auto flex w-full max-w-[1600px] flex-col pb-16">
                 {children}
               </div>
             </main>

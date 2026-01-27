@@ -73,7 +73,7 @@ export const SiteHeader = ({
         <div className="mx-auto w-full max-w-[1440px]">
           <div className="relative h-[72px] w-full md:h-[168px]">
             {canToggleGender && (
-              <div className={`hidden md:block ${profileToggleClassName}`}>
+              <div className={`hidden lg:block ${profileToggleClassName}`}>
                 <div className="flex flex-col items-center py-2">
                   <GenderToggleStack
                     sex={genderSex}
@@ -98,7 +98,7 @@ export const SiteHeader = ({
 
             <button
               type="button"
-              className="absolute right-4 top-1/2 z-[260] inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/40 text-white/80 backdrop-blur-sm transition hover:border-white/40 hover:text-white md:hidden"
+              className="absolute right-4 top-1/2 z-[260] inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/40 text-white/80 backdrop-blur-sm transition hover:border-white/40 hover:text-white lg:hidden"
               aria-label={isMobileMenuOpen ? "Cerrar menu" : "Abrir menu"}
               aria-expanded={isMobileMenuOpen}
               aria-controls={MENU_ID}
@@ -155,14 +155,14 @@ export const SiteHeader = ({
       </header>
 
       {isMobileMenuOpen && (
-        <div id={MENU_ID} className="fixed inset-0 z-[250] md:hidden" role="dialog" aria-modal="true">
+        <div id={MENU_ID} className="fixed inset-0 z-[250] lg:hidden" role="dialog" aria-modal="true">
           <button
             type="button"
             className="absolute inset-0 bg-black/60"
             aria-label="Cerrar menu"
             onClick={() => setIsMobileMenuOpen(false)}
           />
-          <aside className="absolute right-0 top-0 flex h-full w-[85vw] max-w-[360px] flex-col gap-6 border-l border-white/10 bg-[#020404] px-6 py-6 shadow-[0_30px_80px_rgba(0,0,0,0.65)]">
+          <aside className="absolute right-0 top-0 flex h-[100dvh] w-full max-w-[320px] flex-col gap-6 border-l border-white/10 bg-[#020404] px-6 pt-6 pb-20 shadow-[0_30px_80px_rgba(0,0,0,0.65)] overflow-y-auto">
             <div className="flex items-center justify-between">
               <p className="text-xs font-semibold uppercase tracking-[0.35em] text-white/60">Menu</p>
               <button

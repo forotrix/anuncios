@@ -33,12 +33,12 @@ export const ServiceFilterDropdown = ({
   const containerBase =
     "relative flex h-[69px] w-[172px] items-center justify-center rounded-[32px] text-white before:content-[''] before:absolute before:inset-0 before:p-[3px] before:rounded-[32px] before:[background:linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] before:[-webkit-mask:linear-gradient(#fff_0_0)_content-box,linear-gradient(#fff_0_0)] before:[-webkit-mask-composite:xor] before:[mask-composite:exclude] before:pointer-events-none";
   const openPanelClass =
-    "absolute left-0 top-full z-30 mt-3 w-[296px] rounded-3xl bg-white p-4 text-[#000000] shadow-[0_25px_60px_rgba(0,0,0,0.45)]";
+    "absolute left-0 top-full z-[100] mt-3 w-[270px] rounded-3xl bg-white p-4 text-[#000000] shadow-[0_25px_60px_rgba(0,0,0,0.45)] sm:w-[296px] sm:left-1/2 sm:-translate-x-1/2";
   const zClass = isOpen ? "z-20" : "z-0";
 
   return (
     <div className={`${containerBase} ${zClass} ${className}`}>
-      <button
+      <button // ... keeps button code same
         type="button"
         onClick={onToggle}
         className={`relative flex w-full items-center justify-center gap-2 rounded-[32px] px-[38px] py-5 font-h3-subdivisiones text-[length:var(--h3-subdivisiones-font-size)] leading-[var(--h3-subdivisiones-line-height)] text-white ${
@@ -53,7 +53,7 @@ export const ServiceFilterDropdown = ({
 
       {isOpen && (
         <div className={openPanelClass}>
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-3 max-h-[320px] overflow-y-auto custom-scrollbar pr-1">
             {options.map((option) => {
               const isSelected = selectedOptions.includes(option.id);
               return (

@@ -65,7 +65,7 @@ export const AgeRangeFilterControl = ({
   const containerBase =
     "relative flex items-center justify-center h-[69px] w-[172px] rounded-[32px] transition-all duration-200 ease-out text-white before:content-[''] before:absolute before:inset-0 before:p-[3px] before:rounded-[32px] before:[background:linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] before:[-webkit-mask:linear-gradient(#fff_0_0)_content-box,linear-gradient(#fff_0_0)] before:[-webkit-mask-composite:xor] before:[mask-composite:exclude] before:pointer-events-none";
   const openPanelClass =
-    "absolute left-1/2 top-full z-30 mt-3 w-[283px] -translate-x-1/2 rounded-3xl bg-white p-5 text-[#000000] shadow-[0_25px_60px_rgba(0,0,0,0.45)]";
+    "absolute left-0 top-full z-[100] mt-3 w-[270px] translate-x-0 rounded-3xl bg-white p-5 text-[#000000] shadow-[0_25px_60px_rgba(0,0,0,0.45)] sm:w-[283px]";
 
   const zClass = isOpen ? "z-20" : "z-0";
 
