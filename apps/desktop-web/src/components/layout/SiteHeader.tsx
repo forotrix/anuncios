@@ -98,7 +98,7 @@ export const SiteHeader = ({
 
             <button
               type="button"
-              className="absolute right-4 top-1/2 z-[260] inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/40 text-white/80 backdrop-blur-sm transition hover:border-white/40 hover:text-white lg:hidden"
+              className="absolute right-4 top-1/2 z-[260] inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/40 text-white/80 backdrop-blur-sm transition hover:border-white/40 hover:text-white md:hidden"
               aria-label={isMobileMenuOpen ? "Cerrar menu" : "Abrir menu"}
               aria-expanded={isMobileMenuOpen}
               aria-controls={MENU_ID}

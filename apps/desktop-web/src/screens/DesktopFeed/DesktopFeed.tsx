@@ -297,30 +297,32 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
                 </div>
               </div>
 
-              <div className="px-2 py-4 sm:px-4 sm:py-6">
+              <div className="px-1 py-4 sm:px-4 sm:py-6">
                 {heroAd ? (
                   <>
                     <div className="flex flex-col gap-2 lg:flex-row lg:items-end lg:justify-between">
                       <div className="space-y-3">
-                        <p className="text-[19px] font-semibold tracking-[0.01em] text-white">Perfiles destacados</p>
+                        <p className="text-base font-semibold tracking-[0.01em] text-white sm:text-[19px]">
+                          Perfiles destacados
+                        </p>
                       </div>
                     </div>
 
-                    <div className="mt-6 grid items-stretch gap-6 lg:grid-cols-[0.9fr,1.1fr]">
-                      <div className="order-2 flex min-h-[0] flex-col justify-between lg:order-1 lg:min-h-[460px]">
-                        <div className="space-y-3 text-center lg:text-left">
-                          <h1 className="text-xl font-semibold leading-tight sm:text-2xl lg:text-4xl">
+                    <div className="mt-6 grid items-stretch gap-6 md:gap-10 md:grid-cols-[1fr,0.9fr] lg:grid-cols-[0.9fr,1.1fr]">
+                      <div className="order-2 flex min-h-[0] flex-col justify-between md:order-1 lg:min-h-[460px]">
+                        <div className="space-y-3 text-center md:text-left">
+                          <h1 className="text-lg font-semibold leading-tight sm:text-2xl lg:text-4xl">
                             {heroAd.title}
                           </h1>
-                          <div className="text-sm text-white/70">
+                          <div className="text-xs text-white/70 sm:text-sm">
                             <p>{heroAd.age ? `${heroAd.age} años` : "Sin edad"}</p>
                             <p>{heroAd.city ?? "Sin ciudad"}</p>
                           </div>
-                          <p className="text-sm text-white/70 sm:max-w-[420px]">
+                          <p className="text-xs text-white/70 sm:text-sm sm:max-w-[420px] mx-auto md:mx-0">
                             {heroAd.description?.trim().length ? heroAd.description :
                               "Monitorea anfitrionas con fotos verificadas y agendas activas para vivir experiencias premium."}
                           </p>
-                          <div className="flex flex-wrap gap-2 text-xs text-white/70">
+                          <div className="flex flex-wrap justify-center gap-2 text-[11px] text-white/70 sm:text-xs md:justify-start">
                             {heroTags.length ? (
                               heroTags.map((tag) => (
                                 <span key={`${heroAd.id}-${tag}`} className="tracking-[0.02em]">
@@ -332,7 +334,7 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
                             )}
                           </div>
                         </div>
-                        <div className="flex justify-center lg:justify-start">
+                        <div className="flex justify-center md:justify-start">
                           <Link
                             href={heroAd.id ? `/anuncio/${heroAd.id}` : "/anuncio"}
                             className="rounded-full bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] px-6 py-2.5 text-sm font-semibold text-white shadow-shadow-g"
@@ -342,21 +344,21 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
                         </div>
                       </div>
 
-                    <div className="order-1 relative lg:order-2">
-                      <img
-                        src={heroImage}
-                        srcSet={heroSrcSet}
-                        sizes="(max-width: 1024px) 100vw, 600px"
-                        alt={heroAd.title}
-                        className="h-[260px] w-full cursor-zoom-in rounded-[40px] object-cover object-top shadow-[0_30px_80px_rgba(0,0,0,0.6)] sm:h-[360px] lg:h-[460px]"
-                        loading="eager"
-                        decoding="async"
-                        onClick={() => {
-                          setLightboxImage(heroImage);
-                          setLightboxAlt(heroAd.title);
-                        }}
-                      />
-                    </div>
+                      <div className="order-1 relative md:order-2">
+                        <img
+                          src={heroImage}
+                          srcSet={heroSrcSet}
+                          sizes="(max-width: 1024px) 100vw, 600px"
+                          alt={heroAd.title}
+                          className="h-[200px] w-full cursor-zoom-in rounded-[24px] object-cover object-top shadow-[0_30px_80px_rgba(0,0,0,0.6)] sm:h-[320px] sm:rounded-[32px] md:h-[300px] lg:h-[460px] lg:rounded-[40px]"
+                          loading="eager"
+                          decoding="async"
+                          onClick={() => {
+                            setLightboxImage(heroImage);
+                            setLightboxAlt(heroAd.title);
+                          }}
+                        />
+                      </div>
                     </div>
                   </>
                 ) : (
@@ -402,7 +404,7 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-[19px] font-semibold tracking-[0.01em] text-white">Perfiles de la semana</h2>
+              <h2 className="text-base font-semibold tracking-[0.01em] text-white sm:text-[19px]">Perfiles de la semana</h2>
               <div className="rounded-[28px] border border-[#7a0f11]/60 bg-[#090204] p-4 shadow-[0_25px_60px_rgba(0,0,0,0.5)] sm:p-6">
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {displayedFavoriteAds.map((ad) => (
@@ -422,10 +424,10 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
             </section>
 
             <section className="space-y-6 pt-2">
-              <h2 className="text-[19px] font-semibold tracking-[0.01em] text-white">Explora perfiles</h2>
+              <h2 className="text-base font-semibold tracking-[0.01em] text-white sm:text-[19px]">Explora perfiles</h2>
 
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                <div className="flex items-center gap-3 overflow-x-auto pb-1 sm:overflow-visible sm:pb-0">
+                <div className="flex flex-wrap items-center gap-2 pb-1 sm:flex-nowrap sm:gap-3 sm:pb-0">
                   <AgeRangeFilterControl
                     className="!h-[52px] !w-[120px] shrink-0 sm:!w-[130px]"
                     label={ageConfig.label}
@@ -467,7 +469,7 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
                   />
                 </div>
                 <SearchInput
-                  className="!h-[52px] !w-full !rounded-full !px-5 sm:!w-[260px]"
+                  className="!h-[52px] !w-full !rounded-full !px-5 md:!w-[280px] lg:!w-[260px]"
                   value={searchValue}
                   onChange={(val) => setSearchValue(val)}
                   onSubmit={() => applyFilters({ text: searchValue })}
