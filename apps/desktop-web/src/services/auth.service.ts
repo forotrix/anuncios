@@ -6,6 +6,9 @@ export type RegisterData = {
   password: string;
   role: "provider" | "agency" | "customer";
   name?: string;
+  category?: string;
+  location?: string;
+  phone?: string;
 };
 
 export type LoginData = {
@@ -18,6 +21,8 @@ export type AuthUser = {
   email: string;
   role: "provider" | "agency" | "customer" | "admin";
   name: string | null;
+  category: string | null;
+  location: string | null;
   contacts: ContactChannels | null;
   avatarUrl: string | null;
   avatarPublicId: string | null;

@@ -15,12 +15,15 @@ const credentialsSchema = z.object({
 const registerSchema = credentialsSchema.extend({
   role: z.enum(['provider', 'agency', 'customer']),
   name: z.string().min(2).max(120).optional(),
+  category: z.string().trim().optional(),
+  location: z.string().trim().optional(),
+  phone: z.string().trim().optional(),
 });
 
 router.post('/register', async (req, res, next) => {
   try {
     const body = registerSchema.parse(req.body);
-    const output = await service.register(body.email, body.password, body.role, body.name);
+    const output = await service.register(body.email, body.password, body.role, body.name, body.category, body.location, body.phone);
     res.status(201).json(output);
   } catch (err) {
     next(err);

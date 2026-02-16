@@ -24,6 +24,8 @@ export type PublicUser = {
   email: string;
   role: UserRole;
   name: string | null;
+  category: string | null;
+  location: string | null;
   contacts: ContactChannels | null;
   avatarUrl: string | null;
   avatarPublicId: string | null;
@@ -35,6 +37,7 @@ type AuthResponse = {
   user: PublicUser;
   access: string;
   refresh: string;
+  delete?: boolean; // temporary fix for some type error if exists somewhere, but likely not needed
 };
 
 const normalizeEmail = (email: string) => email.trim().toLowerCase();
@@ -63,6 +66,8 @@ function toPublicUser(user: UserDocument): PublicUser {
     email: user.email,
     role: user.role,
     name: user.name ?? null,
+    category: user.category ?? null,
+    location: user.location ?? null,
     contacts: user.contacts ?? null,
     avatarUrl: user.avatarUrl ?? null,
     avatarPublicId: user.avatarPublicId ?? null,
@@ -84,16 +89,29 @@ async function rotateTokens(user: UserDocument): Promise<Omit<AuthResponse, 'use
   return { access, refresh };
 }
 
-export async function register(email: string, password: string, role: RegisterRole, name?: string) {
+export async function register(
+  email: string,
+  password: string,
+  role: RegisterRole,
+  name?: string,
+  category?: string,
+  location?: string,
+  phone?: string
+) {
   const normalizedEmail = normalizeEmail(email);
   const exists = await User.findOne({ email: normalizedEmail });
   if (exists) throw createError(409, 'Email already in use');
+
+  const contacts = phone ? { phone } : null;
 
   const user = (await User.create({
     email: normalizedEmail,
     password,
     role,
     name: sanitizeName(name),
+    category: sanitizeName(category),
+    location: sanitizeName(location),
+    contacts,
   })) as UserDocument;
   const tokens = await rotateTokens(user);
 

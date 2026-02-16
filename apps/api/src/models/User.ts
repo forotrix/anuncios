@@ -11,6 +11,8 @@ export interface IUser {
   password: string;
   role: UserRole;
   name?: string | null;
+  category?: string | null;
+  location?: string | null;
   refreshTokenHash?: string | null;
   contacts?: ContactChannels | null;
   avatarUrl?: string | null;
@@ -34,6 +36,8 @@ const userSchema = new Schema<IUser>(
     password: { type: String, required: true },
     role: { type: String, enum: USER_ROLES, default: 'customer' },
     name: String,
+    category: String,
+    location: String,
     refreshTokenHash: { type: String, default: null },
     contacts: { type: contactSchema, default: null },
     avatarUrl: { type: String, default: null },

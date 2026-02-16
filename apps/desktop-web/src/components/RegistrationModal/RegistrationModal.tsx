@@ -113,6 +113,9 @@ export const RegistrationModal = ({ onClose, variant = "default" }: Props) => {
           password,
           role,
           name: formData.name.trim(),
+          category: formData.category,
+          location: formData.location.trim(),
+          phone: formData.contactNumber.trim(),
         });
         console.log("Registration successful");
       }
