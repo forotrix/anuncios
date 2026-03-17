@@ -7,7 +7,7 @@ interface Props {
 
 export const PageHeader = ({ page }: Props) => {
   return (
-    <section className="mx-auto flex w-full max-w-[1440px] flex-col gap-3 px-6 py-6 text-white">
+    <section className="mx-auto flex w-full max-w-[1280px] flex-col gap-3 px-6 py-6 text-white">
       <p className="text-xs uppercase tracking-[0.3em] text-white/60">
         Mock
       </p>

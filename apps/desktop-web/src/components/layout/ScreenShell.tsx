@@ -9,7 +9,7 @@ interface Props {
 export const ScreenShell = ({ children, disableMinWidth = false, disableOverflow = false }: Props) => {
   return (
     <section className={`w-full ${disableOverflow ? "overflow-x-hidden" : "overflow-x-hidden"} px-4 pb-16`}>
-      <div className={`mx-auto ${disableMinWidth ? "w-full" : "w-full max-w-[1440px]"}`}>{children}</div>
+      <div className={`mx-auto ${disableMinWidth ? "w-full" : "w-full max-w-[1280px]"}`}>{children}</div>
     </section>
   );
 };

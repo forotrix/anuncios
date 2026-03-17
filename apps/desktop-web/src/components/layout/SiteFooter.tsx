@@ -19,7 +19,7 @@ export const SiteFooter = ({ className = "" }: Props) => {
 
   return (
     <footer className={`w-full bg-black px-6 py-10 text-white md:px-16 ${className}`}>
-      <div className="mx-auto flex w-full max-w-[1440px] flex-col items-center gap-8 text-center lg:flex-row lg:items-start lg:justify-between lg:text-left">
+      <div className="mx-auto flex w-full max-w-[1280px] flex-col items-center gap-8 text-center lg:flex-row lg:items-start lg:justify-between lg:text-left">
         <div className="flex flex-col items-center gap-3 lg:items-start">
           <Link href="/feed" onClick={handleLogoClick} aria-label="Volver al inicio">
             <img className="h-[50px] w-auto sm:h-[66px] sm:w-[273px]" alt="ForoTrix" src={ASSETS.logoPrimary} />

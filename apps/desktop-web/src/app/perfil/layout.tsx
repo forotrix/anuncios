@@ -119,7 +119,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
 
           <main
             className={`transition-[padding-top] duration-200 ease-out ${
-              isAtTop ? "pt-[88px] md:pt-[196px]" : ""
+              isAtTop ? "pt-[88px] md:pt-[124px]" : ""
             }`}
           >
             <div ref={topSentinelRef} aria-hidden="true" />
