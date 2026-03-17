@@ -185,7 +185,7 @@ async function runFlush() {
     const [next] = queueState.events;
     try {
       const { internalId: _internalId, ...body } = next;
-      await postJson("/events/log", body);
+      await postJson("/api/v1/events/log", body);
       queueState.events.shift();
       persistQueue(queueState.events);
     } catch (error) {

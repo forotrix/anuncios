@@ -11,5 +11,5 @@ export type EventLogDTO = {
 };
 
 export async function fetchEventLogs(token: string): Promise<EventLogDTO[]> {
-  return getJson<EventLogDTO[]>("/events/log", token);
+  return getJson<EventLogDTO[]>("/api/v1/events/log", token);
 }
