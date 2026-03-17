@@ -12,7 +12,7 @@ export default function CookiesPage() {
     <div className="min-h-screen bg-[#020404] text-white">
       <SiteHeader logoHref="/feed" />
 
-      <main className="mx-auto w-full max-w-[1440px] px-6 pt-24 md:px-16">
+      <main className="mx-auto w-full max-w-[1280px] px-6 pt-24 md:px-16">
         <h1 className="text-3xl font-semibold">POLÍTICA DE COOKIES</h1>
 
         <section className="mt-10 space-y-10 text-sm text-white/80">
