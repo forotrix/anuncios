@@ -463,11 +463,12 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
             <section className="space-y-4">
               <h2 className="text-base font-semibold tracking-[0.01em] text-white sm:text-[19px]">Perfiles de la semana</h2>
               <div className="rounded-[28px] border border-[#7a0f11]/60 bg-[#090204] p-3 shadow-[0_25px_60px_rgba(0,0,0,0.5)] sm:p-6">
-                <div className="grid gap-3 grid-cols-2 lg:grid-cols-3">
+                <div className="flex flex-wrap justify-center gap-3">
                   {displayedFavoriteAds.map((ad) => (
                     <FavoriteCard
                       key={ad.id}
                       ad={ad}
+                      className="w-[calc(50%-6px)] lg:w-[calc(33.333%-8px)]"
                       isFavorite={favoriteIds.includes(ad.id)}
                       onToggleFavorite={() => toggleFavorite(ad.id)}
                       onImageClick={(imageUrl, alt) => {
@@ -538,11 +539,12 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
               </div>
 
               {displayedGridAds.length ? (
-                <div className="mt-8 grid gap-3 grid-cols-2 lg:grid-cols-3 sm:gap-6 [&>*:last-child:nth-child(odd)]:col-span-2 [&>*:last-child:nth-child(odd)]:justify-self-center [&>*:last-child:nth-child(odd)]:w-[calc(50%-0.375rem)] sm:[&>*:last-child:nth-child(odd)]:w-[calc(50%-0.75rem)] lg:[&>*:last-child:nth-child(odd)]:col-span-auto lg:[&>*:last-child:nth-child(odd)]:justify-self-auto lg:[&>*:last-child:nth-child(odd)]:w-full">
+                <div className="mt-8 flex flex-wrap justify-center gap-3 sm:gap-6">
                   {displayedGridAds.map((ad) => (
                     <FeedCard
                       key={ad.id}
                       ad={ad}
+                      className="w-[calc(50%-6px)] sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]"
                       isFavorite={favoriteIds.includes(ad.id)}
                       onToggleFavorite={() => toggleFavorite(ad.id)}
                       onImageClick={(imageUrl, alt) => {
@@ -710,9 +712,10 @@ type FavoriteCardProps = {
   isFavorite: boolean;
   onToggleFavorite: () => void;
   onImageClick?: (imageUrl: string, alt: string) => void;
+  className?: string;
 };
 
-const FavoriteCard = ({ ad, isFavorite, onToggleFavorite, onImageClick }: FavoriteCardProps) => {
+const FavoriteCard = ({ ad, isFavorite, onToggleFavorite, onImageClick, className = "" }: FavoriteCardProps) => {
   const image = getAdImage(ad);
   const srcSet = buildCloudinarySrcSet(image, [360, 520, 720]);
   const subtitle = [ad.city ?? "Sin ciudad", ad.age ? `${ad.age} años` : null].filter(Boolean).join(" / ");
@@ -720,7 +723,7 @@ const FavoriteCard = ({ ad, isFavorite, onToggleFavorite, onImageClick }: Favori
   const isMock = Boolean(ad.metadata?.seed?.isMock);
 
   return (
-    <article className="relative overflow-hidden rounded-[20px] border border-premium-200/60 bg-[linear-gradient(135deg,#3a0d15_0%,#200608_70%,#140405_100%)] p-2.5 shadow-[0_22px_50px_rgba(213,43,51,0.2)] sm:p-3 w-full">
+    <article className={`relative overflow-hidden rounded-[20px] border border-premium-200/60 bg-[linear-gradient(135deg,#3a0d15_0%,#200608_70%,#140405_100%)] p-2.5 shadow-[0_22px_50px_rgba(213,43,51,0.2)] sm:p-3 ${className}`}>
       <div className="overflow-hidden rounded-[16px] aspect-[3/4] sm:aspect-[3/4] w-full">
         <img
           src={image}
@@ -772,9 +775,10 @@ type FeedCardProps = {
   isFavorite: boolean;
   onToggleFavorite: () => void;
   onImageClick?: (imageUrl: string, alt: string) => void;
+  className?: string;
 };
 
-const FeedCard = ({ ad, isFavorite, onToggleFavorite, onImageClick }: FeedCardProps) => {
+const FeedCard = ({ ad, isFavorite, onToggleFavorite, onImageClick, className = "" }: FeedCardProps) => {
   const image = getAdImage(ad);
   const srcSet = buildCloudinarySrcSet(image, [360, 520, 720]);
   const subtitle = ad.city ?? "Sin ciudad";
@@ -782,7 +786,7 @@ const FeedCard = ({ ad, isFavorite, onToggleFavorite, onImageClick }: FeedCardPr
   const isMock = Boolean(ad.metadata?.seed?.isMock);
 
   return (
-    <article className="group relative overflow-hidden rounded-[20px] sm:rounded-[28px] border border-premium-400/60 bg-premium-900 shadow-[0_20px_50px_rgba(0,0,0,0.5)] ring-1 ring-premium-400/25 w-full">
+    <article className={`group relative overflow-hidden rounded-[20px] sm:rounded-[28px] border border-premium-400/60 bg-premium-900 shadow-[0_20px_50px_rgba(0,0,0,0.5)] ring-1 ring-premium-400/25 ${className}`}>
       <div className="relative w-full aspect-[3/4] sm:aspect-[3/4] md:h-72 md:aspect-auto overflow-hidden">
         <img
           src={image}
