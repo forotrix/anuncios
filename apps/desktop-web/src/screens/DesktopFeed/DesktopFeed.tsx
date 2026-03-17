@@ -257,7 +257,7 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
 
         <main
           className={`w-full flex-1 transition-[padding-top] duration-200 ease-out ${
-            isAtTop ? "pt-[72px] md:pt-[168px]" : ""
+            isAtTop ? "pt-[72px] md:pt-[96px]" : ""
           }`}
         >
           <div ref={topSentinelRef} aria-hidden="true" />

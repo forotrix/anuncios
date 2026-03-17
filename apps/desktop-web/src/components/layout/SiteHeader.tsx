@@ -69,53 +69,44 @@ export const SiteHeader = ({
 
   return (
     <>
-      <header className="fixed left-0 top-0 z-[240] w-full bg-black">
-        <div className="mx-auto w-full max-w-[1440px]">
-          <div className="relative h-[72px] w-full md:h-[168px]">
-            {canToggleGender && (
-              <div className={`hidden lg:block ${profileToggleClassName}`}>
-                <div className="flex flex-col items-center py-2">
-                  <GenderToggleStack
-                    sex={genderSex}
-                    identity={genderIdentity}
-                    onSexChange={onGenderSexChange}
-                    onIdentityChange={onGenderIdentityChange}
-                    gapClassName="gap-3"
-                    className="items-center"
-                  />
-                </div>
-              </div>
-            )}
-
+      <header className="fixed left-0 top-0 z-[240] w-full bg-black/95 backdrop-blur-md border-b border-white/5">
+        <div className="mx-auto w-full max-w-[1280px] px-4 md:px-8">
+          <div className="flex h-[72px] items-center justify-between md:h-[96px]">
+            {/* Logo */}
             <Link
               href={logoHref}
               onClick={handleLogoClick}
-              className="absolute left-4 top-1/2 block h-[40px] w-[170px] -translate-y-1/2 md:left-[72px] md:h-[66px] md:w-[273px]"
+              className="relative block h-[32px] w-[130px] md:h-[48px] md:w-[200px]"
               aria-label="Volver al inicio"
             >
-              <img className="h-full w-full" alt="Logo Forotrix" src={ASSETS.logoPrimary} />
+              <img className="h-full w-full object-contain object-left" alt="Logo Forotrix" src={ASSETS.logoPrimary} />
             </Link>
 
-            <button
-              type="button"
-              className="absolute right-4 top-1/2 z-[260] inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/40 text-white/80 backdrop-blur-sm transition hover:border-white/40 hover:text-white lg:hidden"
-              aria-label={isMobileMenuOpen ? "Cerrar menu" : "Abrir menu"}
-              aria-expanded={isMobileMenuOpen}
-              aria-controls={MENU_ID}
-              onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-            >
-              <span className="text-lg leading-none">{isMobileMenuOpen ? "×" : "≡"}</span>
-            </button>
+            {/* Middle: Gender Selector (Desktop Only) */}
+            {canToggleGender && (
+              <div className="hidden lg:flex flex-1 justify-center px-4">
+                <GenderToggleStack
+                  sex={genderSex}
+                  identity={genderIdentity}
+                  onSexChange={onGenderSexChange}
+                  onIdentityChange={onGenderIdentityChange}
+                  gapClassName="gap-3"
+                  className="items-center"
+                  size="small"
+                />
+              </div>
+            )}
 
-            <div className="absolute right-[72px] top-1/2 hidden -translate-y-1/2 items-center gap-4 lg:flex">
+            {/* Right Side: Actions (Desktop) */}
+            <div className="hidden lg:flex items-center gap-4">
               <BotonChicas
-                buttonStyleDivClassName="!mr-[-20.50px] !mt-[-3.00px] !tracking-[var(--h4-letter-spacing)] !ml-[-20.50px] !text-[length:var(--h4-font-size)] ![font-style:var(--h4-font-style)] ![white-space:unset] !font-[number:var(--h4-font-weight)] !font-h4 !leading-[var(--h4-line-height)]"
-                buttonStyleStyleFilledIconNoClassName="!self-stretch !flex-[0_0_auto] !px-[70px] !py-3.5 !flex !left-[unset] !w-full !top-[unset] !rounded-[30px] !bg-black"
+                buttonStyleDivClassName="!tracking-[0.05em] !text-[14px] !font-semibold"
+                buttonStyleStyleFilledIconNoClassName="!px-6 !py-3 !rounded-full !bg-black !w-auto"
                 buttonStyleText="Anuncia"
-                className={`!relative !left-[unset] !top-[unset] !p-[3px] !gap-0 !items-stretch !rounded-[32px] ${
+                className={`!relative !left-0 !top-0 !p-1 !gap-0 !w-auto !items-center !rounded-full ${
                   isAuthenticated && !isProviderRole
                     ? "!bg-[#2a0b0e] !opacity-60 !cursor-not-allowed"
-                    : "!bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)]"
+                    : "!bg-brand-gradient"
                 }`}
                 propiedad1="predeterminada"
                 {...(isAuthenticated
@@ -128,28 +119,40 @@ export const SiteHeader = ({
               {isAuthenticated ? (
                 <Link
                   href={isProviderRole ? "/perfil/mi-anuncio" : "/perfil/cuenta"}
-                  className="relative h-[66px] w-[273px]"
+                  className="relative group"
                   aria-label="Mi cuenta"
                 >
                   <BotonChicas
-                    buttonStyleDivClassName="!mr-[-40.00px] !mt-[-3.00px] !tracking-[var(--h4-letter-spacing)] !ml-[-40.00px] !text-[length:var(--h4-font-size)] ![font-style:var(--h4-font-style)] ![white-space:unset] !font-[number:var(--h4-font-weight)] !font-h4 !leading-[var(--h4-line-height)]"
-                    buttonStyleStyleFilledIconNoClassName="!self-stretch !flex-[0_0_auto] !px-[70px] !py-3.5 !bg-blend-screen !flex !left-[unset] !bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] !bg-[unset] !w-full !top-[unset]"
+                    buttonStyleDivClassName="!tracking-[0.05em] !text-[14px] !font-semibold"
+                    buttonStyleStyleFilledIconNoClassName="!px-6 !py-3 !rounded-full !bg-brand-gradient !w-auto"
                     buttonStyleText="Mi cuenta"
-                    className="!relative !left-[unset] !top-[unset]"
+                    className="!relative !left-0 !top-0 !p-0 !w-auto"
                     propiedad1="predeterminada"
                   />
                 </Link>
               ) : (
                 <BotonChicas
-                  buttonStyleDivClassName="!mr-[-40.00px] !mt-[-3.00px] !tracking-[var(--h4-letter-spacing)] !ml-[-40.00px] !text-[length:var(--h4-font-size)] ![font-style:var(--h4-font-style)] ![white-space:unset] !font-[number:var(--h4-font-weight)] !font-h4 !leading-[var(--h4-line-height)]"
-                  buttonStyleStyleFilledIconNoClassName="!self-stretch !flex-[0_0_auto] !px-[70px] !py-3.5 !bg-blend-screen !flex !left-[unset] !bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] !bg-[unset] !w-full !top-[unset]"
-                  buttonStyleText="Registrarse"
-                  className="!relative !left-[unset] !top-[unset]"
+                  buttonStyleDivClassName="!tracking-[0.05em] !text-[14px] !font-semibold"
+                  buttonStyleStyleFilledIconNoClassName="!px-6 !py-3 !rounded-full !bg-brand-gradient !w-auto"
+                  buttonStyleText="Inscribirse"
+                  className="!relative !left-0 !top-0 !p-0 !w-auto"
                   propiedad1="predeterminada"
                   onClick={handleRegisterClick}
                 />
               )}
             </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              type="button"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white/80 transition hover:border-white/40 hover:text-white lg:hidden"
+              aria-label={isMobileMenuOpen ? "Cerrar menu" : "Abrir menu"}
+              aria-expanded={isMobileMenuOpen}
+              aria-controls={MENU_ID}
+              onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+            >
+              <span className="text-xl leading-none">{isMobileMenuOpen ? "×" : "≡"}</span>
+            </button>
           </div>
         </div>
       </header>
