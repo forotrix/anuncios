@@ -23,13 +23,11 @@ export const AdminLogs = () => {
     const load = async () => {
       try {
         setLoading(true);
-        console.log("Loading logs with token:", accessToken?.slice(0, 10) + "...");
         const data = await fetchEventLogs(accessToken);
         setLogs(data);
         setError(null);
       } catch (err: any) {
-        console.error("Fetch logs error:", err);
-        setError(`${err.message} (status: ${err.status})`);
+        setError(err.message || "Error al cargar los logs");
       } finally {
         setLoading(false);
       }
