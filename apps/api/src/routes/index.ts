@@ -7,6 +7,7 @@ import events from './event-log.routes';
 
 const router = Router();
 router.get('/health', (_req, res) => res.json({ ok: true }));
+router.get('/ping-test', (_req, res) => res.json({ message: 'pong' }));
 router.use('/auth', auth);
 router.use('/ads', ads);
 router.use('/media', media);
