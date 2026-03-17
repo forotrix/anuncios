@@ -191,7 +191,7 @@ export const Anuncio = ({ ad, isMock = false }: Props) => {
 
         <main
           className={`w-full flex-1 transition-[padding-top] duration-200 ease-out ${
-            isAtTop ? "pt-[72px] md:pt-[96px]" : ""
+            isAtTop ? "pt-[72px] md:pt-[168px]" : ""
           }`}
         >
           <div ref={topSentinelRef} aria-hidden="true" />
