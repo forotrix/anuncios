@@ -6,7 +6,7 @@ import assets from './assets.routes';
 import events from './event-log.routes';
 
 const router = Router();
-router.get('/health', (_req, res) => res.json({ ok: true }));
+router.get('/health', (_req, res) => res.json({ ok: true, version: '2.0.debug' }));
 router.get('/ping-test', (_req, res) => res.json({ message: 'pong' }));
 router.use('/auth', auth);
 router.use('/ads', ads);
