@@ -37,3 +37,7 @@ export async function storeEventLog(input: EventLogInput): Promise<IEventLog> {
 
   return EventLog.create(payload);
 }
+
+export async function findEvents(limit = 100): Promise<IEventLog[]> {
+  return EventLog.find().sort({ createdAt: -1 }).limit(limit).lean();
+}

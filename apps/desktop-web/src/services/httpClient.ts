@@ -180,3 +180,16 @@ export async function postJson<T>(path: string, body: unknown, token?: string): 
     body: JSON.stringify(body),
   });
 }
+
+export async function getJson<T>(path: string, token?: string): Promise<T> {
+  const headers: HeadersInit = {};
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  return request<T>(path, {
+    method: "GET",
+    headers,
+  });
+}

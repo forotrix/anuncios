@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { storeEventLog } from '../services/event-log.service';
+import { storeEventLog, findEvents } from '../services/event-log.service';
+import { requireAuth } from '../middlewares/auth';
 
 const router = Router();
 const MAX_EVENT_DATA_CHARS = 4000;
@@ -65,6 +66,15 @@ router.post('/log', async (req, res, next) => {
       ip: req.ip ?? null,
     });
     res.status(201).json({ ok: true });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get('/log', requireAuth(['admin']), async (_req, res, next) => {
+  try {
+    const events = await findEvents(200);
+    res.json(events);
   } catch (err) {
     next(err);
   }
