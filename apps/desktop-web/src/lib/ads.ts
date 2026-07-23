@@ -241,17 +241,31 @@ export async function fetchAds(filters?: AdsQuery): Promise<AdsResult> {
     };
   }
 
-  const query = buildQueryString(filters);
-  const response = await fetch(`${API_BASE_URL}/ads${query}`, {
-    cache: "no-store",
-    headers: { Accept: "application/json" },
-  });
-  if (!response.ok) throw new Error(`Respuesta ${response.status}`);
-  const payload = await response.json();
-  const { items, total, page, pages, limit, cities } = parseBackendResponse(payload);
-  const mappedAds = items.map(mapBackendAd);
-  const citySummary = cities.length ? cities : buildCitySummaryFromAds(mappedAds);
-  return { ads: mappedAds, isMock: false, total, page, pages, limit, citySummary };
+  try {
+    const query = buildQueryString(filters);
+    const response = await fetch(`${API_BASE_URL}/ads${query}`, {
+      cache: "no-store",
+      headers: { Accept: "application/json" },
+    });
+    if (!response.ok) throw new Error(`Respuesta ${response.status}`);
+    const payload = await response.json();
+    const { items, total, page, pages, limit, cities } = parseBackendResponse(payload);
+    const mappedAds = items.map(mapBackendAd);
+    const citySummary = cities.length ? cities : buildCitySummaryFromAds(mappedAds);
+    return { ads: mappedAds, isMock: false, total, page, pages, limit, citySummary };
+  } catch (error) {
+    console.error("fetchAds failed, falling back to mock data:", error);
+    const citySummary = buildCitySummaryFromAds(FALLBACK_ADS);
+    return {
+      ads: FALLBACK_ADS,
+      isMock: true,
+      total: FALLBACK_ADS.length,
+      page: 1,
+      pages: 1,
+      limit: filters?.limit ?? 9,
+      citySummary,
+    };
+  }
 }
 
 
@@ -260,16 +274,21 @@ export async function fetchFiltersCatalog(): Promise<FiltersCatalog> {
     return { services: SERVICE_FILTER_OPTIONS, age: AGE_FILTER_CONFIG };
   }
 
-  const response = await fetch(`${API_BASE_URL}/ads/filters`, {
-    cache: "no-store",
-    headers: { Accept: "application/json" },
-  });
-  if (!response.ok) throw new Error(`Respuesta ${response.status}`);
-  const payload = (await response.json()) as Partial<FiltersCatalog>;
-  return {
-    services: payload.services ?? SERVICE_FILTER_OPTIONS,
-    age: payload.age ?? AGE_FILTER_CONFIG,
-  };
+  try {
+    const response = await fetch(`${API_BASE_URL}/ads/filters`, {
+      cache: "no-store",
+      headers: { Accept: "application/json" },
+    });
+    if (!response.ok) throw new Error(`Respuesta ${response.status}`);
+    const payload = (await response.json()) as Partial<FiltersCatalog>;
+    return {
+      services: payload.services ?? SERVICE_FILTER_OPTIONS,
+      age: payload.age ?? AGE_FILTER_CONFIG,
+    };
+  } catch (error) {
+    console.error("fetchFiltersCatalog failed, falling back to defaults:", error);
+    return { services: SERVICE_FILTER_OPTIONS, age: AGE_FILTER_CONFIG };
+  }
 }
 
 
