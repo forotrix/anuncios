@@ -3,12 +3,13 @@ import styles from "./RegistrationModal.module.css";
 import { authService, type AuthResponse } from "../../services/auth.service";
 import { useAuth } from "@/hooks/useAuth";
 
+type ViewState = "selection" | "particular" | "user" | "login";
+
 type Props = {
   onClose?: () => void;
   variant?: "default" | "variantA" | "variantB";
+  initialView?: ViewState;
 };
-
-type ViewState = "selection" | "particular" | "user" | "login";
 
 const MIN_PASSWORD_LENGTH = 8;
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -27,8 +28,8 @@ type FormField = keyof typeof initialFormData;
 
 type ApiError = Error & { status?: number };
 
-export const RegistrationModal = ({ onClose, variant = "default" }: Props) => {
-  const [view, setView] = useState<ViewState>("selection");
+export const RegistrationModal = ({ onClose, variant = "default", initialView = "selection" }: Props) => {
+  const [view, setView] = useState<ViewState>(initialView);
   const [formData, setFormData] = useState(initialFormData);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -233,7 +234,7 @@ export const RegistrationModal = ({ onClose, variant = "default" }: Props) => {
           </button>
           {isDropdownOpen && (
             <div className={styles.dropdownMenu}>
-              {["Mujeres", "Trans", "Trans Operada", "Otro"].map((cat) => (
+              {["Chica", "Trans", "Chico", "Agencia"].map((cat) => (
                 <button key={cat} type="button" className={styles.dropdownItem} onClick={() => handleCategorySelect(cat)}>
                   {cat}
                 </button>

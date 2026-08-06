@@ -10,15 +10,14 @@ const IDENTITY_KEY = "forotrix:lastGenderIdentity";
 
 type GenderChoice = {
   label: string;
-  sex: GenderSex;
+  sex?: GenderSex;
   identity: GenderIdentity;
 };
 
 const CHOICES: GenderChoice[] = [
   { label: "Chicas", sex: "female", identity: "cis" },
-  { label: "Chicas trans", sex: "female", identity: "trans" },
   { label: "Chicos", sex: "male", identity: "cis" },
-  { label: "Chicos trans", sex: "male", identity: "trans" },
+  { label: "Trans", identity: "trans" },
 ];
 
 export function EntryGate() {
@@ -47,10 +46,14 @@ export function EntryGate() {
     };
   }, [accepted]);
 
-  const handleSelect = (sex: GenderSex, identity: GenderIdentity) => {
+  const handleSelect = (sex: GenderSex | undefined, identity: GenderIdentity) => {
     if (!confirmedAdult) return;
     if (typeof window !== "undefined") {
-      window.localStorage.setItem(SEX_KEY, sex);
+      if (sex) {
+        window.localStorage.setItem(SEX_KEY, sex);
+      } else {
+        window.localStorage.removeItem(SEX_KEY);
+      }
       window.localStorage.setItem(IDENTITY_KEY, identity);
       window.sessionStorage.setItem(SESSION_KEY, "true");
     }
@@ -59,7 +62,11 @@ export function EntryGate() {
     if (pathname?.startsWith("/feed")) {
       const next = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
       next.delete("profileType");
-      next.set("sex", sex);
+      if (sex) {
+        next.set("sex", sex);
+      } else {
+        next.delete("sex");
+      }
       next.set("identity", identity);
       const query = next.toString();
       router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
@@ -93,7 +100,7 @@ export function EntryGate() {
           <span>Confirmo que soy mayor de 18 años.</span>
         </label>
 
-        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+        <div className="mt-6 grid gap-3 sm:grid-cols-3">
           {CHOICES.map((choice) => (
             <button
               key={`${choice.sex}:${choice.identity}`}

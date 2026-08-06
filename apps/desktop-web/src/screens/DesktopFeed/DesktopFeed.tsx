@@ -62,7 +62,7 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
     sex: initialFilters.sex,
     identity: initialFilters.identity,
   });
-  const [sex, setSex] = useState<GenderSex>(initialFilters.sex ?? sexPreference ?? "female");
+  const [sex, setSex] = useState<GenderSex | undefined>(initialFilters.sex ?? sexPreference);
   const [identity, setIdentity] = useState<GenderIdentity>(initialFilters.identity ?? identityPreference ?? "cis");
   const [heroIndex, setHeroIndex] = useState(0);
   const [isAtTop, setIsAtTop] = useState(true);
@@ -71,7 +71,7 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
   const [lightboxAlt, setLightboxAlt] = useState<string>("");
 
   useEffect(() => {
-    setSex(initialFilters.sex ?? sexPreference ?? "female");
+    setSex(initialFilters.sex ?? sexPreference);
   }, [initialFilters.sex, sexPreference]);
 
   useEffect(() => {
@@ -209,16 +209,11 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
     setFavoriteIds((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]));
   };
 
-  const handleSexToggle = (next: GenderSex) => {
-    if (next === sex) return;
-    setSex(next);
-    applyFilters({ sex: next, profileType: undefined, page: 1 });
-  };
-
-  const handleIdentityToggle = (next: GenderIdentity) => {
-    if (next === identity) return;
-    setIdentity(next);
-    applyFilters({ identity: next, profileType: undefined, page: 1 });
+  const handleGenderToggle = (next: { sex?: GenderSex; identity: GenderIdentity }) => {
+    if (next.sex === sex && next.identity === identity) return;
+    setSex(next.sex);
+    setIdentity(next.identity);
+    applyFilters({ sex: next.sex, identity: next.identity, profileType: undefined, page: 1 });
   };
 
   const handlePageChange = (page: number) => {
@@ -241,7 +236,13 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
     setHeroIndex(index);
   };
 
-  const logoHref = sex === "female" && identity === "cis" ? "/feed" : `/feed?sex=${sex}&identity=${identity}`;
+  const logoHref = (() => {
+    if (identity === "cis" && (sex === "female" || sex === undefined)) return "/feed";
+    const params = new URLSearchParams();
+    if (sex) params.set("sex", sex);
+    params.set("identity", identity);
+    return `/feed?${params.toString()}`;
+  })();
 
   return (
     <div className="bg-black text-white">
@@ -249,8 +250,7 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
         <SiteHeader
           genderSex={sex}
           genderIdentity={identity}
-          onGenderSexChange={handleSexToggle}
-          onGenderIdentityChange={handleIdentityToggle}
+          onGenderChange={handleGenderToggle}
           logoHref={logoHref}
           onRegisterClick={openRegister}
         />
@@ -872,7 +872,7 @@ function formatPlanLabel(plan?: string | null) {
   return "Plan básico";
 }
 
-function formatGenderLabel(sex: GenderSex, identity: GenderIdentity) {
-  if (sex === "male") return identity === "trans" ? "Chicos trans" : "Chicos";
-  return identity === "trans" ? "Chicas trans" : "Chicas";
+function formatGenderLabel(sex: GenderSex | undefined, identity: GenderIdentity) {
+  if (identity === "trans") return "Trans";
+  return sex === "male" ? "Chicos" : "Chicas";
 }

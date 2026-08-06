@@ -6,6 +6,7 @@ import { RegistrationModal } from "@/components/RegistrationModal/RegistrationMo
 type AuthModalContextValue = {
   isOpen: boolean;
   openRegister: () => void;
+  openLogin: () => void;
   close: () => void;
 };
 
@@ -13,8 +14,15 @@ const AuthModalContext = createContext<AuthModalContextValue | null>(null);
 
 export const AuthModalProvider = ({ children }: { children: React.ReactNode }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [initialView, setInitialView] = useState<"selection" | "login">("selection");
 
   const openRegister = useCallback(() => {
+    setInitialView("selection");
+    setIsOpen(true);
+  }, []);
+
+  const openLogin = useCallback(() => {
+    setInitialView("login");
     setIsOpen(true);
   }, []);
 
@@ -26,15 +34,16 @@ export const AuthModalProvider = ({ children }: { children: React.ReactNode }) =
     () => ({
       isOpen,
       openRegister,
+      openLogin,
       close,
     }),
-    [isOpen, openRegister, close],
+    [isOpen, openRegister, openLogin, close],
   );
 
   return (
     <AuthModalContext.Provider value={value}>
       {children}
-      {isOpen && <RegistrationModal onClose={close} variant="default" />}
+      {isOpen && <RegistrationModal onClose={close} variant="default" initialView={initialView} />}
     </AuthModalContext.Provider>
   );
 };

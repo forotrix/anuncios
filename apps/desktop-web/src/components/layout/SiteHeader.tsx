@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { GenderIdentity, GenderSex } from "@anuncios/shared";
-import { GenderToggleStack } from "@/components/GenderToggleStack";
+import { GenderFilterToggle } from "@/components/GenderFilterToggle";
 import { BotonChicas } from "@/components/BotonChicas";
 import { ASSETS } from "@/constants/assets";
 import { useAuth } from "@/hooks/useAuth";
@@ -13,11 +13,11 @@ import { useEffect, useState } from "react";
 type Props = {
   genderSex?: GenderSex;
   genderIdentity?: GenderIdentity;
-  onGenderSexChange?: (next: GenderSex) => void;
-  onGenderIdentityChange?: (next: GenderIdentity) => void;
+  onGenderChange?: (next: { sex?: GenderSex; identity: GenderIdentity }) => void;
   profileToggleClassName?: string;
   logoHref?: string;
   onRegisterClick?: () => void;
+  onLoginClick?: () => void;
 };
 
 const DEFAULT_PROFILE_TOGGLE_CLASS = "absolute left-[618px] top-1/2 -translate-y-1/2";
@@ -26,18 +26,19 @@ const MENU_ID = "siteheader-mobile-menu";
 export const SiteHeader = ({
   genderSex,
   genderIdentity,
-  onGenderSexChange,
-  onGenderIdentityChange,
+  onGenderChange,
   profileToggleClassName = DEFAULT_PROFILE_TOGGLE_CLASS,
   logoHref = "/feed",
   onRegisterClick,
+  onLoginClick,
 }: Props) => {
   const { isAuthenticated, user } = useAuth();
-  const { openRegister } = useAuthModal();
-  const canToggleGender = genderSex && genderIdentity && onGenderSexChange && onGenderIdentityChange;
+  const { openRegister, openLogin } = useAuthModal();
+  const canToggleGender = Boolean(genderIdentity && onGenderChange);
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const handleRegisterClick = onRegisterClick ?? openRegister;
+  const handleLoginClick = onLoginClick ?? openLogin;
   const isProviderRole = user?.role === "provider" || user?.role === "agency";
   const handleLogoClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
     if (pathname === "/feed") {
@@ -85,11 +86,10 @@ export const SiteHeader = ({
             {/* Middle: Gender Selector (Desktop Only) */}
             {canToggleGender && (
               <div className="hidden lg:flex flex-1 justify-center px-4">
-                <GenderToggleStack
+                <GenderFilterToggle
                   sex={genderSex}
-                  identity={genderIdentity}
-                  onSexChange={onGenderSexChange}
-                  onIdentityChange={onGenderIdentityChange}
+                  identity={genderIdentity!}
+                  onChange={onGenderChange}
                   gapClassName="gap-3"
                   className="items-center"
                 />
@@ -98,46 +98,55 @@ export const SiteHeader = ({
 
             {/* Right Side: Actions (Desktop) */}
             <div className="hidden lg:flex items-center gap-4">
-              <BotonChicas
-                buttonStyleDivClassName="!mr-[-20.50px] !mt-[-3.00px] !tracking-[var(--h4-letter-spacing)] !ml-[-20.50px] !text-[length:var(--h4-font-size)] ![font-style:var(--h4-font-style)] ![white-space:unset] !font-[number:var(--h4-font-weight)] !font-h4 !leading-[var(--h4-line-height)]"
-                buttonStyleStyleFilledIconNoClassName="!self-stretch !flex-[0_0_auto] !px-[70px] !py-3.5 !flex !left-[unset] !w-full !top-[unset] !rounded-[30px] !bg-black"
-                buttonStyleText="Anuncia"
-                className={`!relative !left-[unset] !top-[unset] !p-[3px] !gap-0 !items-stretch !rounded-[32px] ${
-                  isAuthenticated && !isProviderRole
-                    ? "!bg-[#2a0b0e] !opacity-60 !cursor-not-allowed"
-                    : "!bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)]"
-                }`}
-                propiedad1="predeterminada"
-                {...(isAuthenticated
-                  ? isProviderRole
-                    ? { to: "/perfil/mi-anuncio" }
-                    : { onClick: handleProviderRequired }
-                  : { onClick: handleRegisterClick })}
-              />
-
               {isAuthenticated ? (
-                <Link
-                  href={isProviderRole ? "/perfil/mi-anuncio" : "/perfil/cuenta"}
-                  className="relative h-[66px] w-[273px]"
-                  aria-label="Mi cuenta"
-                >
+                <>
+                  <BotonChicas
+                    buttonStyleDivClassName="!mr-[-20.50px] !mt-[-3.00px] !tracking-[var(--h4-letter-spacing)] !ml-[-20.50px] !text-[length:var(--h4-font-size)] ![font-style:var(--h4-font-style)] ![white-space:unset] !font-[number:var(--h4-font-weight)] !font-h4 !leading-[var(--h4-line-height)]"
+                    buttonStyleStyleFilledIconNoClassName="!self-stretch !flex-[0_0_auto] !px-[70px] !py-3.5 !flex !left-[unset] !w-full !top-[unset] !rounded-[30px] !bg-black"
+                    buttonStyleText="Anuncia"
+                    className={`!relative !left-[unset] !top-[unset] !p-[3px] !gap-0 !items-stretch !rounded-[32px] ${
+                      !isProviderRole
+                        ? "!bg-[#2a0b0e] !opacity-60 !cursor-not-allowed"
+                        : "!bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)]"
+                    }`}
+                    propiedad1="predeterminada"
+                    {...(isProviderRole ? { to: "/perfil/mi-anuncio" } : { onClick: handleProviderRequired })}
+                  />
+
+                  <Link
+                    href={isProviderRole ? "/perfil/mi-anuncio" : "/perfil/cuenta"}
+                    className="relative h-[66px] w-[273px]"
+                    aria-label="Mi cuenta"
+                  >
+                    <BotonChicas
+                      buttonStyleDivClassName="!mr-[-40.00px] !mt-[-3.00px] !tracking-[var(--h4-letter-spacing)] !ml-[-40.00px] !text-[length:var(--h4-font-size)] ![font-style:var(--h4-font-style)] ![white-space:unset] !font-[number:var(--h4-font-weight)] !font-h4 !leading-[var(--h4-line-height)]"
+                      buttonStyleStyleFilledIconNoClassName="!self-stretch !flex-[0_0_auto] !px-[70px] !py-3.5 !bg-blend-screen !flex !left-[unset] !bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] !bg-[unset] !w-full !top-[unset]"
+                      buttonStyleText="Mi cuenta"
+                      className="!relative !left-[unset] !top-[unset]"
+                      propiedad1="predeterminada"
+                    />
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <BotonChicas
+                    buttonStyleDivClassName="!mr-[-20.50px] !mt-[-3.00px] !tracking-[var(--h4-letter-spacing)] !ml-[-20.50px] !text-[length:var(--h4-font-size)] ![font-style:var(--h4-font-style)] ![white-space:unset] !font-[number:var(--h4-font-weight)] !font-h4 !leading-[var(--h4-line-height)]"
+                    buttonStyleStyleFilledIconNoClassName="!self-stretch !flex-[0_0_auto] !px-[70px] !py-3.5 !flex !left-[unset] !w-full !top-[unset] !rounded-[30px] !bg-black"
+                    buttonStyleText="Acceder"
+                    className="!relative !left-[unset] !top-[unset] !p-[3px] !gap-0 !items-stretch !rounded-[32px] !bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)]"
+                    propiedad1="predeterminada"
+                    onClick={handleLoginClick}
+                  />
+
                   <BotonChicas
                     buttonStyleDivClassName="!mr-[-40.00px] !mt-[-3.00px] !tracking-[var(--h4-letter-spacing)] !ml-[-40.00px] !text-[length:var(--h4-font-size)] ![font-style:var(--h4-font-style)] ![white-space:unset] !font-[number:var(--h4-font-weight)] !font-h4 !leading-[var(--h4-line-height)]"
                     buttonStyleStyleFilledIconNoClassName="!self-stretch !flex-[0_0_auto] !px-[70px] !py-3.5 !bg-blend-screen !flex !left-[unset] !bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] !bg-[unset] !w-full !top-[unset]"
-                    buttonStyleText="Mi cuenta"
+                    buttonStyleText="Registrarse"
                     className="!relative !left-[unset] !top-[unset]"
                     propiedad1="predeterminada"
+                    onClick={handleRegisterClick}
                   />
-                </Link>
-              ) : (
-                <BotonChicas
-                  buttonStyleDivClassName="!mr-[-40.00px] !mt-[-3.00px] !tracking-[var(--h4-letter-spacing)] !ml-[-40.00px] !text-[length:var(--h4-font-size)] ![font-style:var(--h4-font-style)] ![white-space:unset] !font-[number:var(--h4-font-weight)] !font-h4 !leading-[var(--h4-line-height)]"
-                  buttonStyleStyleFilledIconNoClassName="!self-stretch !flex-[0_0_auto] !px-[70px] !py-3.5 !bg-blend-screen !flex !left-[unset] !bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] !bg-[unset] !w-full !top-[unset]"
-                  buttonStyleText="Registrarse"
-                  className="!relative !left-[unset] !top-[unset]"
-                  propiedad1="predeterminada"
-                  onClick={handleRegisterClick}
-                />
+                </>
               )}
             </div>
 
@@ -181,12 +190,12 @@ export const SiteHeader = ({
               <div className="rounded-[28px] border border-white/10 bg-[#07080c]/70 p-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.35em] text-white/50">Preferencias</p>
                 <div className="mt-4">
-                  <GenderToggleStack
+                  <GenderFilterToggle
                     sex={genderSex}
-                    identity={genderIdentity}
-                    onSexChange={onGenderSexChange}
-                    onIdentityChange={onGenderIdentityChange}
+                    identity={genderIdentity!}
+                    onChange={onGenderChange}
                     gapClassName="gap-3"
+                    orientation="column"
                   />
                 </div>
               </div>
@@ -194,80 +203,60 @@ export const SiteHeader = ({
 
             <div className="mt-auto space-y-3">
               {isAuthenticated ? (
-                isProviderRole ? (
+                <>
+                  {isProviderRole ? (
+                    <Link
+                      href="/perfil/mi-anuncio"
+                      className="inline-flex w-full items-center justify-center rounded-full border border-white/20 bg-white/5 px-6 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-white/85 transition hover:border-white/40 hover:text-white"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Anuncia
+                    </Link>
+                  ) : (
+                    <button
+                      type="button"
+                      className="inline-flex w-full cursor-not-allowed items-center justify-center rounded-full border border-white/10 bg-[#1a0a0b] px-6 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-white/50"
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        handleProviderRequired();
+                      }}
+                    >
+                      Anuncia
+                    </button>
+                  )}
+
                   <Link
-                    href="/perfil/mi-anuncio"
-                    className="inline-flex w-full items-center justify-center rounded-full border border-white/20 bg-white/5 px-6 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-white/85 transition hover:border-white/40 hover:text-white"
+                    href={isProviderRole ? "/perfil/mi-anuncio" : "/perfil/cuenta"}
+                    className="inline-flex w-full items-center justify-center rounded-full bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] px-6 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-white shadow-shadow-g"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    Anuncia
+                    Mi cuenta
                   </Link>
-                ) : (
+                </>
+              ) : (
+                <>
                   <button
                     type="button"
-                    className="inline-flex w-full cursor-not-allowed items-center justify-center rounded-full border border-white/10 bg-[#1a0a0b] px-6 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-white/50"
+                    className="inline-flex w-full items-center justify-center rounded-full border border-white/20 bg-white/5 px-6 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-white/85 transition hover:border-white/40 hover:text-white"
                     onClick={() => {
                       setIsMobileMenuOpen(false);
-                      handleProviderRequired();
+                      handleLoginClick();
                     }}
                   >
-                    Anuncia
+                    Acceder
                   </button>
-                )
-              ) : onRegisterClick ? (
-                <button
-                  type="button"
-                  className="inline-flex w-full items-center justify-center rounded-full border border-white/20 bg-white/5 px-6 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-white/85 transition hover:border-white/40 hover:text-white"
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    onRegisterClick();
-                  }}
-                >
-                  Anuncia
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  className="inline-flex w-full items-center justify-center rounded-full border border-white/20 bg-white/5 px-6 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-white/85 transition hover:border-white/40 hover:text-white"
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    handleRegisterClick();
-                  }}
-                >
-                  Anuncia
-                </button>
-              )}
 
-              {isAuthenticated ? (
-                <Link
-                  href={isProviderRole ? "/perfil/mi-anuncio" : "/perfil/cuenta"}
-                  className="inline-flex w-full items-center justify-center rounded-full bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] px-6 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-white shadow-shadow-g"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Mi cuenta
-                </Link>
-              ) : onRegisterClick ? (
-                <button
-                  type="button"
-                  className="inline-flex w-full items-center justify-center rounded-full bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] px-6 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-white shadow-shadow-g"
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    onRegisterClick();
-                  }}
-                >
-                  Registrarse
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  className="inline-flex w-full items-center justify-center rounded-full bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] px-6 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-white shadow-shadow-g"
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    handleRegisterClick();
-                  }}
-                >
-                  Registrarse
-                </button>
+                  <button
+                    type="button"
+                    className="inline-flex w-full items-center justify-center rounded-full bg-[linear-gradient(119deg,rgba(135,0,5,1)_12%,rgba(172,7,13,1)_45%,rgba(208,29,35,1)_75%,rgba(236,76,81,1)_100%)] px-6 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-white shadow-shadow-g"
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      handleRegisterClick();
+                    }}
+                  >
+                    Registrarse
+                  </button>
+                </>
               )}
             </div>
           </aside>

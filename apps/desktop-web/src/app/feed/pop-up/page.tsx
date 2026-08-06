@@ -13,8 +13,8 @@ type FeedPopUpPageProps = {
 export default async function FeedPopUpPage({ searchParams }: FeedPopUpPageProps) {
   const resolvedSearchParams = await Promise.resolve(searchParams ?? {});
   const filters = parseFiltersFromSearch(resolvedSearchParams);
-  const heroSex = filters.sex ?? "female";
   const heroIdentity = filters.identity ?? "cis";
+  const heroSex = filters.sex ?? (heroIdentity === "trans" ? undefined : "female");
   const resolvedFilters = { ...filters, profileType: undefined, sex: heroSex, identity: heroIdentity };
   const [catalog, heroResult] = await Promise.all([
     fetchFiltersCatalog(),
