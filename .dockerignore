@@ -1,0 +1,17 @@
+**/node_modules
+**/dist
+**/.next
+**/.turbo
+**/coverage
+.git
+.github
+.claude
+docs
+ops
+cambios
+*.md
+.env
+.env.*
+!.env.example
+apps/desktop-web/public
+apps/api/tests
