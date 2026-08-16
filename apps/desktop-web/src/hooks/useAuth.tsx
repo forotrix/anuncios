@@ -10,11 +10,12 @@ import {
   type ReactNode,
 } from "react";
 import type { AuthResponse } from "@/services/auth.service";
+import { refreshSession } from "@/services/httpClient";
+import { authorizedRequest } from "@/services/apiClient";
 
 type AuthContextValue = {
   user: AuthResponse["user"] | null;
   accessToken: string | null;
-  refreshToken: string | null;
   isAuthenticated: boolean;
   isRemembered: boolean;
   isReady: boolean;
@@ -32,35 +33,19 @@ type AuthProviderProps = {
 const STORAGE_KEY = "forotrix:auth";
 const SESSION_KEY = "forotrix:auth:session";
 
-type PersistedSession = Pick<AuthContextValue, "accessToken" | "refreshToken"> & {
+type PersistedSession = Pick<AuthContextValue, "accessToken"> & {
   user: AuthResponse["user"] | null;
 };
 
 const emptySession: PersistedSession = {
   user: null,
   accessToken: null,
-  refreshToken: null,
 };
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [session, setSession] = useState<PersistedSession>(emptySession);
   const [isRemembered, setIsRemembered] = useState(false);
   const [isReady, setIsReady] = useState(false);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const stored = window.localStorage.getItem(STORAGE_KEY) ?? window.sessionStorage.getItem(SESSION_KEY);
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored) as PersistedSession;
-        setSession(parsed);
-        setIsRemembered(Boolean(window.localStorage.getItem(STORAGE_KEY)));
-      } catch {
-        // ignore corrupted storage
-      }
-    }
-    setIsReady(true);
-  }, []);
 
   const persistSession = useCallback((next: PersistedSession, remember: boolean) => {
     if (typeof window === "undefined") return;
@@ -76,12 +61,45 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setIsRemembered(remember);
   }, []);
 
+  // The refresh token lives in an httpOnly cookie now, never in JS-readable
+  // storage - so on load, instead of reading a persisted token, we ask the
+  // API to silently refresh using that cookie. Any leftover pre-migration
+  // localStorage/sessionStorage entries (which could still contain an old
+  // plaintext refresh token) are purged either way.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    let cancelled = false;
+
+    (async () => {
+      const refreshed = await refreshSession();
+      if (cancelled) return;
+
+      window.localStorage.removeItem(STORAGE_KEY);
+      window.sessionStorage.removeItem(SESSION_KEY);
+
+      if (refreshed?.accessToken) {
+        const nextSession: PersistedSession = {
+          user: (refreshed.user as AuthResponse["user"]) ?? null,
+          accessToken: refreshed.accessToken,
+        };
+        setSession(nextSession);
+        persistSession(nextSession, true);
+      } else {
+        setSession(emptySession);
+      }
+      setIsReady(true);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [persistSession]);
+
   const login = useCallback(
     (payload: AuthResponse, remember = false) => {
       const nextSession: PersistedSession = {
         user: payload.user,
         accessToken: payload.access,
-        refreshToken: payload.refresh,
       };
       setSession(nextSession);
       persistSession(nextSession, remember);
@@ -90,13 +108,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
   );
 
   const logout = useCallback(() => {
+    const currentAccessToken = session.accessToken;
     setSession(emptySession);
     setIsRemembered(false);
     if (typeof window !== "undefined") {
       window.localStorage.removeItem(STORAGE_KEY);
       window.sessionStorage.removeItem(SESSION_KEY);
     }
-  }, []);
+    if (currentAccessToken) {
+      authorizedRequest("/auth/logout", currentAccessToken, { method: "POST" }).catch(() => {
+        // best-effort - local state is already cleared either way
+      });
+    }
+  }, [session.accessToken]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -112,12 +136,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const handleRefresh = (event: Event) => {
-      const detail = (event as CustomEvent<AuthResponse>).detail;
-      if (!detail?.access || !detail?.refresh) return;
+      const detail = (event as CustomEvent<{ user: unknown; accessToken: string }>).detail;
+      if (!detail?.accessToken) return;
       const nextSession: PersistedSession = {
-        user: detail.user ?? session.user,
-        accessToken: detail.access,
-        refreshToken: detail.refresh,
+        user: (detail.user as AuthResponse["user"]) ?? session.user,
+        accessToken: detail.accessToken,
       };
       setSession(nextSession);
       persistSession(nextSession, isRemembered);
@@ -147,7 +170,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     () => ({
       user: session.user,
       accessToken: session.accessToken,
-      refreshToken: session.refreshToken,
       isAuthenticated: Boolean(session.user && session.accessToken),
       isRemembered,
       isReady,

@@ -14,6 +14,7 @@ export type RegisterData = {
 export type LoginData = {
   email: string;
   password: string;
+  remember?: boolean;
 };
 
 export type AuthUser = {
@@ -33,7 +34,6 @@ export type AuthUser = {
 export type AuthResponse = {
   user: AuthUser;
   access: string;
-  refresh: string;
 };
 
 export const authService = {

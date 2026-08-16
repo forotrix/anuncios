@@ -105,7 +105,7 @@ export const RegistrationModal = ({ onClose, variant = "default", initialView = 
     try {
       let authResult: AuthResponse;
       if (view === "login") {
-        authResult = await authService.login({ email, password });
+        authResult = await authService.login({ email, password, remember: rememberMe });
         console.log("Login successful");
       } else {
         const role = view === "particular" ? "provider" : "customer";

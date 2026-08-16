@@ -6,7 +6,6 @@ const SESSION_KEY = "forotrix:auth:session";
 type StoredSession = {
   user: unknown;
   accessToken: string | null;
-  refreshToken: string | null;
 };
 
 const isBrowser = () => typeof window !== "undefined";
@@ -38,34 +37,32 @@ function persistSession(session: StoredSession) {
 
 let refreshPromise: Promise<StoredSession | null> | null = null;
 
-async function refreshSession(): Promise<StoredSession | null> {
+// The refresh token lives in an httpOnly cookie (set by the API on
+// login/register/refresh), never in JS-accessible storage - the browser
+// attaches it automatically as long as this request includes credentials.
+// There's nothing to read from local state before calling this.
+export async function refreshSession(): Promise<StoredSession | null> {
   if (!isBrowser() || !API_BASE_URL) return null;
   if (refreshPromise) return refreshPromise;
   const current = readStoredSession();
-  if (!current?.refreshToken) return null;
 
   refreshPromise = (async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({ refresh: current.refreshToken }),
+        headers: { Accept: "application/json" },
+        credentials: "include",
       });
       if (!response.ok) {
         return null;
       }
-      const payload = (await response.json()) as {
-        user: unknown;
-        access: string;
-        refresh: string;
-      };
+      const payload = (await response.json()) as { user: unknown; access: string };
       const updated: StoredSession = {
-        user: payload.user ?? current.user,
+        user: payload.user ?? current?.user ?? null,
         accessToken: payload.access,
-        refreshToken: payload.refresh,
       };
       persistSession(updated);
-      window.dispatchEvent(new CustomEvent("auth:refresh", { detail: payload }));
+      window.dispatchEvent(new CustomEvent("auth:refresh", { detail: updated }));
       return updated;
     } catch {
       return null;
@@ -138,6 +135,7 @@ export async function request<T>(path: string, init: RequestInit = {}): Promise<
     const response = await fetch(`${API_BASE_URL}${path}`, {
       ...init,
       headers: requestHeaders,
+      credentials: "include",
     });
 
     if (response.status !== 401 || !allowRefresh || !isBrowser()) {
@@ -158,6 +156,7 @@ export async function request<T>(path: string, init: RequestInit = {}): Promise<
     return fetch(`${API_BASE_URL}${path}`, {
       ...init,
       headers: nextHeaders,
+      credentials: "include",
     });
   };
 
