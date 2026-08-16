@@ -1,5 +1,6 @@
 import jwt, { type JwtPayload, type Secret, type SignOptions } from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+import { createHash } from 'node:crypto';
 import { env } from '../config/env';
 import type { UserRole } from '@anuncios/shared';
 
@@ -33,10 +34,19 @@ export function verifyRefresh(token: string) {
   return jwt.verify(token, REFRESH_SECRET) as RefreshPayload;
 }
 
+// bcrypt silently truncates its input at 72 bytes, but a signed JWT is
+// almost always longer than that - hashing the raw token directly would
+// mean the stored hash never actually covers the token's signature. We
+// hash a fixed-length SHA-256 digest of the token instead, so the full
+// token content is what bcrypt actually commits to.
+function digest(raw: string) {
+  return createHash('sha256').update(raw).digest('hex');
+}
+
 export async function hashToken(raw: string) {
-  return bcrypt.hash(raw, 10);
+  return bcrypt.hash(digest(raw), 10);
 }
 
 export async function compareToken(raw: string, hash: string) {
-  return bcrypt.compare(raw, hash);
+  return bcrypt.compare(digest(raw), hash);
 }

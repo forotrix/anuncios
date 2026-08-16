@@ -7,12 +7,17 @@ import { authRateLimiter } from '../middlewares/security';
 const router = Router();
 router.use(authRateLimiter);
 
+// Login only checks a stored password, it doesn't set one - keep this
+// loose (no strength requirement) so users who registered before the
+// 8-char minimum was enforced can still log in.
 const credentialsSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(6),
+  password: z.string().min(1).max(200),
 });
 
-const registerSchema = credentialsSchema.extend({
+const registerSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8).max(200),
   role: z.enum(['provider', 'agency', 'customer']),
   name: z.string().min(2).max(120).optional(),
   category: z.string().trim().optional(),
@@ -111,8 +116,10 @@ router.patch('/profile', requireAuth(), async (req, res, next) => {
 
 const passwordSchema = z
   .object({
-    currentPassword: z.string().min(6),
-    newPassword: z.string().min(6),
+    // Loose on purpose: this checks against whatever the user's current
+    // password already is, which may predate the 8-char minimum below.
+    currentPassword: z.string().min(1).max(200),
+    newPassword: z.string().min(8).max(200),
   })
   .strict();
 
