@@ -118,13 +118,36 @@ export async function register(
   return { user: toPublicUser(user), ...tokens };
 }
 
+const MAX_FAILED_LOGIN_ATTEMPTS = 5;
+const LOCKOUT_DURATION_MS = 15 * 60 * 1000;
+
 export async function login(email: string, password: string): Promise<AuthResponse> {
   const normalizedEmail = normalizeEmail(email);
   const user = (await User.findOne({ email: normalizedEmail })) as UserDocument | null;
   if (!user) throw createError(401, 'Invalid credentials');
 
+  if (user.lockedUntil && user.lockedUntil.getTime() > Date.now()) {
+    throw createError(429, 'Demasiados intentos fallidos. Intenta de nuevo en unos minutos.');
+  }
+
   const ok = await bcrypt.compare(password, user.password);
-  if (!ok) throw createError(401, 'Invalid credentials');
+  if (!ok) {
+    // Distributed brute-forcing (rotating IPs) gets past the IP-keyed
+    // authRateLimiter, so this locks the account itself regardless of
+    // where the attempts come from.
+    user.failedLoginAttempts = (user.failedLoginAttempts ?? 0) + 1;
+    if (user.failedLoginAttempts >= MAX_FAILED_LOGIN_ATTEMPTS) {
+      user.lockedUntil = new Date(Date.now() + LOCKOUT_DURATION_MS);
+      user.failedLoginAttempts = 0;
+    }
+    await user.save();
+    throw createError(401, 'Invalid credentials');
+  }
+
+  if (user.failedLoginAttempts || user.lockedUntil) {
+    user.failedLoginAttempts = 0;
+    user.lockedUntil = null;
+  }
 
   const tokens = await rotateTokens(user);
   return { user: toPublicUser(user), ...tokens };

@@ -17,6 +17,8 @@ export interface IUser {
   contacts?: ContactChannels | null;
   avatarUrl?: string | null;
   avatarPublicId?: string | null;
+  failedLoginAttempts: number;
+  lockedUntil?: Date | null;
 }
 
 const contactSchema = new Schema(
@@ -42,6 +44,8 @@ const userSchema = new Schema<IUser>(
     contacts: { type: contactSchema, default: null },
     avatarUrl: { type: String, default: null },
     avatarPublicId: { type: String, default: null },
+    failedLoginAttempts: { type: Number, default: 0 },
+    lockedUntil: { type: Date, default: null },
   },
   { timestamps: true }
 );
