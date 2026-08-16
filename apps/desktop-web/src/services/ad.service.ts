@@ -94,6 +94,15 @@ export const adService = {
     const query = buildQuery(filters);
     return authorizedRequest<OwnAdsResponse>(`/ads/mine${query}`, token);
   },
+  async fetchOwnAdById(token: string | null | undefined, adId: string): Promise<AdRecord> {
+    ensureAccessToken(token);
+    if (!isApiConfigured()) {
+      const ad = mockOwnAds.find((item) => item.id === adId);
+      if (!ad) throw new Error("Anuncio no encontrado");
+      return ad;
+    }
+    return authorizedRequest<AdRecord>(`/ads/${adId}/owner`, token);
+  },
   async createAd(token: string | null | undefined, payload: BaseAdPayload): Promise<AdRecord> {
     ensureAccessToken(token);
     return authorizedJsonRequest<AdRecord>("/ads", token, "POST", payload);

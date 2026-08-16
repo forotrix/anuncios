@@ -15,13 +15,6 @@ type NavLink = {
   requiresProvider?: boolean;
 };
 
-const NAV_LINKS: NavLink[] = [
-  { href: "/perfil/mi-anuncio", label: "Mi anuncio", requiresProvider: true },
-  { href: "/perfil/cuenta", label: "Cuenta" },
-  { href: "/perfil/suscripciones", label: "Suscripciones", requiresProvider: true },
-  { href: "/perfil/estadisticas", label: "Estadísticas", requiresProvider: true },
-];
-
 const NAV_LINK_BASE_CLASS =
   "font-h5 font-[number:var(--h5-font-weight)] text-[length:var(--h5-font-size)] tracking-[var(--h5-letter-spacing)] leading-[var(--h5-line-height)] [font-style:var(--h5-font-style)] transition-colors duration-150 px-5 py-3 rounded-[14px]";
 
@@ -33,12 +26,27 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
   const [ownAdPreviewId, setOwnAdPreviewId] = useState<string | null>(null);
   const [roleNotice, setRoleNotice] = useState<string | null>(null);
   const isProviderRole = user?.role === "provider" || user?.role === "agency";
+  const isAgencyRole = user?.role === "agency";
   const [isAtTop, setIsAtTop] = useState(true);
   const topSentinelRef = useRef<HTMLDivElement>(null);
+
+  const navLinks: NavLink[] = [
+    {
+      href: isAgencyRole ? "/perfil/mis-perfiles" : "/perfil/mi-anuncio",
+      label: isAgencyRole ? "Mis perfiles" : "Mi anuncio",
+      requiresProvider: true,
+    },
+    { href: "/perfil/cuenta", label: "Cuenta" },
+    { href: "/perfil/suscripciones", label: "Suscripciones", requiresProvider: true },
+    { href: "/perfil/estadisticas", label: "Estadísticas", requiresProvider: true },
+  ];
 
   const isActive = (href: string) => {
     if (href === "/anuncio") {
       return pathname.startsWith("/anuncio");
+    }
+    if (href === "/perfil/mis-perfiles") {
+      return pathname === "/perfil/mis-perfiles" || pathname === "/perfil/mi-anuncio";
     }
     return pathname === href;
   };
@@ -139,7 +147,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
                     className="no-scrollbar flex w-full items-center gap-2 overflow-x-auto rounded-[18px] bg-[#52040a]/70 p-2 backdrop-blur-sm lg:flex-col lg:items-stretch"
                     aria-label="Navegacion de perfil"
                   >
-                    {NAV_LINKS.map((link, index) => {
+                    {navLinks.map((link, index) => {
                       const active = isActive(link.href);
                       const roundedClass = "rounded-[14px]";
                       if (link.requiresProvider && !isProviderRole) {

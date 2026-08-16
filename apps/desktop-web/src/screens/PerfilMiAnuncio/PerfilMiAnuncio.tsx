@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import type { MediaAsset } from "@anuncios/shared";
 import { GenderToggleStack } from "@/components/GenderToggleStack";
 import { ImageLightbox } from "@/components/ImageLightbox";
@@ -88,7 +89,9 @@ const buildCloudinarySrcSet = (url?: string | null, widths: number[] = [320, 480
 
 export const PerfilMiAnuncio = () => {
   const { user, accessToken, logout, updateUser } = useAuth();
-  const form = useMiAnuncioForm(accessToken, { onAuthExpired: logout });
+  const searchParams = useSearchParams();
+  const adId = searchParams.get("id") ?? undefined;
+  const form = useMiAnuncioForm(accessToken, { onAuthExpired: logout, adId });
   const {
     draft,
     loading,

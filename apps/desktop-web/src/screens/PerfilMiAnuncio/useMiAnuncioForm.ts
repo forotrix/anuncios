@@ -282,7 +282,7 @@ function buildPayload(state: MiAnuncioDraft) {
 
 export function useMiAnuncioForm(
   accessToken?: string | null,
-  options: { onAuthExpired?: () => void } = {},
+  options: { onAuthExpired?: () => void; adId?: string } = {},
 ) {
   const [draft, setDraft] = useState<MiAnuncioDraft>(() => createEmptyDraft());
   const [loading, setLoading] = useState(false);
@@ -298,15 +298,16 @@ export function useMiAnuncioForm(
     setLoading(true);
     setError(null);
     try {
-      const response = await adService.fetchOwnAds(accessToken, { page: 1, limit: 1 });
-      const ad = response.items[0];
+      const ad = options.adId
+        ? await adService.fetchOwnAdById(accessToken, options.adId)
+        : (await adService.fetchOwnAds(accessToken, { page: 1, limit: 1 })).items[0];
       setDraft(ad ? mapAdToDraft(ad) : createEmptyDraft());
     } catch (err) {
       setError(err as Error);
     } finally {
       setLoading(false);
     }
-  }, [accessToken]);
+  }, [accessToken, options.adId]);
 
   useEffect(() => {
     void load();
