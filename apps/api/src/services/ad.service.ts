@@ -7,6 +7,10 @@ import type { AdMetadata, GenderIdentity, GenderSex, Plan, ProfileType } from '@
 import { normalizeAdTitle } from '../utils/normalizeTitle';
 
 const MAX_LIMIT = 50;
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 type AvailabilitySlot = NonNullable<AdMetadata['availability']>[number];
 const ALLOWED_DAYS: AvailabilitySlot['day'][] = [
   'monday',
@@ -439,7 +443,7 @@ export async function listAds(filters: ListFilters, page = 1, limit = 20) {
   }
   if (city) query.city = city;
   if (plan) query.plan = plan;
-  if (text) query.title = { $regex: text, $options: 'i' };
+  if (text) query.title = { $regex: escapeRegExp(text), $options: 'i' };
   if (profileType) query.profileType = profileType;
   const genderClauses: any[] = [];
   if (sex) {

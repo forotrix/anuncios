@@ -64,3 +64,10 @@ export const adMutationLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
+
+export const eventLogLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  limit: 60,
+  standardHeaders: true,
+  legacyHeaders: false,
+});

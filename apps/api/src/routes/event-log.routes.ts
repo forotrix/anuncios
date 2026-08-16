@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { storeEventLog, findEvents } from '../services/event-log.service';
 import { requireAuth } from '../middlewares/auth';
+import { eventLogLimiter } from '../middlewares/security';
 
 const router = Router();
 const MAX_EVENT_DATA_CHARS = 4000;
@@ -56,7 +57,7 @@ const logEventSchema = z
   })
   .strict();
 
-router.post('/log', async (req, res, next) => {
+router.post('/log', eventLogLimiter, async (req, res, next) => {
   try {
     const body = logEventSchema.parse(req.body);
     await storeEventLog({

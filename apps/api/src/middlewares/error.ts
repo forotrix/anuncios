@@ -7,7 +7,10 @@ export function errorHandler(err: any, _req: Request, res: Response, _next: Next
   }
 
   const status = err.status || 500;
-  const message = err.message || 'Internal error';
-  if (status >= 500) console.error(err);
-  return res.status(status).json({ error: message });
+  if (status >= 500) {
+    console.error(err);
+    const message = process.env.NODE_ENV === 'production' ? 'Internal error' : err.message || 'Internal error';
+    return res.status(status).json({ error: message });
+  }
+  return res.status(status).json({ error: err.message || 'Error' });
 }

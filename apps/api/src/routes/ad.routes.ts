@@ -304,7 +304,8 @@ router.post('/:id/comments', adMutationLimiter, requireAuth(), async (req, res, 
 
 router.get('/:id', async (req, res, next) => {
   try {
-    const ad = await service.getPublicAd(req.params.id);
+    const adId = objectId.parse(req.params.id);
+    const ad = await service.getPublicAd(adId);
     res.json(ad);
   } catch (err) {
     next(err);
