@@ -19,6 +19,7 @@ export interface IUser {
   avatarPublicId?: string | null;
   failedLoginAttempts: number;
   lockedUntil?: Date | null;
+  status: 'active' | 'suspended';
 }
 
 const contactSchema = new Schema(
@@ -46,6 +47,7 @@ const userSchema = new Schema<IUser>(
     avatarPublicId: { type: String, default: null },
     failedLoginAttempts: { type: Number, default: 0 },
     lockedUntil: { type: Date, default: null },
+    status: { type: String, enum: ['active', 'suspended'], default: 'active', index: true },
   },
   { timestamps: true }
 );

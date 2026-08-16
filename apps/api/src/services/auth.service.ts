@@ -130,6 +130,10 @@ export async function login(email: string, password: string): Promise<AuthRespon
     throw createError(429, 'Demasiados intentos fallidos. Intenta de nuevo en unos minutos.');
   }
 
+  if (user.status === 'suspended') {
+    throw createError(403, 'Esta cuenta ha sido suspendida');
+  }
+
   const ok = await bcrypt.compare(password, user.password);
   if (!ok) {
     // Distributed brute-forcing (rotating IPs) gets past the IP-keyed
@@ -230,7 +234,7 @@ export async function updatePassword(userId: string, currentPassword: string, ne
   await user.save();
 }
 
-export async function deleteAccount(userId: string) {
+export async function deleteAccount(userId: string, actorId: string = userId) {
   const user = (await User.findById(userId)) as UserDocument | null;
   if (!user) throw createError(404, 'User not found');
 
@@ -255,7 +259,7 @@ export async function deleteAccount(userId: string) {
 
   await recordAudit({
     action: 'account:delete',
-    actorId: userId,
+    actorId,
     targetId: userId,
   });
 }

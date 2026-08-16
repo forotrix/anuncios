@@ -720,3 +720,55 @@ export async function deleteAd(ownerId: string, id: string) {
     targetId: id,
   });
 }
+
+export async function listAdsForAdmin(
+  filters: { status?: 'draft' | 'published' | 'blocked'; text?: string },
+  page = 1,
+  limit = 20,
+) {
+  const { limit: safeLimit, skip, page: safePage } = clampPagination(page, limit);
+
+  const query: FilterQuery<IAd> = {};
+  if (filters.status) query.status = filters.status;
+  if (filters.text) query.title = { $regex: escapeRegExp(filters.text), $options: 'i' };
+
+  const [items, total] = await Promise.all([
+    Ad.find(query).sort({ createdAt: -1 }).skip(skip).limit(safeLimit).populate('images').lean(),
+    Ad.countDocuments(query),
+  ]);
+
+  return {
+    items: items.map(serializeAd),
+    total,
+    page: safePage,
+    pages: Math.ceil(total / safeLimit),
+    limit: safeLimit,
+  };
+}
+
+export async function blockAd(adminId: string, id: string) {
+  const ad = await Ad.findById(id);
+  if (!ad) throw createError(404, 'Not found');
+
+  ad.status = 'blocked';
+  await ad.save();
+  await ad.populate('images');
+  const result = serializeAd(ad.toObject());
+
+  await recordAudit({ action: 'admin:ad:block', actorId: adminId, targetId: result.id });
+  return result;
+}
+
+export async function unblockAd(adminId: string, id: string) {
+  const ad = await Ad.findById(id);
+  if (!ad) throw createError(404, 'Not found');
+  if (ad.status !== 'blocked') throw createError(400, 'Ad is not blocked');
+
+  ad.status = 'published';
+  await ad.save();
+  await ad.populate('images');
+  const result = serializeAd(ad.toObject());
+
+  await recordAudit({ action: 'admin:ad:unblock', actorId: adminId, targetId: result.id });
+  return result;
+}
