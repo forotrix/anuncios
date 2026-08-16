@@ -20,7 +20,7 @@ export default function PrivacidadPage() {
             <h2 className="text-lg font-semibold text-white">Responsable del tratamiento</h2>
             <p>Responsable: Ritort Patrimoni, S.L.U.</p>
             <p>Domicilio: Carrer Sant Miquel 31, 08241 Manresa, Barcelona</p>
-            <p>Correo electrónico: [privacidad@forotrix.com]</p>
+            <p>Correo electrónico: forotrix@gmail.com</p>
           </div>
 
           <div className="space-y-3">

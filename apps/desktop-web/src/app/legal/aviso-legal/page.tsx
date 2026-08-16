@@ -25,7 +25,7 @@ export default function AvisoLegalPage() {
             <p>Titular: Ritort Patrimoni, S.L.U.</p>
             <p>CIF: B-624541-8</p>
             <p>Domicilio social: Carrer Sant Miquel 31, 08241 Manresa, Barcelona, España</p>
-            <p>Correo electrónico de contacto: [legal@forotrix.com]</p>
+            <p>Correo electrónico de contacto: forotrix@gmail.com</p>
           </div>
 
           <div className="space-y-3">

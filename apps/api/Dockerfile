@@ -8,7 +8,7 @@
 # resolve the workspace graph against pnpm-lock.yaml, not the full source of
 # every app, to keep the build context and final image small.
 
-FROM node:20-alpine AS base
+FROM node:24-alpine AS base
 RUN corepack enable && corepack prepare pnpm@9.0.0 --activate
 WORKDIR /app
 
