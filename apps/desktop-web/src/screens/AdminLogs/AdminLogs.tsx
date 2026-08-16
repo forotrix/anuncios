@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { fetchEventLogs, type EventLogDTO } from "@/services/admin.service";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
+import { AdminNav } from "@/components/AdminNav/AdminNav";
 
 export const AdminLogs = () => {
   const { accessToken, user } = useAuth();
@@ -57,7 +58,8 @@ export const AdminLogs = () => {
     <div className="flex min-h-screen flex-col bg-black text-white">
       <SiteHeader />
       <main className="mx-auto w-full max-w-[1440px] flex-1 px-6 pt-[168px] pb-24">
-        <div className="flex items-center justify-between border-b border-white/10 pb-6">
+        <AdminNav />
+        <div className="mt-6 flex items-center justify-between border-b border-white/10 pb-6">
           <div>
             <h1 className="text-3xl font-bold">Panel de Seguimiento</h1>
             <p className="mt-1 text-white/50">Últimos 200 eventos registrados en el sistema</p>
