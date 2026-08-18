@@ -49,8 +49,13 @@ const listQuerySchema = z
     ),
     page: z.coerce.number().int().min(1).optional(),
     limit: z.coerce.number().int().min(1).max(50).optional(),
+    nearLat: z.coerce.number().min(-90).max(90).optional(),
+    nearLng: z.coerce.number().min(-180).max(180).optional(),
   })
-  .strict();
+  .strict()
+  .refine((value) => (value.nearLat === undefined) === (value.nearLng === undefined), {
+    message: 'nearLat and nearLng must be provided together',
+  });
 
 const contactSchema = z
   .object({
@@ -237,10 +242,13 @@ router.get('/', async (req, res, next) => {
       featured,
       weekly,
       excludeIds,
+      nearLat,
+      nearLng,
     } =
       listQuerySchema.parse(req.query);
+    const near = nearLat !== undefined && nearLng !== undefined ? { lat: nearLat, lon: nearLng } : undefined;
     const output = await service.listAds(
-      { text, city, plan, services, profileType, sex, identity, ageMin, ageMax, featured, weekly, excludeIds },
+      { text, city, plan, services, profileType, sex, identity, ageMin, ageMax, featured, weekly, excludeIds, near },
       page,
       limit,
     );

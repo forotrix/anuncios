@@ -4,9 +4,15 @@ import { Ad, type IAd } from '../models/Ad';
 import { detachMediaFromAd, replaceAdMedia } from './media.service';
 import { recordAudit } from './audit.service';
 import type { AdMetadata, GenderIdentity, GenderSex, Plan, ProfileType } from '@anuncios/shared';
+import { haversineDistanceKm, jitterCoordinates, resolveLocationCoordinates } from '@anuncios/shared';
 import { normalizeAdTitle } from '../utils/normalizeTitle';
 
 const MAX_LIMIT = 50;
+// Tope de candidatos a evaluar cuando se ordena por cercania: el ordenamiento
+// se hace en memoria (las coordenadas son un catalogo estatico, no un campo
+// indexado en Mongo), asi que se acota a los N anuncios mas recientes que
+// cumplen el resto de filtros en vez de cargar la coleccion entera.
+const NEAR_CANDIDATE_LIMIT = 500;
 
 function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -322,6 +328,7 @@ export type ListFilters = {
   featured?: boolean;
   weekly?: boolean;
   excludeIds?: string[];
+  near?: { lat: number; lon: number };
 };
 
 function resolveProfileType(
@@ -434,7 +441,8 @@ export async function createAd(ownerId: string, data: CreateAdInput) {
 }
 
 export async function listAds(filters: ListFilters, page = 1, limit = 20) {
-  const { text, city, plan, services, profileType, sex, identity, ageMin, ageMax, featured, weekly, excludeIds } = filters;
+  const { text, city, plan, services, profileType, sex, identity, ageMin, ageMax, featured, weekly, excludeIds, near } =
+    filters;
   const { limit: safeLimit, skip, page: safePage } = clampPagination(page, limit);
 
   const query: FilterQuery<IAd> = { status: 'published' };
@@ -491,6 +499,58 @@ export async function listAds(filters: ListFilters, page = 1, limit = 20) {
   const cityCountersQuery: FilterQuery<IAd> = { ...query };
   delete cityCountersQuery.city;
 
+  const cityAggregation = () =>
+    Ad.aggregate([
+      { $match: cityCountersQuery },
+      {
+        $group: {
+          _id: { $ifNull: ['$city', 'Sin zona'] },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          city: '$_id',
+          count: 1,
+        },
+      },
+      { $sort: { count: -1, city: 1 } },
+    ]);
+
+  if (near) {
+    const [candidates, citySummary] = await Promise.all([
+      Ad.find(query).sort({ createdAt: -1 }).limit(NEAR_CANDIDATE_LIMIT).populate('images').lean(),
+      cityAggregation(),
+    ]);
+
+    const withDistance = candidates
+      .map((ad) => {
+        const zone = (ad.metadata as AdMetadata | null | undefined)?.location?.zone;
+        const base = resolveLocationCoordinates(ad.city, zone);
+        if (!base) return null;
+        const point = jitterCoordinates(base, ad._id.toString());
+        return { ad, distanceKm: haversineDistanceKm(near, point) };
+      })
+      .filter((entry): entry is { ad: (typeof candidates)[number]; distanceKm: number } => entry !== null)
+      .sort((a, b) => a.distanceKm - b.distanceKm);
+
+    const total = withDistance.length;
+    const paged = withDistance.slice(skip, skip + safeLimit);
+
+    return {
+      items: paged.map(({ ad, distanceKm }) => ({
+        ...serializeAd(ad),
+        distanceKm: Math.round(distanceKm * 10) / 10,
+      })),
+      total,
+      page: safePage,
+      pages: Math.ceil(total / safeLimit),
+      limit: safeLimit,
+      cities: citySummary,
+    };
+  }
+
   const weeklySort: Record<string, 1 | -1> = {
     'metadata.seed.isMock': 1,
     'metadata.ranking.favoritesWeekly': -1,
@@ -512,23 +572,7 @@ export async function listAds(filters: ListFilters, page = 1, limit = 20) {
         .populate('images')
         .lean(),
       Ad.countDocuments(query),
-      Ad.aggregate([
-        { $match: cityCountersQuery },
-        {
-          $group: {
-            _id: { $ifNull: ['$city', 'Sin zona'] },
-            count: { $sum: 1 },
-          },
-        },
-        {
-          $project: {
-            _id: 0,
-            city: '$_id',
-            count: 1,
-          },
-        },
-        { $sort: { count: -1, city: 1 } },
-      ]),
+      cityAggregation(),
     ]);
 
   let items: IAd[];

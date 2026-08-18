@@ -4,6 +4,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import type { MediaAsset } from "@anuncios/shared";
+import { CITY_COORDINATES, DISTRICT_COORDINATES } from "@anuncios/shared";
 import { GenderToggleStack } from "@/components/GenderToggleStack";
 import { ImageLightbox } from "@/components/ImageLightbox";
 import { useAuth } from "@/hooks/useAuth";
@@ -140,6 +141,10 @@ export const PerfilMiAnuncio = () => {
 
   const canPublish = Boolean(draft.adId);
   const headline = draft.profileName || user?.name || "Tu anuncio";
+  const cityDistricts = useMemo(
+    () => DISTRICT_COORDINATES.filter((entry) => entry.city.toLowerCase() === draft.city.trim().toLowerCase()),
+    [draft.city],
+  );
   const statusMessage = useMemo(() => {
     if (loading) return "Cargando tu anuncio...";
     if (saving) return "Guardando cambios...";
@@ -341,7 +346,13 @@ export const PerfilMiAnuncio = () => {
                     value={draft.city}
                     onChange={(value) => updateField("city", value)}
                     placeholder="Barcelona"
+                    list="ciudades-datalist"
                   />
+                  <datalist id="ciudades-datalist">
+                    {CITY_COORDINATES.map((entry) => (
+                      <option key={entry.city} value={entry.city} />
+                    ))}
+                  </datalist>
                   <div>
                     <FormLabel text="Región" />
                     <select
@@ -357,12 +368,33 @@ export const PerfilMiAnuncio = () => {
                       ))}
                     </select>
                   </div>
-                  <Field
-                    label="Zona/Barrio"
-                    value={draft.zone}
-                    onChange={(value) => updateField("zone", value)}
-                    placeholder="Ej. Eixample"
-                  />
+                  {cityDistricts.length > 0 ? (
+                    <div>
+                      <FormLabel text="Zona/Barrio" />
+                      <select
+                        value={draft.zone}
+                        onChange={(event) => updateField("zone", event.target.value)}
+                        className={INPUT_CLASS}
+                      >
+                        <option value="">Selecciona zona</option>
+                        {cityDistricts.map((entry) => (
+                          <option key={entry.district} value={entry.district}>
+                            {entry.district}
+                          </option>
+                        ))}
+                      </select>
+                      <p className="mt-1 text-[11px] text-white/40">
+                        Usamos tu zona para mostrarte a quienes buscan cerca. Nunca compartimos tu ubicación exacta.
+                      </p>
+                    </div>
+                  ) : (
+                    <Field
+                      label="Zona/Barrio"
+                      value={draft.zone}
+                      onChange={(value) => updateField("zone", value)}
+                      placeholder="Ej. Eixample"
+                    />
+                  )}
                 </div>
               </article>
             </section>
@@ -759,12 +791,14 @@ const Field = ({
   onChange,
   placeholder,
   type = "text",
+  list,
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
   type?: string;
+  list?: string;
 }) => (
   <div>
     <FormLabel text={label} />
@@ -773,6 +807,7 @@ const Field = ({
       value={value}
       onChange={(event) => onChange(event.target.value)}
       placeholder={placeholder}
+      list={list}
       className={INPUT_CLASS}
     />
   </div>
