@@ -1,15 +1,10 @@
-import fs from 'node:fs';
-import path from 'node:path';
 import { config as loadEnv } from 'dotenv';
 
+// Solo carga apps/api/.env (el .env local de este paquete). Nunca hace
+// fallback a un .env de otro sitio - eso fue justamente lo que causó que
+// pruebas locales sin MONGODB_URI explicito acabaran escribiendo en la base
+// de datos de produccion.
 loadEnv();
-
-if (!process.env.MONGODB_URI) {
-  const rootEnvPath = path.resolve(__dirname, '../../../../.env');
-  if (fs.existsSync(rootEnvPath)) {
-    loadEnv({ path: rootEnvPath });
-  }
-}
 
 function req(name: string, def?: string) {
   const value = process.env[name] ?? def;
