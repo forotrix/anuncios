@@ -30,9 +30,10 @@ export type Ad = {
   createdAt: string;
   updatedAt: string;
   metadata?: AdMetadata | null;
+  distanceKm?: number;
 };
 
-type BackendAd = MockBackendAd & { plan: string };
+type BackendAd = MockBackendAd & { plan: string; distanceKm?: number };
 
 const FALLBACK_ADS: Ad[] = MOCK_ADS.map(mapBackendAd);
 
@@ -51,6 +52,7 @@ export type AdsQuery = {
   page?: number;
   limit?: number;
   excludeIds?: string[];
+  near?: { lat: number; lng: number };
 };
 
 export type FiltersCatalog = {
@@ -103,6 +105,7 @@ function mapBackendAd(ad: BackendAd): Ad {
     createdAt: ad.createdAt,
     updatedAt: ad.updatedAt,
     metadata: (ad as Partial<Ad>).metadata ?? null,
+    distanceKm: ad.distanceKm,
   };
 }
 
@@ -156,6 +159,9 @@ export function parseFiltersFromSearch(searchParams: Record<string, string | str
   const featured = normalizeBoolean(searchParams.featured);
   const page = toNumber(searchParams.page) ?? 1;
   const limit = toNumber(searchParams.limit) ?? 9;
+  const nearLat = toNumber(searchParams.nearLat);
+  const nearLng = toNumber(searchParams.nearLng);
+  const near = nearLat !== undefined && nearLng !== undefined ? { lat: nearLat, lng: nearLng } : undefined;
 
   const inferredFromLegacy =
     !sex && !identity && profileType
@@ -177,6 +183,7 @@ export function parseFiltersFromSearch(searchParams: Record<string, string | str
     text: normalizeString(searchParams.text),
     page,
     limit,
+    near,
   };
 }
 
@@ -220,6 +227,10 @@ function buildQueryString(filters?: AdsQuery) {
   if (typeof filters.weekly === "boolean") params.set("weekly", String(filters.weekly));
   if (typeof filters.page === "number") params.set("page", String(filters.page));
   if (typeof filters.limit === "number") params.set("limit", String(filters.limit));
+  if (filters.near) {
+    params.set("nearLat", String(filters.near.lat));
+    params.set("nearLng", String(filters.near.lng));
+  }
   filters.services?.forEach((service) => params.append("services", service));
   filters.excludeIds?.forEach((id) => params.append("excludeIds", id));
 

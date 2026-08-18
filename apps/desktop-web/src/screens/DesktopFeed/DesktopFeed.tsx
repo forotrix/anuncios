@@ -69,6 +69,9 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
   const topSentinelRef = useRef<HTMLDivElement>(null);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const [lightboxAlt, setLightboxAlt] = useState<string>("");
+  const [isLocating, setIsLocating] = useState(false);
+  const [geoError, setGeoError] = useState<string | null>(null);
+  const isNearMeActive = Boolean(initialFilters.near);
 
   useEffect(() => {
     setSex(initialFilters.sex ?? sexPreference);
@@ -189,6 +192,8 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
     updateParam(params, "featured", typeof current.featured === "boolean" ? String(current.featured) : undefined);
     updateParam(params, "page", current.page && current.page > 1 ? String(current.page) : undefined);
     updateParam(params, "limit", current.limit ? String(current.limit) : undefined);
+    updateParam(params, "nearLat", current.near ? String(current.near.lat) : undefined);
+    updateParam(params, "nearLng", current.near ? String(current.near.lng) : undefined);
 
     params.delete("services");
     current.services?.forEach((service) => params.append("services", service));
@@ -197,6 +202,33 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
     if (nextSex) setSexPreference(nextSex);
     if (nextIdentity) setIdentityPreference(nextIdentity);
     router.push(query ? `?${query}` : "/feed", { scroll: false });
+  };
+
+  const handleNearMeToggle = () => {
+    if (isNearMeActive) {
+      applyFilters({ near: undefined, page: 1 });
+      return;
+    }
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      setGeoError("Tu navegador no permite compartir ubicación.");
+      return;
+    }
+    setGeoError(null);
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setIsLocating(false);
+        applyFilters({
+          near: { lat: position.coords.latitude, lng: position.coords.longitude },
+          page: 1,
+        });
+      },
+      () => {
+        setIsLocating(false);
+        setGeoError("No pudimos acceder a tu ubicación. Revisa los permisos del navegador.");
+      },
+      { timeout: 10000 },
+    );
   };
 
   const servicesOptions = useMemo(() => filtersCatalog.services, [filtersCatalog.services]);
@@ -488,6 +520,18 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
 
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 <div className="flex flex-wrap items-center gap-2 pb-1 sm:flex-nowrap sm:gap-3 sm:pb-0">
+                  <button
+                    type="button"
+                    onClick={handleNearMeToggle}
+                    disabled={isLocating}
+                    className={`!h-[52px] shrink-0 whitespace-nowrap rounded-full border px-4 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                      isNearMeActive
+                        ? "border-rojo-cereza500 bg-rojo-cereza500 text-white"
+                        : "border-white/50 bg-transparent text-white hover:bg-white/10"
+                    }`}
+                  >
+                    {isLocating ? "Localizando..." : isNearMeActive ? "Cerca de mí (activo)" : "Cerca de mí"}
+                  </button>
                   <AgeRangeFilterControl
                     className="!h-[52px] !w-[120px] shrink-0 sm:!w-[130px]"
                     label={ageConfig.label}
@@ -537,6 +581,7 @@ export const DesktopFeed = ({ ads, heroAds, weeklyAds, filtersCatalog, initialFi
                   onFocusChange={setIsSearchFocused}
                 />
               </div>
+              {geoError && <p className="text-sm text-rojo-cereza200">{geoError}</p>}
 
               {displayedGridAds.length ? (
                 <div className="mt-8 flex flex-wrap justify-center gap-3 sm:gap-6">
