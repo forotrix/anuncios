@@ -124,6 +124,9 @@ export type SubscriptionPlanDefinition = {
   features: string[];
   highlightColor?: string;
   badge?: string;
+  // Se rellena cuando exista una cuenta de Stripe real - hasta entonces el
+  // plan sigue siendo solo un catalogo informativo, sin cobro.
+  stripePriceId?: string;
 };
 
 export type SubscriptionStatus = {

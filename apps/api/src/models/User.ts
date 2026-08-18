@@ -20,6 +20,8 @@ export interface IUser {
   failedLoginAttempts: number;
   lockedUntil?: Date | null;
   status: 'active' | 'suspended';
+  // Sin usar todavia - reservado para cuando se conecte Stripe de verdad.
+  stripeCustomerId?: string | null;
 }
 
 const contactSchema = new Schema(
@@ -48,6 +50,7 @@ const userSchema = new Schema<IUser>(
     failedLoginAttempts: { type: Number, default: 0 },
     lockedUntil: { type: Date, default: null },
     status: { type: String, enum: ['active', 'suspended'], default: 'active', index: true },
+    stripeCustomerId: { type: String, default: null },
   },
   { timestamps: true }
 );

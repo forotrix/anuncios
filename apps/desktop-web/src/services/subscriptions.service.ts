@@ -1,51 +1,7 @@
 import type { SubscriptionPlanDefinition, SubscriptionStatus } from "@anuncios/shared";
+import { SUBSCRIPTION_PLANS as MOCK_PLANS } from "@anuncios/shared";
 import { isApiConfigured, request } from "./httpClient";
 import { authorizedJsonRequest, authorizedRequest, ensureAccessToken } from "./apiClient";
-
-const MOCK_PLANS: SubscriptionPlanDefinition[] = [
-  {
-    id: "basic",
-    name: "Básico",
-    description: "Presencia esencial dentro del marketplace.",
-    price: 29,
-    currency: "EUR",
-    period: "monthly",
-    features: ["Hasta 1 anuncio publicado", "Soporte estandar", "Visibilidad en listados"],
-    highlightColor: "#C2185B",
-  },
-  {
-    id: "premium",
-    name: "Premium",
-    description: "Mayor exposición y herramientas adicionales.",
-    price: 59,
-    currency: "EUR",
-    period: "monthly",
-    features: [
-      "Hasta 3 anuncios publicados",
-      "Acceso a estadísticas",
-      "Prioridad en listados",
-      "Soporte prioritario",
-    ],
-    highlightColor: "#FF7043",
-    badge: "Popular",
-  },
-  {
-    id: "vip",
-    name: "VIP",
-    description: "Máxima visibilidad y soporte dedicado.",
-    price: 99,
-    currency: "EUR",
-    period: "monthly",
-    features: [
-      "Anuncios ilimitados",
-      "Destacados permanentes",
-      "Reportes avanzados",
-      "Account manager dedicado",
-    ],
-    highlightColor: "#FFD54F",
-    badge: "Exclusive",
-  },
-];
 
 let mockSubscriptionStatus: SubscriptionStatus = {
   planId: "premium",
